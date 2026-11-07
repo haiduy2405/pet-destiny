@@ -29,3 +29,5 @@ body[data-page=fortune] .hero{display:none}.camera-games{display:grid;grid-templ
 @media(max-width:400px){.pet-home-scene{height:300px}.home-heading h2{font-size:25px}.home-care-shortcuts{grid-template-columns:1fr 1fr}.home-care-shortcuts button:last-child{grid-column:1/-1}.home-featured-pet{bottom:20px}}
 
 .home-shop-tabs{scrollbar-width:none;background:transparent}.home-shop-tabs::-webkit-scrollbar{display:none}html[data-display=dark] .home-shop-tabs{background:#223d35}
+
+#nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.egg-stamp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:20px 0}.egg-stamp-grid .chosen{background:#b2d49f;color:#23422e}.egg-shop-entry{width:100%;margin:0 0 18px}.egg-journey-hub{margin-top:20px}
