@@ -18,12 +18,12 @@ const PetHomes=(()=>{
  function pagePrice(s){return 120+90*(s.homes.length-1)}
  function buyPage(s){const cost=pagePrice(s);if(s.coins<cost)return false;s.coins-=cost;s.homes.push({petId:null,owned:[],equipped:{},theme:'classic',decor:[]});s.homePage=s.homes.length-1;s.pens=s.homes.map(h=>h.petId);return true}
  function assign(s,index,id,t){normalize(s,t);const h=s.homes[index];if(!h||id&&!s.pets.some(p=>p.id===id))return false;const displaced=s.pets.find(p=>p.id===h.petId);if(displaced&&displaced.id!==id)displaced.waitUntil=t+grace;for(const x of s.homes)if(x.petId===id)x.petId=null;h.petId=id;normalize(s,t);return true}
- function merge(s,targetId,sourceId,t){normalize(s,t);if(targetId===sourceId)return false;const a=s.pets.find(p=>p.id===targetId),b=s.pets.find(p=>p.id===sourceId);if(!a||!b)return false;
+ function merge(s,targetId,sourceId,t){normalize(s,t);if(targetId===sourceId)return false;const a=s.pets.find(p=>p.id===targetId),b=s.pets.find(p=>p.id===sourceId);if(!a||!b||b.locked)return false;
   xp(a,b.totalXP);a.lastTreat=Math.max(a.lastTreat||0,b.lastTreat||0);a.capital+=b.capital;a.evolutionCredits+=b.evolutionCredits;a.evolution=Math.max(a.evolution,b.evolution);if(b.evoStart){a.evoStart??={...b.evoStart};for(const k of new Set([...Object.keys(a.evoStart),...Object.keys(b.evoStart)]))a.evoStart[k]=Math.min(a.evoStart[k]||0,b.evoStart[k]||0)}
   for(const k of keys){const sum=a[k]+a.reserve[k]+b[k]+b.reserve[k];a[k]=Math.min(100,sum);a.reserve[k]=Math.max(0,sum-100)}
   const sourcePage=s.homes.findIndex(h=>h.petId===b.id),targetPage=s.homes.findIndex(h=>h.petId===a.id);for(const h of s.homes)if(h.petId===b.id)h.petId=null;if(targetPage<0&&sourcePage>=0)s.homes[sourcePage].petId=a.id;
   s.pets=s.pets.filter(p=>p.id!==b.id);normalize(s,t);return true;
  }
- function remove(s,id,t){normalize(s,t);const p=s.pets.find(p=>p.id===id);if(!p)return false;const coins=price(p,t);s.coins+=coins;s.pets=s.pets.filter(p=>p.id!==id);for(const h of s.homes)if(h.petId===id)h.petId=null;normalize(s,t);return coins}
+ function remove(s,id,t){normalize(s,t);const p=s.pets.find(p=>p.id===id);if(!p||p.locked)return false;const coins=price(p,t);s.coins+=coins;s.pets=s.pets.filter(p=>p.id!==id);for(const h of s.homes)if(h.petId===id)h.petId=null;normalize(s,t);return coins}
  return {normalize,xp,level,rawValue,discount,price,pagePrice,buyPage,assign,merge,remove,keys};
 })();

@@ -6,7 +6,7 @@ const Economy=(()=>{
  function upgradePrice(s){return 100+75*(s.gardenLevel||0)}
  function upgrade(s){const price=upgradePrice(s);if(!Number.isSafeInteger(price)||!Number.isSafeInteger(4+4*((s.gardenLevel||0)+1)))return {ok:false,message:'Không thể nâng cấp thêm trong phiên này.'};if(s.coins<price)return {ok:false,message:'Chưa đủ '+price+' xu để nâng cấp.'};s.coins-=price;s.gardenLevel=(s.gardenLevel||0)+1;return {ok:true,message:'Đã nâng cấp vườn · +4 chỗ · −'+price+' xu'}}
  function petPrice(p){return 10+Math.floor(Math.max(0,Math.min(100,p.xp||0))/10)+(p.evolution?25:0)}
- function sellPet(s,id){const p=s.pets.find(p=>p.id===id);if(!p)return {ok:false,message:'Thú không còn trong ô lưu này.'};const price=petPrice(p);s.pets=s.pets.filter(p=>p.id!==id);s.pens=(s.pens||[]).map(x=>x===id?null:x);s.coins+=price;return {ok:true,message:'Đã bán thú · +'+price+' xu'}}
+ function sellPet(s,id){const p=s.pets.find(p=>p.id===id);if(!p)return {ok:false,message:'Thú không còn trong ô lưu này.'};if(p.locked)return {ok:false,message:'Thú đang khóa. Mở khóa trước khi bán.'};const price=petPrice(p);s.pets=s.pets.filter(p=>p.id!==id);s.pens=(s.pens||[]).map(x=>x===id?null:x);s.coins+=price;return {ok:true,message:'Đã bán thú · +'+price+' xu'}}
  return {items,normalize,buy,sellEgg,upgradePrice,upgrade,petPrice,sellPet};
 })();
 
