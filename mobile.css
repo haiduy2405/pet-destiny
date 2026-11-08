@@ -55,3 +55,5 @@ body[data-page=fortune] .hero{display:none}.camera-games{display:grid;grid-templ
 .passive-item-yield{display:block;line-height:1.5;font-size:11px;color:#527245;padding:8px 0}html[data-display=dark] .passive-item-yield{color:#c0d991}
 
 html[data-display=dark] .home-progress{background:#284337;color:#edf3dd}html[data-display=dark] .home-page-label{background:#304d3d;color:#edf3dd}
+
+.egg-journey-progress{padding:12px 14px;border-radius:14px;background:#78965d22}.egg-journey-progress progress{display:block;width:100%;margin:8px 0}.egg-journey-progress p{margin:4px 0;font-size:.875rem}.egg-stamp-grid button b,.egg-stamp-grid button small{display:block}.egg-stamp-grid button small{margin-top:4px;font-weight:500;line-height:1.25}
