@@ -57,3 +57,8 @@ body[data-page=fortune] .hero{display:none}.camera-games{display:grid;grid-templ
 html[data-display=dark] .home-progress{background:#284337;color:#edf3dd}html[data-display=dark] .home-page-label{background:#304d3d;color:#edf3dd}
 
 .egg-journey-progress{padding:12px 14px;border-radius:14px;background:#78965d22}.egg-journey-progress progress{display:block;width:100%;margin:8px 0}.egg-journey-progress p{margin:4px 0;font-size:.875rem}.egg-stamp-grid button b,.egg-stamp-grid button small{display:block}.egg-stamp-grid button small{margin-top:4px;font-weight:500;line-height:1.25}
+
+.wear-editor-layer{z-index:15;pointer-events:none}
+.wear-editor-layer .wear-edit-handle{pointer-events:auto;touch-action:none;cursor:grab;min-width:0;min-height:0;padding:0;border:0;background:transparent;color:inherit;box-shadow:none;line-height:inherit}
+.wear-edit-handle[aria-pressed=true]{outline:2px solid #e9bd54;outline-offset:3px}
+.room-inventory [data-wear-select][aria-pressed=true]{outline:2px solid #c59736;outline-offset:-2px}

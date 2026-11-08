@@ -5,7 +5,10 @@ const Atelier=(()=>{
  function objects(h){if(!h.roomObjects)h.roomObjects=[...new Set([h.equipped?.house,h.equipped?.toy,...(h.decor||[])].filter(Boolean))].map(pose);return h.roomObjects}
  function put(h,id){const list=objects(h);if(!h.owned.includes(id)||list.some(o=>o.id===id))return false;list.push(pose(id,list.length));return true}
  function commit(h,draft){const seen=new Set();h.roomObjects=draft.filter(o=>h.owned.includes(o.id)&&!seen.has(o.id)&&(seen.add(o.id),true)).map(normalize)}
+ function wearPose(id, saved={}){
+  return {id,x:clamp(saved.x,-110,110),y:clamp(saved.y,-130,130),scale:clamp(saved.scale??1,.35,2.2)};
+ }
  function cleanName(value){return Array.from(String(value||'').replace(/[\u0000-\u001f\u007f]/g,'').trim()).slice(0,24).join('')}
  function escape(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
- return {pose,normalize,objects,put,commit,cleanName,escape};
+ return {pose,normalize,objects,put,commit,wearPose,cleanName,escape};
 })();
