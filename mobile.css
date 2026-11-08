@@ -73,3 +73,24 @@ html[data-display=dark] .home-progress{background:#284337;color:#edf3dd}html[dat
 .evo-game-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .evo-game-links button{min-height:44px;padding:8px 12px;font-size:13px}
 html[data-display=dark] #gameSearch{background:#233b37;color:#e1ecd8;border-color:#6f8a73}
+.game-pack{margin:14px 0 18px;padding:14px 16px;animation:none}
+.game-pack summary{cursor:pointer;min-height:44px;padding:4px 0}
+.game-pack summary small{display:block;margin:5px 0 0 16px;color:inherit;font-size:12px}
+.game-pack-body{padding-top:6px}
+.game-pack-body .muted{font-size:13px}
+.game-pack-body ol{display:grid;gap:7px;padding:0;list-style:none}
+.game-pack-body li button{width:100%;min-height:44px;padding:8px 12px;font-size:14px;text-align:left}
+.game-pack-body li span{display:block;padding:10px 12px;font-size:13px}
+.game-pack-practice{margin-top:16px;padding-top:14px;border-top:1px solid #82957c66}
+.game-practice-progress{font-size:11px;margin:0 0 10px}
+.practice-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}
+.practice-options button{padding:9px 6px}
+.practice-clock{display:block;width:min(160px,100%);margin:12px auto}
+.practice-clock circle{fill:none;stroke:currentColor;stroke-width:2}
+.practice-clock text{fill:currentColor;text-anchor:middle;dominant-baseline:central;font-size:13px}
+.practice-clock line{stroke:currentColor;stroke-linecap:round}
+.practice-clock .clock-hour{stroke-width:6}
+.practice-clock .clock-minute{stroke-width:3}
+.practice-clock .clock-pin{fill:currentColor}
+.practice-pattern,.practice-word{text-align:center;font-weight:750;font-size:22px}
+.practice-word span{display:block;font-size:38px}

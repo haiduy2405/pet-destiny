@@ -1,6 +1,7 @@
 let journeyPracticeSlot = null;
 
 function bindJourneyReturn(button) {
+  if (typeof bindGamePackReturn === 'function' && bindGamePackReturn(button)) return;
   if (journeyPracticeSlot === null || journeyPracticeSlot !== activeSlot) return;
   button.textContent = 'Về Viện ươm';
   button.onclick = () => adventureDialog.close();
