@@ -24,13 +24,27 @@ function normalizeGameSearch(text) {
   return text.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/đ/g, 'd');
 }
 
+const gameSubjects = [
+  ['Toán', ['count', 'order', 'math', 'fractions', 'change', 'clock', 'patterns', 'ruler']],
+  ['Âm nhạc', ['music', 'melody', 'rhythm', 'earmemory', 'pitch']],
+  ['Tiếng Anh', ['english', 'phrases']],
+  ['Tiếng Việt', ['reading']],
+  ['Quan sát và trí nhớ', []]
+];
+
 renderQuests = function() {
   const previousQuery = $('gameSearch')?.value || '';
+  const previousSubject = $('gameSubject')?.value || '';
   const games = [...arcadeGames, ...cameraGames];
+  const subjects = games.map(([id]) =>
+    (gameSubjects.find(([, members]) => members.includes(id)) || gameSubjects.at(-1))[0]);
   $('view').innerHTML = `<h2>Chơi kiếm xu</h2>
     <p class="muted">Chơi bao nhiêu tùy thích, thắng lượt nào nhận xu lượt đó. Dùng xu để chăm thú lớn và tiến hóa.</p>
     <label class="game-search" for="gameSearch">Tìm game</label>
     <input id="gameSearch" type="search" placeholder="Nhập tên hoặc từ khóa" autocomplete="off" aria-controls="gameGrid">
+    <label class="game-search" for="gameSubject">Môn học</label>
+    <select id="gameSubject" aria-controls="gameGrid"><option value="">Tất cả môn</option>
+      ${gameSubjects.map(([subject]) => `<option>${subject}</option>`).join('')}</select>
     <p id="gameSearchStatus" class="muted" role="status"></p>
     <div class="eyebrow game-list-heading">CHỌN GAME · THƯỞNG MỖI LƯỢT</div>
     <div class="grid" id="gameGrid">${games.map(([id, icon, name, desc, coins], index) => {
@@ -41,26 +55,31 @@ renderQuests = function() {
         <button ${camera ? 'data-camera-game' : 'data-mini'}="${id}">Chơi · +${coins} xu</button></article>`;
     }).join('')}</div>`;
   const search = $('gameSearch');
+  const subject = $('gameSubject');
   const cards = [...$('gameGrid').children];
   const searchText = games.map(([, , name, description], index) =>
-    normalizeGameSearch(name + ' ' + description + (index >= arcadeGames.length ? ' camera' : '')));
+    normalizeGameSearch(name + ' ' + description + ' ' + subjects[index] + (index >= arcadeGames.length ? ' camera' : '')));
   cards.forEach(card => {
     const button = card.querySelector('button');
     button.onclick = () => button.dataset.mini ? startMini(button.dataset.mini) : openCameraGame(button.dataset.cameraGame);
   });
-  search.oninput = () => {
+  function filterGames() {
     const query = normalizeGameSearch(search.value).trim();
     const words = query ? query.split(/\s+/) : [];
     let count = 0;
     cards.forEach((card, index) => {
-      const matches = words.every(word => searchText[index].includes(word));
+      const matches = (!subject.value || subjects[index] === subject.value) &&
+        words.every(word => searchText[index].includes(word));
       card.hidden = !matches;
       if (matches) count++;
     });
-    $('gameSearchStatus').textContent = !query ? '' : count ? count + ' game phù hợp' : 'Không tìm thấy game phù hợp.';
-  };
+    $('gameSearchStatus').textContent = !query && !subject.value ? '' :
+      count ? count + ' game phù hợp' : 'Không tìm thấy game phù hợp.';
+  }
   search.value = previousQuery;
-  search.oninput();
+  subject.value = previousSubject;
+  search.oninput = subject.onchange = filterGames;
+  filterGames();
 };
 const oldExtraStart=startMini;startMini=function(type){if(!['math','odd','path'].includes(type))return oldExtraStart(type);if(type==='path'){originalStartMini('memory');miniSession.type='path';miniSession.sequence=Array.from({length:4},()=>rand(4));adventureDialog.innerHTML=`<h2>Theo dấu chân</h2><div class="memory-sequence">${miniSession.sequence.map(i=>['🍎','🌼','🍃','💧'][i]).join(' → ')}</div><p>Nhớ 4 biểu tượng rồi chạm lại đúng thứ tự.</p><button id="pathReady">Đã nhớ</button><button class="secondary" id="closePath">Đóng</button>`;$('pathReady').onclick=drawPath;$('closePath').onclick=()=>adventureDialog.close();return}miniSession={type,slot:activeSlot,step:0};drawExtra();if(!adventureDialog.open)adventureDialog.showModal()};
 function drawPath(){drawMemory();$('miniStatus').textContent=miniSession.step+'/4 biểu tượng đúng';adventureDialog.querySelectorAll('[data-memory]').forEach(b=>b.onclick=()=>{const s=miniSession;if(!s)return;if(Number(b.dataset.memory)!==s.sequence[s.step]){s.step=0;$('miniStatus').textContent='Thử lại: 0/4';return}if(++s.step===4)return winMini();$('miniStatus').textContent=s.step+'/4 biểu tượng đúng'})}

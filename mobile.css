@@ -94,3 +94,18 @@ html[data-display=dark] #gameSearch{background:#233b37;color:#e1ecd8;border-colo
 .practice-clock .clock-pin{fill:currentColor}
 .practice-pattern,.practice-word{text-align:center;font-weight:750;font-size:22px}
 .practice-word span{display:block;font-size:38px}
+#gameSubject{width:100%;min-height:44px;padding:8px 12px;border:1px solid #a5b69b;border-radius:14px;background:#fffff8;color:#203e36;font:inherit}
+html[data-display=dark] #gameSubject{background:#233b37;color:#e1ecd8;border-color:#6f8a73}
+.pet-moment{margin:12px 0;padding:14px 16px;overflow-wrap:anywhere}
+.pet-moment h3{margin:0;font-size:17px}
+.pet-moment p{margin:7px 0;font-size:13px}
+.pet-moment button{min-height:44px;margin-top:4px;font-size:13px}
+.room-editing+.pet-moment{display:none}
+.pet-name-editor{margin:0 0 14px}
+.pet-name-editor summary{cursor:pointer;padding:9px 0;font-weight:700}
+.pet-name-editor form{margin:8px 0}
+.home-heading h2,#gardenPanelTitle{overflow-wrap:anywhere}
+.practice-ruler{display:block;width:100%;max-width:380px;margin:12px auto}
+.practice-ruler line{stroke:currentColor;stroke-width:2}
+.practice-ruler text{fill:currentColor;text-anchor:middle;font-size:13px}
+.practice-ruler rect{fill:#56976b}

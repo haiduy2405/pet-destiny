@@ -17,7 +17,7 @@ const Adventure=(()=>{
  }
  function evolution(s,p){
   const delta=key=>evolutionCount(s,p,key);
-  const played=['memory','count','pairs','snacks','colors','order','shapes','math','odd','path','music','melody','rhythm','fractions','change','earmemory','clock','patterns','english'].filter(key=>delta('mini_'+key)>0).length;
+  const played=['memory','count','pairs','snacks','colors','order','shapes','math','odd','path','music','melody','rhythm','fractions','change','earmemory','clock','patterns','english','ruler','pitch','phrases','reading'].filter(key=>delta('mini_'+key)>0).length;
   return [
    ['Thắng 2 lượt săn màu hoặc săn hình',delta('color')+delta('camera_shape'),2,'camera'],
    ['Chăm sóc 3 lần',delta('care'),careTarget],

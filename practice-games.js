@@ -54,6 +54,68 @@ const practiceGames = {
         options: [answer, ...distractors.map(([, , word]) => word)], answer,
         hint: `Từ này bắt đầu bằng chữ “${answer[0]}”.`, explanation: `${vietnamese} là “${answer}”.`};
     }
+  },
+  ruler: {
+    icon: '📏', title: 'Đo độ dài', rounds: 5, reward: 12,
+    intro: 'Đọc thước theo xăng-ti-mét. Độ dài bằng số ở đầu bên phải trừ số ở đầu bên trái.',
+    question(round) {
+      const start = round < 2 ? 0 : 1 + rand(3), answer = 2 + rand(6);
+      const end = start + answer;
+      const ticks = Array.from({length: 11}, (_, i) => `<line x1="${15 + i * 25}" y1="32" x2="${15 + i * 25}" y2="43"/><text x="${15 + i * 25}" y="59">${i}</text>`).join('');
+      const prompt = `<svg class="practice-ruler" viewBox="0 0 280 65" role="img" aria-label="Vật nằm từ vạch ${start} đến vạch ${end} xăng-ti-mét">
+        <rect x="${15 + start * 25}" y="10" width="${answer * 25}" height="13" rx="4"/>${ticks}</svg>`;
+      return {prompt, answer, options: [answer, answer - 1, answer + 1, answer + 2],
+        hint: 'Đếm các khoảng giữa hai đầu của vật, hoặc lấy vạch cuối trừ vạch đầu.',
+        explanation: `${end} − ${start} = ${answer} cm.`};
+    }
+  },
+  pitch: {
+    icon: '🎧', title: 'Nghe cao hay thấp', rounds: 5, reward: 13,
+    intro: 'Nghe hai âm liên tiếp. Chọn xem âm thứ hai cao hơn, thấp hơn hay bằng âm đầu. Có thể nghe lại bao nhiêu lần tùy thích.',
+    question(round) {
+      const base = [262, 294, 330][rand(3)];
+      const direction = round === 0 ? 1 : round === 1 ? -1 : rand(3) - 1;
+      const options = ['Thấp hơn', 'Bằng nhau', 'Cao hơn'];
+      const answer = options[direction + 1];
+      return {prompt: '<p>Âm thứ hai thế nào so với âm đầu?</p>', answer, options,
+        audio: [base, base * 2 ** (direction * (round < 3 ? 7 : 4) / 12)],
+        hint: 'Nghe lại và thử ngân theo hai âm. Giọng đi lên là cao hơn, đi xuống là thấp hơn.',
+        explanation: direction === 0 ? 'Hai âm có cùng độ cao.' : 'Âm thứ hai ' + answer.toLowerCase() + ' âm đầu.'};
+    }
+  },
+  phrases: {
+    icon: '💬', title: 'Tiếng Anh hằng ngày', rounds: 5, reward: 15,
+    intro: 'Chọn câu tiếng Anh dùng được trong từng tình huống hằng ngày.',
+    words: [
+      ['Bạn muốn nói lời cảm ơn.', 'Thank you.'], ['Bạn muốn xin lỗi vì đến muộn.', 'I’m sorry.'],
+      ['Bạn gặp bạn bè vào buổi sáng.', 'Good morning.'], ['Bạn cần ai đó giúp mình.', 'Can you help me?'],
+      ['Bạn muốn xin một ít nước.', 'Water, please.'], ['Bạn chưa hiểu câu vừa nghe.', 'I don’t understand.'],
+      ['Bạn muốn biết nhà vệ sinh ở đâu.', 'Where is the restroom?']
+    ],
+    question(round, session) {
+      const [scenario, answer] = session.words[round];
+      return {prompt: `<p>${scenario}</p>`, answer,
+        options: [answer, ...shuffle(this.words.filter(([, phrase]) => phrase !== answer)).slice(0, 2).map(([, phrase]) => phrase)],
+        hint: `Câu phù hợp bắt đầu bằng “${answer.split(' ')[0].replace(/[.!?]$/, '')}”.`,
+        explanation: `Bạn có thể nói “${answer}”`};
+    }
+  },
+  reading: {
+    icon: '📚', title: 'Đọc hiểu tình huống', rounds: 5, reward: 14,
+    intro: 'Đọc một mẩu tin ngắn và chọn chi tiết đúng. Luyện với lời nhắn, biển báo và hướng dẫn quen thuộc.',
+    words: [
+      ['“An ơi, nhớ bỏ bình nước vào cặp trước khi ra khỏi nhà.” An cần mang gì?', 'Bình nước', 'Hộp bút', 'Áo mưa', 'Lời nhắn dặn mang bình nước.'],
+      ['Biển ghi “Sàn ướt, đi chậm”. Em nên làm gì?', 'Đi chậm', 'Chạy nhanh', 'Nhảy qua', 'Đi chậm giúp tránh trượt ngã.'],
+      ['Lịch ghi “Trả sách vào thứ Sáu”. Em trả sách ngày nào?', 'Thứ Sáu', 'Thứ Năm', 'Chủ nhật', 'Ngày ghi trong lịch là thứ Sáu.'],
+      ['“Con rửa tay rồi mới ăn.” Việc nào làm trước?', 'Rửa tay', 'Ăn', 'Dọn bàn', 'Từ “rồi mới” cho biết việc rửa tay làm trước.'],
+      ['Nhãn ghi “Chỉ tưới khi đất khô”. Đất đang ướt, em nên làm gì?', 'Chờ đất khô', 'Tưới ngay', 'Đổ thêm nước', 'Nhãn dặn chỉ tưới khi đất khô.'],
+      ['“Em đặt bút chì bên cạnh quyển vở.” Bút chì ở đâu?', 'Bên cạnh quyển vở', 'Dưới ghế', 'Trong cặp', 'Cụm “bên cạnh” chỉ vị trí ngay cạnh quyển vở.']
+    ],
+    question(round, session) {
+      const [scenario, answer, second, third, explanation] = session.words[round];
+      return {prompt: `<p>${scenario}</p>`, answer, options: [answer, second, third],
+        hint: 'Đọc lại câu và tìm đúng chi tiết mà câu hỏi nhắc tới.', explanation};
+    }
   }
 };
 
@@ -85,12 +147,15 @@ function drawPracticeQuestion() {
   const options = shuffle(question.options);
   let missed = false;
   adventureDialog.innerHTML = `<h2>${game.icon} ${game.title}</h2><p>Câu ${round + 1}/${game.rounds}</p>${question.prompt}
+    ${question.audio ? '<button class="secondary" id="hearPractice">🔈 Nghe hai âm</button>' : ''}
     <div class="practice-options">${options.map((answer, i) => `<button data-practice-answer="${i}">${answer}</button>`).join('')}</div>
     <p id="practiceFeedback" class="muted" role="status"></p>
     <button id="practiceNext" hidden>${round + 1 === game.rounds ? 'Nhận xu' : 'Câu tiếp theo →'}</button>
     <button class="secondary close-mini">Đóng</button>`;
   const next = $('practiceNext');
   const answers = adventureDialog.querySelectorAll('[data-practice-answer]');
+  const hear = $('hearPractice');
+  if (hear) hear.onclick = () => musicPlay(question.audio.map(frequency => ({frequency})));
   answers.forEach((button, index) => {
     button.onclick = () => {
       if (practiceSession !== session || session.slot !== activeSlot || !next.hidden) return;
@@ -115,7 +180,7 @@ function drawPracticeQuestion() {
     drawPracticeQuestion();
   };
   adventureDialog.querySelector('.close-mini').onclick = () => adventureDialog.close();
-  answers[0].focus({preventScroll: true});
+  (hear || answers[0]).focus({preventScroll: true});
 }
 
 function finishPractice() {
