@@ -7,8 +7,93 @@ function petArt(p){return `<div class="pet-art ${p.evolution?'evolved':''}" styl
 const oldAdventureRender=render;render=function(){Adventure.normalize(state);oldAdventureRender();if(current==='garden')decorateGarden()};
 function decorateGarden(){const board=document.createElement('section');board.className='pen-board';board.innerHTML=`<div class="eyebrow">KHU TRƯNG BÀY · 4 CHUỒNG MIỄN PHÍ</div><h2>Những người bạn trong vườn</h2><p class="muted">Chọn thú đã nở để thả vào chuồng. Đổi chuồng hoặc cất về bộ sưu tập bất cứ lúc nào.</p><div class="pen-grid">${state.pens.map((id,i)=>{const p=state.pets.find(p=>p.id===id);return `<article class="pen"><span class="pen-label">Chuồng ${i+1}</span><div class="pen-scene">${p?petArt(p):'<span class="pen-empty">🌱</span>'}</div>${p?`<strong>${petName(p)}</strong><small>${p.evolution?'Đã tiến hóa ✦':'Lớn '+Math.floor(p.xp)+'%'}</small><progress aria-label="Mức trưởng thành" value="${p.xp}" max="100"></progress>`:'<strong>Chờ người bạn nhỏ</strong><small>Chưa có thú trong chuồng</small>'}<button class="secondary" data-pen="${i}">${p?'Đổi / cất thú':'＋ Thả thú'}</button></article>`}).join('')}</div>`;$('view').prepend(board);board.querySelectorAll('[data-pen]').forEach(b=>b.onclick=()=>choosePen(Number(b.dataset.pen)));document.querySelectorAll('#view .animal').forEach((el,i)=>{const p=state.pets[i-state.eggs.length];if(!p)return;el.innerHTML=petArt(p);const growth=document.createElement('div');growth.className='growth-card';growth.innerHTML=`<div class="stat"><b>Trưởng thành ${Math.floor(p.xp)}%</b><span>${p.evolution?'Đã tiến hóa':p.xp>=100?'Sẵn sàng tiến hóa':p.xp>=40?'Thiếu niên':'Thú non'}</span></div><progress aria-label="Trưởng thành ${Math.floor(p.xp)}%" value="${p.xp}" max="100"></progress><p class="muted">Chăm sóc +10%. Nhận thưởng nhiệm vụ +8% cho thú ở chuồng đầu tiên có thú (hoặc thú đầu tiên nếu chuồng trống).</p>${p.evolution?'<p class="evo-complete">👑 Dạng Linh thú · Đã hoàn thành tiến hóa</p>':p.xp>=100?`<button data-evo="${p.id}">${p.evoStart?'Xem nhiệm vụ tiến hóa':'✦ Nhận nhiệm vụ tiến hóa'}</button>`:''}`;el.parentNode.append(growth);if(p.xp>=100&&!p.evolution)growth.querySelector('button').onclick=()=>evolutionDialog(p.id)});}
 function choosePen(index){adventureDialog.innerHTML=`<h2>Chuồng ${index+1}</h2><p class="muted">Chỉ thú đã nở mới vào chuồng. Một thú chỉ ở một chuồng.</p><div class="pen-choices">${state.pets.map(p=>`<button class="secondary" data-place="${p.id}">${petName(p)} · ${Math.floor(p.xp)}% ${p.evolution?'👑':''}${state.pens.includes(p.id)?' · Đang trong vườn':''}</button>`).join('')||'<p>Bạn chưa có thú. Hãy nhận và ấp trứng trước nhé.</p>'}</div><div class="actions"><button class="secondary" id="emptyPen">Cất thú</button><button id="closeAdventure">Đóng</button></div>`;adventureDialog.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>{Adventure.assign(state,index,b.dataset.place);save();adventureDialog.close();render();notice('Đã thả thú vào chuồng '+(index+1))});$('emptyPen').onclick=()=>{Adventure.assign(state,index,null);save();adventureDialog.close();render()};$('closeAdventure').onclick=()=>adventureDialog.close();adventureDialog.showModal()}
-function evolutionDialog(id){const p=state.pets.find(p=>p.id===id);if(!p||p.xp<100||p.evolution)return;if(!p.evoStart){Adventure.startEvolution(state,id);save()}const steps=Adventure.evolution(state,p),ready=steps.every(([,n,max])=>n>=max);adventureDialog.innerHTML=`<div class="eyebrow">NGHI THỨC DUYÊN SẮC</div><h2>Tiến hóa ${petName(p)}</h2><p class="muted">Thú đã lớn đủ 100%. Hoàn thành các mục sau kể từ lúc nhận nhiệm vụ; tiến độ giữ qua ngày và khi đổi ô lưu.</p><ul class="evo-steps">${steps.map(([name,n,max])=>`<li>${n>=max?'✅':'○'} ${name} <b>${Math.min(n,max)}/${max}</b></li>`).join('')}</ul><p class="muted">Phần thưởng: dạng Linh thú với vương miện, hào quang và 25 xu. Mỗi thú tiến hóa một lần ở bản này.</p><div class="actions"><button class="secondary" id="closeAdventure">Để sau</button><button id="evolvePet" ${ready?'':'disabled'}>✦ Tiến hóa</button></div>`;$('closeAdventure').onclick=()=>adventureDialog.close();$('evolvePet').onclick=()=>{if(!Adventure.evolve(state,id,day()))return;state.coins+=25;save();adventureDialog.close();render();notice('Thú đã tiến hóa! 👑 +25 xu')};adventureDialog.showModal()}
-function startMini(type){miniSession={type,slot:activeSlot,sequence:Array.from({length:3},()=>rand(4)),step:0,count:3+rand(6)};if(type==='memory'){adventureDialog.innerHTML=`<h2>Nhớ thứ tự nhé!</h2><div class="memory-sequence">${miniSession.sequence.map(i=>['🍎','🌼','🍃','💧'][i]).join(' → ')}</div><p class="muted">Khi đã nhớ, bấm nút để bắt đầu chọn lại.</p><button id="memoryReady">Tôi đã nhớ</button><button class="secondary close-mini">Đóng</button>`;$('memoryReady').onclick=drawMemory}else drawCount();adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();adventureDialog.showModal()}
+let evolutionGame = null;
+
+function evolutionDialog(id) {
+  const pet = state.pets.find(p => p.id === id);
+  if (!pet || pet.xp < 100 || pet.evolution) return;
+  if (!pet.evoStart) {
+    Adventure.startEvolution(state, id);
+    save();
+  }
+  const steps = Adventure.evolution(state, pet);
+  const ready = steps.every(([, done, target]) => done >= target);
+  const buttons = {
+    camera: cameraGames.map(([game, , label]) => [game, label]),
+    mini: [['count', 'Đếm đom đóm']],
+    variety: ['memory', 'count']
+      .filter(game => Adventure.evolutionCount(state, pet, 'mini_' + game) === 0)
+      .slice(0, 1)
+      .map(game => [game, arcadeGames.find(([key]) => key === game)[2]])
+  };
+  const rows = steps.map(([name, done, target, shortcut]) => {
+    const complete = done >= target;
+    const games = complete ? [] : (buttons[shortcut] || []);
+    return `<li>${complete ? '✅' : '○'} ${name} <b>${Math.min(done, target)}/${target}</b>
+      ${games.length ? `<div class="evo-game-links">${games.map(([game, label]) =>
+        `<button class="secondary" data-evolution-game="${game}">${label} →</button>`).join('')}</div>` : ''}</li>`;
+  }).join('');
+  const careOptions = Adventure.evolutionCareOptions(state, pet);
+  const careLabels = { food: 'Kiểm tra bữa ăn', clean: 'Lau nhẹ', joy: 'Vuốt ve', energy: 'Ru ngủ' };
+  adventureDialog.innerHTML = `<div class="eyebrow">NGHI THỨC DUYÊN SẮC</div><h2>Tiến hóa ${petName(pet)}</h2>
+    <p class="muted">Thú đã lớn đủ 100%. Hoàn thành các mục sau kể từ lúc nhận nhiệm vụ; tiến độ giữ qua ngày và khi đổi ô lưu.</p>
+    <ul class="evo-steps">${rows}</ul>
+    ${careOptions.length ? `<p class="muted"><strong>Chăm sóc nhẹ</strong> khi chỉ số đã đủ. Miễn phí và được tính vào nhiệm vụ.</p>
+      <div class="evo-game-links">${careOptions.map(type =>
+        `<button class="secondary" data-evolution-care="${type}">${careLabels[type]}</button>`).join('')}</div>` : ''}
+    <p class="muted">Phần thưởng: dạng Linh thú với vương miện, hào quang và 25 xu. Mỗi thú tiến hóa một lần ở bản này.</p>
+    <div class="actions"><button class="secondary" id="closeAdventure">Để sau</button><button id="evolvePet" ${ready ? '' : 'disabled'}>✦ Tiến hóa</button></div>`;
+  adventureDialog.querySelectorAll('[data-evolution-game]').forEach(button => {
+    button.onclick = () => {
+      const game = button.dataset.evolutionGame;
+      if (game === 'colorMain' || game === 'shapeMain') {
+        adventureDialog.close();
+        openCameraGame(game);
+        return;
+      }
+      evolutionGame = { id, slot: activeSlot };
+      startMini(game);
+      adventureDialog.scrollTop = 0;
+      adventureDialog.querySelector('button')?.focus();
+    };
+  });
+  adventureDialog.querySelectorAll('[data-evolution-care]').forEach(button => {
+    button.onclick = () => {
+      const type = button.dataset.evolutionCare;
+      const currentPet = state.pets.find(candidate => candidate.id === id);
+      if (!Adventure.evolutionCareOptions(state, currentPet).includes(type)) return;
+      const saved = homeTransaction(() => {
+        recordEvent('care');
+        recordEvent('care_' + type);
+      }, 'Đã tính một lượt chăm sóc nhẹ');
+      if (!saved) return;
+      const scroll = adventureDialog.scrollTop;
+      evolutionDialog(id);
+      adventureDialog.scrollTop = scroll;
+      (adventureDialog.querySelector(`[data-evolution-care="${type}"]`) ||
+        adventureDialog.querySelector('[data-evolution-care]') || $('closeAdventure')).focus({ preventScroll: true });
+    };
+  });
+  $('closeAdventure').onclick = () => adventureDialog.close();
+  $('evolvePet').onclick = () => {
+    if (!Adventure.evolve(state, id, day())) return;
+    state.coins += 25;
+    save();
+    adventureDialog.close();
+    render();
+    notice('Thú đã tiến hóa! 👑 +25 xu');
+  };
+  if (!adventureDialog.open) adventureDialog.showModal();
+}
+
+adventureDialog.addEventListener('close', () => {
+  if (!evolutionGame || adventureDialog.open) return;
+  const { id, slot } = evolutionGame;
+  evolutionGame = null;
+  miniSession = null;
+  if (slot === activeSlot) evolutionDialog(id);
+});
+function startMini(type){miniSession={type,slot:activeSlot,sequence:Array.from({length:3},()=>rand(4)),step:0,count:3+rand(6)};if(type==='memory'){adventureDialog.innerHTML=`<h2>Nhớ thứ tự nhé!</h2><div class="memory-sequence">${miniSession.sequence.map(i=>['🍎','🌼','🍃','💧'][i]).join(' → ')}</div><p class="muted">Khi đã nhớ, bấm nút để bắt đầu chọn lại.</p><button id="memoryReady">Tôi đã nhớ</button><button class="secondary close-mini">Đóng</button>`;$('memoryReady').onclick=drawMemory}else drawCount();adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();if(!adventureDialog.open)adventureDialog.showModal()}
 function drawMemory(){adventureDialog.innerHTML=`<h2>Chọn đúng thứ tự</h2><p id="miniStatus">${miniSession.step}/3 biểu tượng đúng</p><div class="mini-options">${['🍎','🌼','🍃','💧'].map((s,i)=>`<button data-memory="${i}" aria-label="${['Táo','Hoa','Lá','Nước'][i]}">${s}</button>`).join('')}</div><button class="secondary close-mini">Đóng</button>`;adventureDialog.querySelectorAll('[data-memory]').forEach(b=>b.onclick=()=>{if(Number(b.dataset.memory)!==miniSession.sequence[miniSession.step]){miniSession.step=0;$('miniStatus').textContent='Chưa đúng. Thử lại từ đầu: 0/3';return}miniSession.step++;if(miniSession.step===3)winMini();else $('miniStatus').textContent=miniSession.step+'/3 biểu tượng đúng'});adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close()}
 function drawCount(){adventureDialog.innerHTML=`<h2>Có bao nhiêu đom đóm?</h2><div class="firefly-field" aria-label="Các đom đóm cần đếm">${Array.from({length:miniSession.count},(_,i)=>`<span style="left:${10+(i*29)%78}%;top:${12+(i*37)%70}%">✦</span>`).join('')}</div><div class="mini-options">${Array.from({length:6},(_,i)=>i+3).map(n=>`<button data-count="${n}">${n}</button>`).join('')}</div><p id="miniStatus"></p><button class="secondary close-mini">Đóng</button>`;adventureDialog.querySelectorAll('[data-count]').forEach(b=>b.onclick=()=>{if(Number(b.dataset.count)===miniSession.count)winMini();else $('miniStatus').textContent='Chưa đúng, quan sát thêm một chút nhé.'});adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close()}
 function winMini(){if(!miniSession||miniSession.slot!==activeSlot)return;const type=miniSession.type;miniSession=null;recordEvent('mini');const gained=rewardQuest('mini-'+type,type==='memory'?18:15);save();adventureDialog.innerHTML=`<h2>Đúng rồi! ✨</h2><p>${gained?'Bạn nhận được quà và thêm tiến độ nhiệm vụ.':'Đã nhận quà trò này hôm nay. Lượt chơi vẫn được tính vào nhiệm vụ tiến hóa.'}</p><button id="closeAdventure">Tuyệt!</button>`;$('closeAdventure').onclick=()=>{adventureDialog.close();render()}}

@@ -62,3 +62,14 @@ html[data-display=dark] .home-progress{background:#284337;color:#edf3dd}html[dat
 .wear-editor-layer .wear-edit-handle{pointer-events:auto;touch-action:none;cursor:grab;min-width:0;min-height:0;padding:0;border:0;background:transparent;color:inherit;box-shadow:none;line-height:inherit}
 .wear-edit-handle[aria-pressed=true]{outline:2px solid #e9bd54;outline-offset:3px}
 .room-inventory [data-wear-select][aria-pressed=true]{outline:2px solid #c59736;outline-offset:-2px}
+
+.game-search{display:block;margin:16px 0 6px;font-size:14px;font-weight:750}
+#gameSearch{width:100%;min-height:48px;padding:10px 13px;border:1px solid #a5b69b;border-radius:14px;background:#fffff8;color:#203e36;font:inherit}
+#gameSearch:focus-visible{outline:2px solid #4b8a59;outline-offset:2px}
+#gameSearchStatus{margin:8px 0 0}
+#gameSearchStatus:empty{margin:0}
+.game-list-heading{margin:18px 0 14px}
+#gameGrid .arcade-card[hidden]{display:none}
+.evo-game-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.evo-game-links button{min-height:44px;padding:8px 12px;font-size:13px}
+html[data-display=dark] #gameSearch{background:#233b37;color:#e1ecd8;border-color:#6f8a73}
