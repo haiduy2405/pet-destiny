@@ -87,7 +87,7 @@ const beforeVnStart=startMini;
 startMini=function(type){
   if(type!=='buildsen')return beforeVnStart(type);
   vnB={slot:activeSlot,list:shuffle(VN_SENT).slice(0,5),i:0,first:0};
-  adventureDialog.innerHTML=`<h2>🧱 Ghép câu thần tốc</h2><p>Các từ bị xáo trộn. Chạm lần lượt để xây thành câu đúng nghĩa. Từ đầu tiên đã có sẵn. Chạm sai thì thử lại, nhưng câu đó sẽ không được thưởng thêm.</p><p>5 câu · 15 xu, thưởng tối đa +5.</p><button id="vnBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
+  adventureDialog.innerHTML=`<h2>🧱 Ghép câu thần tốc</h2><p>Các từ bị xáo trộn. Chạm lần lượt để xây thành câu đúng nghĩa. Từ đầu tiên đã có sẵn. Chạm sai thì thử lại, nhưng câu đó sẽ không được thưởng thêm.</p><p>5 câu · thưởng theo công sức, thêm tối đa +5.</p><button id="vnBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
   $('vnBegin').onclick=vnSentence;adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();
   if(!adventureDialog.open)adventureDialog.showModal();
 };
@@ -105,7 +105,7 @@ function vnDraw(){
 }
 function vnFinish(){
   const b=vnB;if(!b||b.slot!==activeSlot)return;
-  const backup=SaveStore.copy(state),coins=15+Math.min(b.first,5);
+  const backup=SaveStore.copy(state),coins=Balance.pay(state,day(),'buildsen',b.first);
   state.coins+=coins;recordEvent('mini');recordEvent('mini_buildsen');
   if(!save()){state=backup;return}
   $('coins').textContent=state.coins;vnB=null;

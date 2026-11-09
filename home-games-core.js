@@ -12,8 +12,8 @@ const HomeGames=(()=>{
  const foods=[['🥚','quả trứng'],['🍅','quả cà chua'],['🥕','củ cà rốt'],['🍎','quả táo'],['🥔','củ khoai'],['🍓','quả dâu'],['🧅','củ hành'],['🍋','quả chanh']];
  const dishes=['bánh','salad','súp','món chiên'];
  /* three kinds: multiply (recipe x portions), subtract (what is left), share (equal plates) */
- function cook(round,rand){
-  const [icon,noun]=pick(foods,rand),kind=round%3,hard=round>=3,dish=pick(dishes,rand);
+ function cook(round,rand,level=2){
+  const [icon,noun]=pick(foods,rand),kind=round%3,hard=level>=3||(level===2&&round>=3),dish=pick(dishes,rand);
   if(kind===0){
    const a=between(2,hard?6:4,rand),b=between(2,hard?5:3,rand),ans=a*b;
    return {kind:'multiply',calc:{a,b},answer:String(ans),options:options(ans,[a+b,ans+a,ans-a,ans+1],rand),
@@ -33,8 +33,8 @@ const HomeGames=(()=>{
  }
  const plants=[['🍅','cây cà chua'],['🌻','cây hướng dương'],['🥕','luống cà rốt'],['🌷','bông hoa tulip'],['🍓','bụi dâu']];
  /* three kinds: rows x columns, add, subtract */
- function garden(round,rand){
-  const [icon,noun]=pick(plants,rand),kind=round%3,hard=round>=3;
+ function garden(round,rand,level=2){
+  const [icon,noun]=pick(plants,rand),kind=round%3,hard=level>=3||(level===2&&round>=3);
   if(kind===0){
    const r=between(2,hard?5:3,rand),c=between(2,hard?6:4,rand),ans=r*c;
    return {kind:'grid',calc:{r,c},answer:String(ans),options:options(ans,[r+c,ans+r,ans-c,ans+1],rand),

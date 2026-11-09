@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v38)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v39)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Sau đó trình bày cho tôi 7 hướng phát triển ở mục "Gợi ý" (có chỉnh theo thực tế hiện tại, kèm công sức/tác động), rồi chờ tôi chọn trước khi làm. Trả lời tiếng Việt, ngắn gọn, TL;DR trước.
@@ -25,8 +25,14 @@ Nhãn phiên bản `vNN` nằm ở tiêu đề trang (index.html). **Mỗi lần
 - **Game trong nhà** (`home-games-core.js` sinh câu hỏi thuần, có test tính lại đáp án; `home-games.js` đăng ký `cook` 🍳 và `garden` 🌱 như `practiceGames`, môn Toán): nút xuất hiện trong phòng Nhà bếp / Sân vườn; thưởng đi qua đường ống chuẩn (15 + tối đa 5, +10 lần đầu mỗi ngày) nên **không tạo nguồn xu mới**. `home-games.js` phải nạp trước `rewards.js`.
 - **Ảnh phòng** (`dollhouse-photo-core.js` thuần + `dollhouse-photo.js` vẽ canvas, không chụp DOM): thêm tường/sàn mới trong `DollHouse.walls/floors` thì **phải thêm spec vẽ canvas tương ứng** trong `DollPhotoCore.walls/floors` (test bắt thiếu/dư).
 
-## Kinh tế (đã cân bằng, v31)
-Mọi game: **15 xu + tối đa 5 xu** nếu đúng ngay lần đầu; **+10 xu lần đầu mỗi game mỗi ngày** (`rewards.js`, bọc `recordEvent`). Camera 15 xu. XP chăm sóc: ăn +30, tắm/chơi +15, huấn luyện +25 (8 xu), bánh +40. Tiến hóa +60 xu. Ngôi nhà: xây phòng 100–250, đồ 10–150, thưởng sao 10/25/50 một lần/phòng, tiệc 100 xu một lần.
+## Kinh tế (v39 — thay thế bảng v31)
+- **Thưởng nền theo công sức** từng game: `balance-core.js` (`Balance.base`, mặc định 15; bấm nhanh ≈ 9–12, suy luận ≈ 20–30, Dãy số bí mật 30). Mọi chỗ trả xu gọi `Balance.pay(state,day(),id,first)` (= nền + tối đa 5 xu đúng ngay, nhân hệ số giảm khi lặp).
+- **Giảm dần khi lặp 1 game/ngày**: lượt 1→5+ nhận 100% / 70% / 45% / 25% / 12% (tối thiểu 3 xu). Chặn exploit 1 trò dễ.
+- **Thưởng đa dạng**: +10 xu lần đầu mỗi game mỗi ngày (rewards.js); chơi đủ 3 / 6 / 10 game khác nhau trong ngày: +15 / +30 / +60 một lần (`Balance.record`, state.plays).
+- **Mức khó** (levels-core.js): Dễ ×1, Vừa ×1.5, Khó ×2.2 trên thưởng nền; mở khóa mức kế khi đúng ≥60% ngay lần đầu. Có mức: mọi `practiceGames` + 6 game arcade (arcade-levels.js: memory, count, pairs, snacks, colors, order). Chưa có mức: music/melody, speak*, hangman, math/odd/path, fractions/change/earmemory, rhythm, buildsen, camera → bước tiếp theo.
+- Đếm đom đóm: phải đếm đúng 5 lần mới nhận xu; sai mất 1 lần đúng và đổi đàn mới.
+- **Hộp quà may mắn** (lucky-core.js + lucky.js, thẻ đầu tab Kiếm xu): vé 60 xu, 1 lượt miễn phí/ngày, tối đa 8 vé mua/ngày, pity 7 hộp, kỳ vọng ~88% giá vé (mô phỏng trong test). Chỉ xu trong game.
+- Khi thêm game mới: thêm id vào `Balance.base` theo công sức, gọi `Balance.pay` TRƯỚC `recordEvent`.
 
 ## Đã làm trong session trước
 dọn code chết + 82→93 test · cân bằng thưởng · giai đoạn lớn (🥚🌱🌿⭐👑) + animation tiến hóa · 4 game Tiếng Anh (Giải cứu từ, Xếp chữ, Nghe, Điền từ) · 5 game nói/nghe (Web Speech API, có chế độ tự đánh giá) · 8 game Tiếng Việt · Ngôi nhà của em (6 phòng, ~60 đồ, sao, tiệc tân gia, thú khen).

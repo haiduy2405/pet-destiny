@@ -78,7 +78,7 @@ startMini=function(type){
   hang={slot:activeSlot,words:engPick(4),i:0,first:0};
   adventureDialog.innerHTML=`<h2>🎈 Giải cứu từ</h2><p>Mỗi từ có <b>5 quả bóng 🎈</b>. Đoán sai một chữ → nổ một quả. Hết bóng thì từ rơi xuống (vẫn được xem đáp án).</p>
   <ul class="muted"><li>Có hình + nghĩa tiếng Việt + gợi ý tiếng Anh.</li><li>🔥 Đoán đúng 3 chữ liên tiếp → tặng một chữ miễn phí.</li><li>💡 Gợi ý mạnh: lộ một chữ + câu ví dụ song ngữ (tốn 1 bóng).</li><li>Mỗi từ đoán đúng không sai, không gợi ý: +1 xu thưởng.</li></ul>
-  <p>4 từ · 15 xu, thưởng tối đa +4.</p><button id="hangBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
+  <p>4 từ · thưởng theo công sức, thêm xu cho từ đúng ngay lần đầu.</p><button id="hangBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
   $('hangBegin').onclick=hangWord;adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();
   if(!adventureDialog.open)adventureDialog.showModal();
 };
@@ -115,7 +115,7 @@ function hangGuess(c){
 document.addEventListener('keydown',e=>{if(hang&&adventureDialog.open&&!hang.over&&hang.g&&/^[a-z]$/i.test(e.key)&&!e.ctrlKey&&!e.metaKey)hangGuess(e.key.toUpperCase())});
 function hangFinish(){
   const h=hang;if(!h||h.slot!==activeSlot)return;
-  const backup=SaveStore.copy(state),coins=15+Math.min(h.first,5);
+  const backup=SaveStore.copy(state),coins=Balance.pay(state,day(),'hangman',h.first);
   state.coins+=coins;recordEvent('mini');recordEvent('mini_hangman');
   if(!save()){state=backup;return}
   $('coins').textContent=state.coins;hang=null;

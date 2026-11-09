@@ -31,7 +31,7 @@ const practiceGames = {
         [i => start + i * step + Math.floor(i / 2), `Lần lượt cộng ${step} rồi cộng ${step + 1}, sau đó lặp lại.`],
         [i => start + i * (i + 1) / 2, 'Các bước lần lượt là +1, +2, +3, +4…']
       ];
-      const [valueAt, explanation] = rules[round];
+      const [valueAt, explanation] = rules[round % rules.length];
       const answer = valueAt(4);
       const options = [answer, answer - 1, answer + 2, answer + step + 2];
       return {prompt: `<p class="practice-pattern">${Array.from({length: 4}, (_, i) => valueAt(i)).join(' · ')} · ?</p>`,
@@ -128,10 +128,11 @@ const beforePracticeStart = startMini;
 startMini = function(type) {
   const game = practiceGames[type];
   if (!game) return beforePracticeStart(type);
-  practiceSession = {type, game, slot: activeSlot, round: 0, first: 0};
+  practiceSession = {type, game, slot: activeSlot, round: 0, first: 0, level: levelNow(type)};
   if (game.words) practiceSession.words = shuffle(game.words);
+  practiceSession.rounds = Levels.roundsFor(practiceSession.level, game.rounds, practiceSession.words?.length);
   adventureDialog.innerHTML = `<h2>${game.icon} ${game.title}</h2><p>${game.intro}</p>
-    <p>${game.rounds} câu · ${game.reward}–${game.reward + game.rounds} xu. Thử lại thoải mái và nhận thêm 1 xu cho mỗi câu đúng ngay.</p>
+    <p>Mức ${Levels.def(practiceSession.level).icon} ${Levels.def(practiceSession.level).name} · ${practiceSession.rounds} câu · ${Levels.payRange(practiceSession.level, game.reward).join('–')} xu. Câu đúng ngay lần đầu được thêm xu. Thử lại thoải mái.</p>
     <button id="startPractice">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
   $('startPractice').onclick = drawPracticeQuestion;
   adventureDialog.querySelector('.close-mini').onclick = () => adventureDialog.close();
@@ -144,13 +145,13 @@ function drawPracticeQuestion() {
   if (!session || session.slot !== activeSlot) return;
   const {game, round} = session;
   const question = game.question(round, session);
-  const options = shuffle(question.options);
+  const options = shuffle(levelOptions(question, session));
   let missed = false;
-  adventureDialog.innerHTML = `<h2>${game.icon} ${game.title}</h2><p>Câu ${round + 1}/${game.rounds}</p>${question.prompt}
+  adventureDialog.innerHTML = `<h2>${game.icon} ${game.title}</h2><p>Câu ${round + 1}/${session.rounds}</p>${question.prompt}
     ${question.audio ? '<button class="secondary" id="hearPractice">🔈 Nghe hai âm</button>' : ''}
     <div class="practice-options">${options.map((answer, i) => `<button data-practice-answer="${i}">${answer}</button>`).join('')}</div>
     <p id="practiceFeedback" class="muted" role="status"></p>
-    <button id="practiceNext" hidden>${round + 1 === game.rounds ? 'Nhận xu' : 'Câu tiếp theo →'}</button>
+    <button id="practiceNext" hidden>${round + 1 === session.rounds ? 'Nhận xu' : 'Câu tiếp theo →'}</button>
     <button class="secondary close-mini">Đóng</button>`;
   const next = $('practiceNext');
   const answers = adventureDialog.querySelectorAll('[data-practice-answer]');
@@ -162,7 +163,7 @@ function drawPracticeQuestion() {
       if (options[index] !== question.answer) {
         missed = true;
         button.disabled = true;
-        $('practiceFeedback').textContent = 'Chưa đúng. ' + question.hint;
+        $('practiceFeedback').textContent = 'Chưa đúng. ' + (Levels.def(session.level).hints ? question.hint : 'Thử một đáp án khác nhé.');
         const remaining = [...answers].find(answer => !answer.disabled);
         remaining?.focus({preventScroll: true});
         return;
@@ -175,7 +176,7 @@ function drawPracticeQuestion() {
     };
   });
   next.onclick = () => {
-    if (round + 1 === game.rounds) return finishPractice();
+    if (round + 1 === session.rounds) return finishPractice();
     session.round++;
     drawPracticeQuestion();
   };
@@ -187,8 +188,9 @@ function finishPractice() {
   const session = practiceSession;
   if (!session || session.slot !== activeSlot) return;
   const backup = SaveStore.copy(state);
-  const coins = session.game.reward + Math.min(session.first, 5);
+  const coins = Balance.pay(state, day(), session.type, session.first);
   state.coins += coins;
+  levelReport(session.type, session.first / session.rounds, session.first);
   recordEvent('mini');
   recordEvent('mini_' + session.type);
   if (!save()) {
@@ -198,7 +200,7 @@ function finishPractice() {
   practiceSession = null;
   $('coins').textContent = state.coins;
   adventureDialog.innerHTML = `<h2>🏆 Hoàn thành · +${coins} xu</h2>
-    <p>${session.first}/${session.game.rounds} câu đúng ngay lần đầu.</p>
+    <p>${session.first}/${session.rounds} câu đúng ngay lần đầu.</p>
     <button id="practiceAgain">Luyện tiếp</button><button class="secondary" id="practiceHome">Đóng</button>`;
   $('practiceAgain').onclick = () => startMini(session.type);
   $('practiceHome').onclick = () => { adventureDialog.close(); render(); };
@@ -214,7 +216,7 @@ render = function() {
   for (const [id, game] of Object.entries(practiceGames)) {
     const button = document.querySelector(`[data-mini="${id}"]`);
     if (!button) continue;
-    const range = game.reward + '–' + (game.reward + game.rounds) + ' xu';
+    const range = Levels.payRange(1, game.reward)[0] + '–' + Levels.payRange(3, game.reward)[1] + ' xu';
     button.textContent = 'Chơi · ' + range;
     button.parentElement.querySelector('.quest-meta').textContent = '🪙 ' + range + ' / phiên hoàn thành';
   }

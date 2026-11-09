@@ -43,7 +43,7 @@ startMini=function(type){
   const g=SPK_GAMES[key];spk={slot:activeSlot,type,g,items:g.items(),i:0,first:0,tries:0,busy:false,done:false};
   adventureDialog.innerHTML=`<h2>${g.icon} ${g.title}</h2><p>${g.intro}</p>
   <ul class="muted"><li>🎤 Bấm nút micro, cho phép trình duyệt dùng micro, rồi nói.</li><li>Nói sai <b>không bị trừ xu</b>. Cứ thử là có xu!</li><li>${SPK_SR?'Máy này nhận diện được giọng nói.':'Máy này chưa nhận diện được giọng nói → em đọc to rồi tự bấm “Em đã đọc to”.'}</li></ul>
-  <p>${g.n} câu · 15 xu, thưởng tối đa +5 cho câu nói chuẩn ngay lần đầu.</p><button id="spkBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
+  <p>${g.n} câu · thưởng theo công sức, thêm tối đa +5 cho câu nói chuẩn ngay lần đầu.</p><button id="spkBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
   $('spkBegin').onclick=spkDraw;adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();
   if(!adventureDialog.open)adventureDialog.showModal();
 };
@@ -79,7 +79,7 @@ function spkPass(firstTry,heard,score){
 }
 function spkFinish(){
   const s=spk;if(!s||s.slot!==activeSlot)return;
-  const backup=SaveStore.copy(state),coins=15+Math.min(s.first,5);
+  const backup=SaveStore.copy(state),coins=Balance.pay(state,day(),s.type,s.first);
   state.coins+=coins;recordEvent('mini');recordEvent('mini_'+s.type);
   if(!save()){state=backup;return}
   $('coins').textContent=state.coins;spk=null;
