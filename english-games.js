@@ -33,11 +33,11 @@ const ENG=[
 ['music','🎵','âm nhạc','You listen to it and sing','Bạn nghe và hát','I love music.','Tôi yêu âm nhạc.']
 ];
 const engPick=(n,filter)=>shuffle(ENG.filter(filter||(()=>true))).slice(0,n);
-function engSay(word){
+function engSay(word,rate=.8){
   if(!('speechSynthesis' in window))return false;
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);u.lang='en-US';u.rate=.8;speechSynthesis.speak(u);return true}catch(e){return false}
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(word);u.lang='en-US';u.rate=rate;speechSynthesis.speak(u);return true}catch(e){return false}
 }
-adventureDialog.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b&&!engSay(b.dataset.say))notice('Máy chưa hỗ trợ phát âm. Từ này là “'+b.dataset.say+'”.')});
+adventureDialog.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b&&!engSay(b.dataset.say,Number(b.dataset.rate)||.8))notice('Máy chưa hỗ trợ phát âm. Từ này là “'+b.dataset.say+'”.')});
 
 function engTypos(w){
   const set=new Set(),sw=[...w],sub={a:'o',e:'a',i:'e',o:'u',u:'a'};

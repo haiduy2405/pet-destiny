@@ -161,3 +161,8 @@ html[data-display=dark] #gameSubject{background:#233b37;color:#e1ecd8;border-col
 /* Vietnamese games (vietnamese-games.js) */
 .vn-line{font-size:22px;font-weight:700;text-align:center;margin:14px 0;min-height:34px}
 .vn-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}.vn-pool button{min-height:44px}
+
+/* Speaking games (english-speaking.js) */
+.spk-mic{display:block;width:100%;font-size:20px;padding:16px;margin:12px 0;border-radius:18px}
+.spk-mic.on{animation:spkPulse 1s ease-in-out infinite;background:#d94f4f;color:#fff}
+@keyframes spkPulse{50%{transform:scale(1.03);box-shadow:0 0 0 10px #d94f4f33}}
