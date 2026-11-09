@@ -38,6 +38,23 @@ const Sfx=(()=>{
   if(last[g]!==undefined&&at-last[g]<min)return false;
   last[g]=at;return true;
  }
+
+ /* ---- mẫu âm thật (CC0 "organic" của UI SFX); thiếu/đang tải thì dùng tiếng tổng hợp ở trên ---- */
+ const samples={
+  tap:['press',.32],flip:['snap',.4],nav:['forward',.4],good:['check',.55],bad:['blocked',.45],
+  win:['level-up',.65],coin:['receive',.42],spend:['purchase',.38],plant:['drop',.55],harvest:['bonus',.55],
+  pet:['reaction',.5],egg:['unlock',.55],reveal_rare:['badge',.6],reveal_epic:['achievement',.7],place:['snap',.45]};
+ samples.reward=samples.win;
+ const uiFile=cue=>`audio/ui/${cue}.mp3`;
+ /* Salamander Grand Piano (CC BY 3.0): mỗi quãng tám lấy nốt Đô và Fa thăng, dịch cao độ bằng playbackRate (tối đa ±3 nửa cung) */
+ const pianoMidi=[[36,'C2'],[42,'Fs2'],[48,'C3'],[54,'Fs3'],[60,'C4'],[66,'Fs4'],[72,'C5'],[78,'Fs5'],[84,'C6']];
+ const pianoFile=n=>`audio/piano/${n}.mp3`;
+ const toMidi=f=>69+12*Math.log2(f/440);
+ function nearestPiano(freq){
+  const m=toMidi(freq);let best=pianoMidi[0];
+  for(const p of pianoMidi)if(Math.abs(p[0]-m)<Math.abs(best[0]-m))best=p;
+  return {name:best[1],midi:best[0],rate:2**((m-best[0])/12),shift:m-best[0]};
+ }
  const MAX_VOICES=14;
  /* phân loại câu phản hồi hiển thị trong game */
  const GOOD=/^(Đúng|Chính xác|Tuyệt|Giỏi|Chuẩn|Xuất sắc)/i,BAD=/^(Chưa|Thử|Sai|Hãy tìm|Hãy chọn|Đó là chiếc lá|Không đúng|Gần đúng)/i;
@@ -49,5 +66,5 @@ const Sfx=(()=>{
   return null;
  }
  const total=n=>{const r=recipes[n];return r?Math.max(...r.map(x=>x.t+x.d)):0};
- return {freq,midi,recipes,gaps,group,shouldPlay,classify,total,MAX_VOICES};
+ return {freq,midi,recipes,gaps,group,shouldPlay,classify,total,MAX_VOICES,samples,uiFile,pianoMidi,pianoFile,nearestPiano,toMidi};
 })();

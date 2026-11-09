@@ -11,6 +11,27 @@ function sfxEnsure(){
   if(sfxCtx.state==='suspended')sfxCtx.resume().catch(()=>{});
   return sfxCtx;
 }
+/* ---- mẫu âm thật: tải nền sau lần chạm đầu tiên; chưa tải xong thì dùng tiếng tổng hợp ---- */
+const sfxBuf={},sfxLoading={};
+function sfxLoad(url){
+  if(sfxBuf[url]||sfxLoading[url]||!sfxCtx)return;
+  sfxLoading[url]=true;
+  fetch(url).then(r=>r.ok?r.arrayBuffer():Promise.reject()).then(data=>new Promise((ok,no)=>{const p=sfxCtx.decodeAudioData(data,ok,no);if(p&&p.catch)p.catch(no)}))
+    .then(buf=>{sfxBuf[url]=buf}).catch(()=>{}).finally(()=>{delete sfxLoading[url]});
+}
+let sfxPreloaded=false;
+function sfxPreload(){
+  if(sfxPreloaded||!sfxCtx)return;sfxPreloaded=true;
+  new Set(Object.values(Sfx.samples).map(x=>x[0])).forEach(c=>sfxLoad(Sfx.uiFile(c)));
+  setTimeout(()=>Sfx.pianoMidi.forEach(([,n])=>sfxLoad(Sfx.pianoFile(n))),1200);
+}
+function sfxSample(buf,vol,rate=1,dur=0){
+  const ctx=sfxCtx;if(sfxVoices>=Sfx.MAX_VOICES*2)return;
+  const src=ctx.createBufferSource(),g=ctx.createGain(),t=ctx.currentTime+.005;src.buffer=buf;src.playbackRate.value=rate;
+  g.gain.setValueAtTime(vol,t);
+  if(dur&&dur<buf.duration/rate){g.gain.setValueAtTime(vol,t+Math.max(0,dur-.18));g.gain.linearRampToValueAtTime(0.0001,t+dur)}
+  src.connect(g);g.connect(sfxMaster);src.start(t);sfxVoices++;src.onended=()=>{sfxVoices--};
+}
 /* 1 giọng: dạng sóng + (tuỳ chọn) họa âm chuông; bao hình tấn công nhanh, tắt dần */
 function sfxVoice(freq,start,dur,wave,gain,bell){
   const ctx=sfxCtx;if(!ctx||sfxVoices>=Sfx.MAX_VOICES*2)return;
@@ -29,12 +50,23 @@ function sfxPlay(name){
   /* tiếng xu không chồng lên màn thắng vừa phát */
   if(name==='coin'&&sfxLast.win!==undefined&&at-sfxLast.win<800)return;
   if(!Sfx.shouldPlay(name,at,sfxLast))return;
-  try{const ctx=sfxEnsure();if(!ctx)return;const t0=ctx.currentTime+.005;for(const n of r)sfxVoice(n.f,t0+n.t,n.d,n.w,n.g,n.b)}catch{}
+  try{
+    const ctx=sfxEnsure();if(!ctx)return;
+    const sm=Sfx.samples[name],buf=sm&&sfxBuf[Sfx.uiFile(sm[0])];
+    if(buf){sfxSample(buf,sm[1]);return}
+    const t0=ctx.currentTime+.005;for(const n of r)sfxVoice(n.f,t0+n.t,n.d,n.w,n.g,n.b);
+  }catch{}
 }
 /* nốt đàn: thân + họa âm 2,3,4, tắt dần ~1 giây */
 function sfxPiano(freq,delay=0,dur=1.05,gain=.17){
   try{
-    const ctx=sfxEnsure();if(!ctx)return;const t=ctx.currentTime+.005+delay;
+    const ctx=sfxEnsure();if(!ctx)return;
+    const np=Sfx.nearestPiano(freq),pb=sfxBuf[Sfx.pianoFile(np.name)];
+    if(pb){
+      if(delay>0)setTimeout(()=>sfxSample(pb,Math.min(1.1,gain*5.2),np.rate,dur),delay*1000);else sfxSample(pb,Math.min(1.1,gain*5.2),np.rate,dur);
+      return;
+    }
+    const t=ctx.currentTime+.005+delay;
     [[1,'triangle',1],[2,'sine',.38],[3,'sine',.16],[4,'sine',.07]].forEach(([m,w,k])=>{
       if(sfxVoices>=Sfx.MAX_VOICES*2)return;
       const o=ctx.createOscillator(),a=ctx.createGain(),d=dur/(1+(m-1)*.45);o.type=w;o.frequency.value=freq*m;
@@ -58,7 +90,7 @@ musicPlay=function(notes){
 };
 /* ---- tiếng khi người chơi chạm ---- */
 const sfxLetters='CDEFGAB';
-document.addEventListener('pointerdown',()=>{sfxLastClick=Date.now();sfxEnsure()},{capture:true,passive:true});
+document.addEventListener('pointerdown',()=>{sfxLastClick=Date.now();if(sfxEnsure())sfxPreload()},{capture:true,passive:true});
 document.addEventListener('keydown',()=>{sfxLastClick=Date.now()},{capture:true,passive:true});
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('button');if(!b||b.disabled)return;

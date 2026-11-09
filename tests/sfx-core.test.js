@@ -50,3 +50,20 @@ test('feedback text is classified for sound', () => {
   assert.equal(S.classify('3/5 biểu tượng đúng'), null);
   assert.equal(S.classify(''), null); assert.equal(S.classify(undefined), null);
 });
+
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+test('every sampled cue and piano sample exists on disk, and each cue has a synth fallback', () => {
+  for (const [name, [cue, gain]] of Object.entries(S.samples)) {
+    assert.ok(fs.existsSync(path.join(root, S.uiFile(cue))), name + ' -> ' + cue);
+    assert.ok(gain > 0 && gain <= 0.8, name + ' gain'); assert.ok(S.recipes[name], name + ' fallback recipe');
+  }
+  for (const [, n] of S.pianoMidi) assert.ok(fs.existsSync(path.join(root, S.pianoFile(n))), n);
+  assert.ok(fs.existsSync(path.join(root, 'audio/CREDITS.md')), 'credits file');
+});
+test('piano: nearest sample and pitch shift stay within 3 semitones across the staff range', () => {
+  assert.equal(S.nearestPiano(S.freq('C', 4)).name, 'C4'); assert.ok(Math.abs(S.nearestPiano(S.freq('C', 4)).rate - 1) < 1e-9);
+  const d = S.nearestPiano(S.freq('D', 4)); assert.equal(d.name, 'C4'); assert.ok(Math.abs(d.rate - 2 ** (2 / 12)) < 1e-6);
+  for (let m = 40; m <= 83; m++) assert.ok(Math.abs(S.nearestPiano(S.midi(m)).shift) <= 3.0001, 'midi ' + m);
+});
