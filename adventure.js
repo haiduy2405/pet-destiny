@@ -73,11 +73,11 @@ function evolutionDialog(id) {
   $('closeAdventure').onclick = () => adventureDialog.close();
   $('evolvePet').onclick = () => {
     if (!Adventure.evolve(state, id, day())) return;
-    state.coins += 25;
+    state.coins += 60;
     save();
     adventureDialog.close();
     render();
-    notice('Thú đã tiến hóa! 👑 +25 xu');
+    notice('Thú đã tiến hóa! 👑 +60 xu');
   };
   if (!adventureDialog.open) adventureDialog.showModal();
 }

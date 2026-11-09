@@ -187,7 +187,7 @@ function finishPractice() {
   const session = practiceSession;
   if (!session || session.slot !== activeSlot) return;
   const backup = SaveStore.copy(state);
-  const coins = session.game.reward + session.first;
+  const coins = session.game.reward + Math.min(session.first, 5);
   state.coins += coins;
   recordEvent('mini');
   recordEvent('mini_' + session.type);
