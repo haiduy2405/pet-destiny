@@ -72,16 +72,14 @@ gameSubjects.find(([s])=>s==='Tiếng Anh')[1].push('scramble','listen','fillbla
 
 /* Hangman, kid version: wrong letters pop balloons (no hanging). */
 let hang=null;
-const beforeHangStart=startMini;
-startMini=function(type){
-  if(type!=='hangman')return beforeHangStart(type);
+Games.on('hangman',function(type){
   hang={slot:activeSlot,words:engPick(4),i:0,first:0};
   adventureDialog.innerHTML=`<h2>🎈 Giải cứu từ</h2><p>Mỗi từ có <b>5 quả bóng 🎈</b>. Đoán sai một chữ → nổ một quả. Hết bóng thì từ rơi xuống (vẫn được xem đáp án).</p>
   <ul class="muted"><li>Có hình + nghĩa tiếng Việt + gợi ý tiếng Anh.</li><li>🔥 Đoán đúng 3 chữ liên tiếp → tặng một chữ miễn phí.</li><li>💡 Gợi ý mạnh: lộ một chữ + câu ví dụ song ngữ (tốn 1 bóng).</li><li>Mỗi từ đoán đúng không sai, không gợi ý: +1 xu thưởng.</li></ul>
   <p>4 từ · thưởng theo công sức, thêm xu cho từ đúng ngay lần đầu.</p><button id="hangBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
   $('hangBegin').onclick=hangWord;adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();
   if(!adventureDialog.open)adventureDialog.showModal();
-};
+});
 function hangWord(){
   const h=hang;if(!h||h.slot!==activeSlot)return;
   Object.assign(h,{g:new Set(),lives:5,streak:0,wrong:0,assist:false,hinted:false,over:false});hangDraw();

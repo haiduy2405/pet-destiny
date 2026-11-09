@@ -83,14 +83,12 @@ const VN_SENT=[['Em','đi','học','bằng','xe đạp'],['Mẹ','nấu','cơm',
 ['Vườn','nhà','em','có','nhiều','hoa'],['Cá','bơi','lội','dưới','ao'],['Bố','đưa','em','đến','trường'],['Bà','kể','chuyện','cổ tích']];
 arcadeGames.push(['buildsen','🧱','Ghép câu thần tốc','Chạm các từ theo đúng thứ tự để ghép thành câu hoàn chỉnh. Từ đầu tiên đã được đặt sẵn!',15]);
 let vnB=null;
-const beforeVnStart=startMini;
-startMini=function(type){
-  if(type!=='buildsen')return beforeVnStart(type);
+Games.on('buildsen',function(type){
   vnB={slot:activeSlot,list:shuffle(VN_SENT).slice(0,5),i:0,first:0};
   adventureDialog.innerHTML=`<h2>🧱 Ghép câu thần tốc</h2><p>Các từ bị xáo trộn. Chạm lần lượt để xây thành câu đúng nghĩa. Từ đầu tiên đã có sẵn. Chạm sai thì thử lại, nhưng câu đó sẽ không được thưởng thêm.</p><p>5 câu · thưởng theo công sức, thêm tối đa +5.</p><button id="vnBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
   $('vnBegin').onclick=vnSentence;adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();
   if(!adventureDialog.open)adventureDialog.showModal();
-};
+});
 function vnSentence(){const b=vnB;if(!b||b.slot!==activeSlot)return;const t=b.list[b.i];Object.assign(b,{n:1,bad:false,pool:shuffle(t.slice(1).map((w,k)=>[k,w]))});vnDraw()}
 function vnDraw(){
   const b=vnB,t=b.list[b.i],done=b.n===t.length,line=t.slice(0,b.n).join(' ')+(done?'.':'');

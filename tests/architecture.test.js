@@ -30,6 +30,10 @@ test('load order: tab router and shared helpers come before every tab that regis
   /* thứ tự đăng ký = thứ tự nút trên thanh tab */
   before('dollhouse.js', 'farm.js', 'Ngôi nhà đứng trước Nông trại'); before('farm.js', 'fishing.js', 'Nông trại đứng trước Câu cá');
 });
+test('load order: Games registry sits after the base startMini and before every game that registers', () => {
+  before('adventure.js', 'games-registry.js', 'registry bọc startMini gốc của adventure.js');
+  for (const f of uiFiles.filter(f => /Games\.on\(/.test(read(f)) && f !== 'games-registry.js')) before('games-registry.js', f, 'game dùng Games.on');
+});
 test('load order: reward/level pipeline sees every game that records events', () => {
   for (const f of ['home-games.js', 'farm.js', 'fishing.js', 'practice-games.js', 'english-games.js', 'vietnamese-games.js', 'english-speaking.js'])
     before(f, 'rewards.js', 'rewards.js đè bảng thưởng của các game đã đăng ký');
@@ -45,7 +49,7 @@ test('global hooks: only the known files wrap render/startMini/recordEvent/petAr
   const wrappers = name => uiFiles.filter(f => new RegExp('(^|[^\\w.$])' + name + '\\s*=\\s*function', 'm').test(read(f))).sort();
   assert.deepEqual(wrappers('render'), ['adventure.js', 'app-kit.js', 'atelier.js', 'egg-journey.js', 'game-packs.js', 'garden-options.js', 'garden.js', 'homes.js', 'learning.js', 'lucky.js', 'mobile.js', 'music.js', 'pet-bond.js', 'pet-loop.js', 'practice-games.js', 'prosperity.js', 'shop.js', 'visual-polish.js'],
     'tab mới hãy dùng Tabs.register (app-kit.js), đừng bọc render nữa');
-  assert.deepEqual(wrappers('startMini'), ['arcade-levels.js', 'arcade.js', 'english-games.js', 'english-speaking.js', 'learning.js', 'levels.js', 'music.js', 'pet-loop.js', 'practice-games.js', 'prosperity.js', 'vietnamese-games.js', 'visual-polish.js']);
+  assert.deepEqual(wrappers('startMini'), ['arcade-levels.js', 'games-registry.js', 'levels.js'], 'game mới hãy dùng Games.on (games-registry.js); chỉ 2 lớp chọn mức khó được bọc ngang');
   assert.deepEqual(wrappers('recordEvent'), ['levels.js', 'rewards.js']);
   assert.deepEqual(wrappers('petArt'), ['evolution-fx.js']);
   assert.deepEqual(wrappers('notice'), ['mobile.js']);

@@ -124,10 +124,8 @@ for (const [id, game] of Object.entries(practiceGames)) {
 }
 
 let practiceSession = null;
-const beforePracticeStart = startMini;
-startMini = function(type) {
+Games.on(type => !!practiceGames[type],function(type){
   const game = practiceGames[type];
-  if (!game) return beforePracticeStart(type);
   practiceSession = {type, game, slot: activeSlot, round: 0, first: 0, level: levelNow(type)};
   if (game.words) practiceSession.words = shuffle(game.words);
   practiceSession.rounds = Levels.roundsFor(practiceSession.level, game.rounds, practiceSession.words?.length);
@@ -138,7 +136,7 @@ startMini = function(type) {
   adventureDialog.querySelector('.close-mini').onclick = () => adventureDialog.close();
   if (!adventureDialog.open) adventureDialog.showModal();
   adventureDialog.scrollTop = 0;
-};
+});
 
 function drawPracticeQuestion() {
   const session = practiceSession;

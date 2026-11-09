@@ -36,17 +36,15 @@ arcadeGames.push(['minpair',practiceGames.minpair.icon,practiceGames.minpair.tit
 gameSubjects.find(([s])=>s==='Tiếng Anh')[1].push('minpair','speakecho','speakshadow','speakchat','speaktwister');
 
 let spk=null;
-const beforeSpkStart=startMini;
-startMini=function(type){
+Games.on(['speakecho','speakshadow','speakchat','speaktwister'],function(type){
   const key={speakecho:'echo',speakshadow:'shadow',speakchat:'chat',speaktwister:'twister'}[type];
-  if(!key)return beforeSpkStart(type);
   const g=SPK_GAMES[key];spk={slot:activeSlot,type,g,items:g.items(),i:0,first:0,tries:0,busy:false,done:false};
   adventureDialog.innerHTML=`<h2>${g.icon} ${g.title}</h2><p>${g.intro}</p>
   <ul class="muted"><li>🎤 Bấm nút micro, cho phép trình duyệt dùng micro, rồi nói.</li><li>Nói sai <b>không bị trừ xu</b>. Cứ thử là có xu!</li><li>${SPK_SR?'Máy này nhận diện được giọng nói.':'Máy này chưa nhận diện được giọng nói → em đọc to rồi tự bấm “Em đã đọc to”.'}</li></ul>
   <p>${g.n} câu · thưởng theo công sức, thêm tối đa +5 cho câu nói chuẩn ngay lần đầu.</p><button id="spkBegin">Bắt đầu</button><button class="secondary close-mini">Đóng</button>`;
   $('spkBegin').onclick=spkDraw;adventureDialog.querySelector('.close-mini').onclick=()=>adventureDialog.close();
   if(!adventureDialog.open)adventureDialog.showModal();
-};
+});
 function spkDraw(){
   const s=spk;if(!s||s.slot!==activeSlot)return;const it=s.items[s.i];
   adventureDialog.innerHTML=`<div class="eyebrow">CÂU ${s.i+1}/${s.g.n}${s.first?' · ⭐'.repeat(Math.min(3,s.first)):''}</div>

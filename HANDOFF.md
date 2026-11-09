@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v44)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v46)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -50,7 +50,8 @@ v39: mức khó Dễ/Vừa/Khó (levels-core/levels/arcade-levels), cân bằng 
 Rà soát cho thấy: `render` bị bọc ở 18 file, `startMini` 12 file, `recordEvent` 2 file; mẫu "sao lưu → sửa → lưu" lặp ở ~15 file; thưởng/giá rải ở 10 core.
 Việc còn lại (theo thứ tự rủi ro tăng dần):
 1. Thay `dhTx`/các đoạn `SaveStore.copy(state)` lặp ở ~12 file bằng `txn()` (từng file một, test xanh mỗi lần).
-2. Sổ đăng ký game (`Games.register`) thay chuỗi bọc `startMini` (12 file) — cần quyết định kiến trúc, xem câu hỏi trong tin nhắn bàn giao.
+2. ~~Sổ đăng ký game~~ XONG (v46): `games-registry.js` (sau adventure.js). Game mới: `Games.on('loai' | ['a','b'] | t=>bool, type=>{...})`; đăng ký sau được hỏi trước; không khớp thì rơi về game gốc memory/count. Chỉ `arcade-levels.js` và `levels.js` (chọn mức khó) còn bọc `startMini` ngang. Nếu hỏng: quay về commit `859b450`.
+3. ~~Gom giá/thưởng~~ XONG một phần (v45): `economy-data.js` (EcoData) nạp đầu tiên; còn lại furniture của dollhouse-core và shop của economy-core. Cây ngắn nông trại đã siết; `tests/economy-balance.test.js` kiểm cân bằng chéo.
 3. Gom bảng giá/thưởng vào 1 module dữ liệu + mô phỏng kinh tế/ngày có ngưỡng trần (hiện chỉ có báo cáo).
 4. Tách `render` của các tab gốc (garden/quests/collection) vào `Tabs` như tab phụ, rồi bỏ `current='collection'` giả.
 5. Dọn CSS tiếp (còn các quy tắc chồng nhau theo `data-page`).
@@ -89,3 +90,7 @@ Xuất/nhập file lưu (+ nhắc sao lưu), PWA cài app + offline, thú ghé t
 5. ~~Ngôi nhà~~ — **xong ở v37–v38** (ảnh phòng, thú tương tác, đồ theo mùa, tặng đồ, game nấu ăn/làm vườn). Còn ý tưởng nhỏ: thêm sàn theo mùa, đổi đồ hai chiều giữa các ô, thêm game thứ ba trong phòng tắm/phòng ngủ.
 6. **Giữ chân**: chuỗi ngày chơi (streak), nhiệm vụ ngày/tuần, sổ sticker và huy hiệu, quà đăng nhập, sự kiện theo mùa.
 7. **Nền tảng kỹ thuật**: gom bảng thưởng/giá vào một file dữ liệu; mô phỏng kinh tế bằng script; dần thay chuỗi bọc `render` bằng một bộ định tuyến tab; dọn CSS; trợ năng (phím tắt, độ tương phản, cỡ chữ); âm thanh/nhạc nền và giọng đọc tốt hơn.
+
+
+## v45–v46
+v45: EcoData (bảng kinh tế một nguồn), siết cải bắp. v46: Games registry thay chuỗi bọc startMini (10 file chuyển sang Games.on). 195 test; smoke Chrome 19 loại game không lỗi console.
