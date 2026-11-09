@@ -1,0 +1,8 @@
+{
+  "name": "pet-destiny",
+  "private": true,
+  "description": "Pet Destiny: a static browser game. No build step; this file only runs the tests.",
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\""
+  }
+}
