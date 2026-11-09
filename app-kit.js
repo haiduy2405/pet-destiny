@@ -1,6 +1,6 @@
 /* Khung dùng chung cho các tab phụ và giao dịch an toàn.
    - Tabs: mỗi tab phụ (Ngôi nhà, Nông trại, Câu cá...) chỉ cần Tabs.register({...}); không còn tự bọc render() và tự chèn nút nav.
-     Thứ tự đăng ký = thứ tự nút. Hook: open() khi bấm nút, leave() mỗi lần vẽ lại (dừng timer/vòng lặp), canDraw(), draw().
+     Thứ tự đăng ký = thứ tự nút. Hook: badge() trả số hiện chấm đỏ trên nút, open() khi bấm nút, leave() mỗi lần vẽ lại (dừng timer/vòng lặp), canDraw(), draw().
    - txn(fn): sao lưu state → fn() → lưu; fn trả {ok:false,message} hoặc lưu hỏng thì hoàn lại state.
    Load SAU mọi file bọc render của tab gốc, TRƯỚC dollhouse.js (tab đầu tiên đăng ký). */
 const Tabs=(()=>{
@@ -19,6 +19,8 @@ const Tabs=(()=>{
       b.onclick=()=>{current=t.id;if(t.open)t.open();render();window.scrollTo(0,0)};
       el.append(b);
     }
+    for(const t of list){const btn=el.querySelector(`[data-tab="${t.id}"]`);if(!btn)continue;let n=0;try{n=t.badge&&activeSlot!==null?t.badge():0}catch{}
+      let dot=btn.querySelector('.nav-badge');if(n>0){if(!dot){dot=document.createElement('i');dot.className='nav-badge';btn.append(dot)}dot.textContent=n>9?'9+':n}else if(dot)dot.remove()}
     const mine=find(current);
     if(mine)el.querySelectorAll('[data-tab]').forEach(x=>{const on=x.dataset.tab===mine.id;x.classList.toggle('active',on);on?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current')});
     const vis=[...el.children].filter(x=>getComputedStyle(x).display!=='none').length||4;

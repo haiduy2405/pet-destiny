@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v47)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v48)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -94,3 +94,9 @@ Xuất/nhập file lưu (+ nhắc sao lưu), PWA cài app + offline, thú ghé t
 
 ## v45–v46
 v45: EcoData (bảng kinh tế một nguồn), siết cải bắp. v46: Games registry thay chuỗi bọc startMini (10 file chuyển sang Games.on). 195 test; smoke Chrome 19 loại game không lỗi console.
+
+## v48: nhiệm vụ ngày + giao diện kiểu game
+- **Nhiệm vụ ngày**: `quests-core.js` (logic thuần, test `tests/quests-core.test.js`), `daily.js` (tab 📜 qua `Tabs.register`, đứng đầu các tab phụ), số liệu ở `EcoData.quests` (4 khe/ngày, mẫu chọn theo hash của ngày, thưởng/bonus/chuỗi). Tiến độ đọc từ `Adventure.daily(...).counts` nên không bọc thêm `recordEvent`. Trạng thái lưu ở `state.dq={date,claimed,bonus,streak,last}`; nghỉ một ngày thì chuỗi về 1. Thêm nhiệm vụ: thêm mẫu vào `EcoData.quests.slots` (metric: mini, care, variety, fish, hunt, hoặc tên sự kiện bất kỳ trong counts); test kiểm trần thu nhập ngày.
+- `Tabs` có hook mới `badge()` (chấm đỏ trên nút tab, dùng cho nhiệm vụ có thể nhận).
+- **Giao diện**: `game-theme.css` là lớp phủ nạp sau `mobile.css` (HUD đầu trang, nút nổi khối, thẻ có độ sâu, dock tab nổi, chế độ tối). Màu ở biến `:root`. Quay về cũ: bỏ thẻ link trong index.html. Chưa làm lại: các màn mini-game riêng lẻ (vẫn dùng style cũ, chỉ thừa hưởng nút/thẻ mới).
+- 202 test.

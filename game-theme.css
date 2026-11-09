@@ -1,0 +1,77 @@
+/* Giao diện kiểu game (v48): lớp phủ trên mobile.css, nạp SAU nó. Chỉ đổi diện mạo (màu, độ nổi, bo góc, thanh tab), không đổi bố cục/chức năng.
+   Muốn quay về giao diện cũ: bỏ thẻ <link> game-theme.css trong index.html. Màu chính nằm ở biến :root bên dưới. */
+:root{--g1:#5fd08a;--g2:#2fa866;--gd:#1d7a49;--gold1:#ffe27a;--gold2:#ffbf2e;--goldd:#c98a12;--ink:#16372f;--bg:#e6f5ec;--card:#ffffff;--line:#cfe6d8;--rose:#ff6b7a;
+ --sky1:#17a5a0;--sky2:#0f6f7a;--shadow:#1c5a3c33}
+html{background:linear-gradient(160deg,#0f6f7a,#17a5a0 45%,#5fd08a)}
+body{background:var(--bg) radial-gradient(circle at 20% 0,#ffffff 0,transparent 38%) no-repeat;color:var(--ink);box-shadow:0 0 0 1px #0002,0 20px 80px #0a3f4a55}
+/* HUD đầu trang */
+header{background:linear-gradient(160deg,var(--sky2),var(--sky1) 60%,#3ec28c);color:#fff;padding:18px 18px 16px;border-radius:0 0 30px 30px;box-shadow:0 8px 0 #0f6f7a30,0 14px 28px #0f6f7a35;margin-bottom:14px}
+header small{color:#d4fff0;letter-spacing:2.2px;font-weight:700}
+h1{color:#fff;font-weight:900;letter-spacing:-.6px;text-shadow:0 2px 0 #0b5560}
+h1 small{color:#fff!important;opacity:.75!important}
+.pill{background:linear-gradient(var(--gold1),var(--gold2));color:#5a3b00!important;border:2px solid #fff3b8;border-radius:999px;box-shadow:0 4px 0 var(--goldd),0 0 18px #ffd34f66;font-weight:900;font-size:19px;padding:7px 15px}
+header .save-menu,header .shop-menu,header .display-toggle,header button:not(#coins){background:#ffffff26;color:#fff;border:1px solid #ffffff55;box-shadow:none;backdrop-filter:blur(6px);font-weight:700;border-radius:999px}
+header .shop-menu{background:linear-gradient(var(--gold1),var(--gold2));color:#5a3b00;border-color:#fff3b8;box-shadow:0 3px 0 var(--goldd)}
+/* Thẻ */
+.card,.pen,.shop-item{background:var(--card);border:2px solid var(--line);border-radius:22px;box-shadow:0 5px 0 #b9d9c6,0 10px 22px var(--shadow)}
+.eyebrow{display:inline-block;background:#ffefb8;color:#8a5a00;border-radius:999px;padding:3px 10px;font-size:10.5px;letter-spacing:1.4px;font-weight:900}
+h2{font-weight:900;color:var(--ink);letter-spacing:-.5px}
+.muted{color:#4f6f64}
+/* Nút nổi khối: ấn xuống thì lún */
+button{background:linear-gradient(var(--g1),var(--g2));border:0;border-radius:16px;box-shadow:0 5px 0 var(--gd),0 8px 14px #1d7a4938;color:#fff;font-weight:850;text-shadow:0 1px 0 #0003;transition:transform .08s,box-shadow .08s,filter .12s}
+button:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--gd)}
+button:disabled{filter:grayscale(.6) brightness(1.05);opacity:.6;box-shadow:0 3px 0 #0002}
+button.secondary,.secondary{background:linear-gradient(#ffffff,#eef6f0);color:#2a5848;border:2px solid var(--line);box-shadow:0 4px 0 #b9d9c6;text-shadow:none}
+.earn-cta{background:linear-gradient(var(--gold1),var(--gold2))!important;color:#5a3b00!important;box-shadow:0 5px 0 var(--goldd)!important;text-shadow:none}
+progress{accent-color:var(--g2)}
+progress::-webkit-progress-bar{background:#dcebe1;border-radius:99px}progress::-webkit-progress-value{background:linear-gradient(var(--g1),var(--g2));border-radius:99px}
+/* Thanh tab: dock nổi */
+nav{width:min(calc(100% - 16px),464px);bottom:8px;border:2px solid #ffffffcc;border-radius:26px;background:#ffffffee;box-shadow:0 6px 0 #0f6f7a33,0 14px 30px #0a3f4a40;padding:7px 6px;gap:3px;backdrop-filter:blur(14px)}
+nav button{position:relative;color:#5d8575;min-height:54px;border-radius:19px;background:transparent;box-shadow:none;text-shadow:none;font-weight:800;font-size:10.5px}
+nav button:active:not(:disabled){transform:scale(.94);box-shadow:none}
+nav button .nav-icon{font-size:22px;transition:transform .15s}
+nav button.active{color:#fff;background:linear-gradient(var(--g1),var(--g2));box-shadow:0 4px 0 var(--gd),0 0 16px #5fd08a66;text-shadow:0 1px 0 #0003;transform:translateY(-6px)}
+nav button.active .nav-icon{transform:scale(1.18)}
+.nav-badge{position:absolute;top:2px;right:6px;min-width:18px;height:18px;border-radius:99px;background:var(--rose);color:#fff;font:800 11px/18px system-ui;font-style:normal;text-align:center;padding:0 4px;box-shadow:0 2px 0 #b83a49,0 0 0 2px #fff;animation:dqPulse 1.6s ease-in-out infinite}
+@keyframes dqPulse{50%{transform:scale(1.18)}}
+main{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+/* Nhiệm vụ ngày */
+.dq-hero{display:flex;gap:14px;align-items:center;padding:16px;margin-top:6px;border-radius:24px;color:#fff;background:linear-gradient(150deg,#ff9a3c,#ff5f6d);box-shadow:0 6px 0 #c24a4f,0 14px 24px #ff5f6d40;border:2px solid #ffd1c4}
+.dq-streak{flex:0 0 76px;height:92px;border-radius:20px;background:#ffffff2b;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid #ffffff66}
+.dq-streak b{font-size:34px;line-height:1;font-weight:900;text-shadow:0 2px 0 #0003}.dq-streak small{font-size:10px;color:#fff;letter-spacing:0;text-align:center;line-height:1.1}
+.dq-flame{font-size:28px;animation:dqFlame 1.2s ease-in-out infinite}@keyframes dqFlame{50%{transform:scale(1.12) rotate(-5deg)}}
+.dq-hero-main{flex:1;min-width:0}.dq-hero h2{color:#fff;margin:4px 0 10px;text-shadow:0 2px 0 #0003;font-size:24px}.dq-hero .eyebrow{background:#fff3;color:#fff}
+.dq-bar{height:14px;border-radius:99px;background:#0003;overflow:hidden;box-shadow:inset 0 2px 3px #0004}.dq-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(#fff6a8,#ffd23f);transition:width .4s}
+.dq-bar.small{height:9px;margin:6px 0 3px;background:#d7e8de;box-shadow:inset 0 1px 2px #0002}.dq-bar.small i{background:linear-gradient(var(--g1),var(--g2))}
+.dq-list{display:grid;gap:11px;margin:16px 0}
+.dq-row{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border:2px solid var(--line);border-radius:20px;box-shadow:0 4px 0 #b9d9c6}
+.dq-row.is-ready{border-color:#ffd34f;box-shadow:0 4px 0 var(--goldd),0 0 18px #ffd34f66;background:linear-gradient(#fffdf0,#fff)}
+.dq-row.is-claimed{opacity:.62;background:#f2f8f4;box-shadow:0 2px 0 #cfe3d7}
+.dq-icon{flex:0 0 48px;height:48px;border-radius:16px;background:linear-gradient(#eaf8ef,#cfeedb);display:grid;place-items:center;font-size:26px;box-shadow:inset 0 -3px 0 #0001}
+.dq-body{flex:1;min-width:0}.dq-body strong{display:block;font-size:14.5px;line-height:1.25}.dq-body small{color:#5f8072;font-weight:700;font-size:12px}
+.dq-row button{flex:0 0 auto;width:auto;margin:0;min-height:42px;padding:8px 13px;font-size:13px}
+.dq-claim{background:linear-gradient(var(--gold1),var(--gold2))!important;color:#5a3b00!important;box-shadow:0 4px 0 var(--goldd)!important;text-shadow:none!important;animation:dqPulse 1.4s ease-in-out infinite}
+.dq-done{flex:0 0 42px;height:42px;border-radius:50%;background:var(--g2);color:#fff;display:grid;place-items:center;font-weight:900;font-size:20px}
+.dq-chest{display:flex;align-items:center;gap:12px;padding:14px;border-radius:22px;background:linear-gradient(160deg,#6a5cff,#a45cff);color:#fff;border:2px solid #d8ccff;box-shadow:0 6px 0 #4a3fb5,0 14px 24px #6a5cff40}
+.dq-chest.is-ready{box-shadow:0 6px 0 #4a3fb5,0 0 26px #ffd34fcc;animation:dqPulse 1.6s ease-in-out infinite}
+.dq-chest.is-open{background:linear-gradient(160deg,#2fa866,#5fd08a);box-shadow:0 6px 0 var(--gd)}
+.dq-chest-icon{font-size:42px;filter:drop-shadow(0 3px 0 #0003)}.dq-chest div{flex:1;min-width:0}.dq-chest strong{display:block;font-size:15px}.dq-chest small{display:block;color:#fff;opacity:.9;font-size:12px;line-height:1.35;margin-top:2px}
+.dq-chest button{flex:0 0 auto;width:auto;margin:0;padding:10px 14px;background:linear-gradient(var(--gold1),var(--gold2));color:#5a3b00;box-shadow:0 4px 0 var(--goldd);text-shadow:none}
+/* Chế độ tối */
+html[data-display=dark]{background:linear-gradient(160deg,#071d22,#0b2f35)}
+html[data-display=dark] body{--bg:#0f2427;--card:#17343a;--line:#2a5156;--ink:#e6f6ee;--shadow:#0006;background:#0f2427;color:var(--ink)}
+html[data-display=dark] header{background:linear-gradient(160deg,#0b3a44,#0f5a5e 60%,#1d7a62);box-shadow:0 8px 0 #0006}
+html[data-display=dark] .muted,html[data-display=dark] .dq-body small{color:#9cc3b6}
+html[data-display=dark] .card,html[data-display=dark] .pen,html[data-display=dark] .shop-item,html[data-display=dark] .dq-row{background:var(--card);border-color:var(--line);box-shadow:0 5px 0 #0b1f22,0 10px 22px #0006}
+html[data-display=dark] .dq-row.is-ready{background:#2a3f2e;border-color:#ffd34f}
+html[data-display=dark] button.secondary,html[data-display=dark] .secondary{background:#1f4047;color:#d6efe4;border-color:#2f5a60;box-shadow:0 4px 0 #0b1f22}
+html[data-display=dark] nav{background:#10303aef;border-color:#2a5156;box-shadow:0 6px 0 #0006,0 14px 30px #0008}
+html[data-display=dark] nav button{color:#8fb9ac}
+html[data-display=dark] nav button.active{color:#fff}
+html[data-display=dark] .dq-icon{background:#1f4a45}
+html[data-display=dark] .eyebrow{background:#4a3c14;color:#ffe27a}
+@media(prefers-reduced-motion:reduce){.nav-badge,.dq-claim,.dq-flame,.dq-chest.is-ready{animation:none}}
+body[data-page=daily] .hero{display:none}body[data-page=daily] #view{padding-top:6px}
+nav button{white-space:nowrap;font-size:10px;letter-spacing:-.2px}
+@media(max-width:360px){nav button{font-size:9px}nav button .nav-icon{font-size:20px}}
+#toast{bottom:calc(104px + env(safe-area-inset-bottom));z-index:40;border-radius:16px;background:#12353d;border:2px solid #ffffff44;box-shadow:0 5px 0 #0a2329,0 12px 24px #0006;font-weight:700}

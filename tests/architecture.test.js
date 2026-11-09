@@ -24,10 +24,12 @@ test('load order: every logic core loads before the UI file that uses it', () =>
   before('balance-core.js', 'levels.js', 'levels.js gọi Balance.*');
   before('levels-core.js', 'levels.js', 'levels.js gọi Levels.*');
   before('fishing-core.js', 'fishing.js', 'fishing.js gọi Fishing.*');
+  before('quests-core.js', 'daily.js', 'daily.js gọi Quests.*'); before('adventure-core.js', 'daily.js', 'daily.js đọc Adventure.daily');
 });
 test('load order: tab router and shared helpers come before every tab that registers', () => {
   for (const f of uiFiles.filter(f => /Tabs\.register\(/.test(read(f)) && f !== 'app-kit.js')) before('app-kit.js', f, 'tab dùng Tabs/txn');
   /* thứ tự đăng ký = thứ tự nút trên thanh tab */
+  before('daily.js', 'dollhouse.js', 'Nhiệm vụ ngày đứng đầu các tab phụ');
   before('dollhouse.js', 'farm.js', 'Ngôi nhà đứng trước Nông trại'); before('farm.js', 'fishing.js', 'Nông trại đứng trước Câu cá');
 });
 test('load order: Games registry sits after the base startMini and before every game that registers', () => {
@@ -62,5 +64,5 @@ test('shared helpers: the safe-transaction pattern lives in txn(), tabs are not 
     assert.ok(!/\.dataset\.tab\s*=\s*['"](dollhouse|farm|fish)['"]/.test(s), f + ' tự chèn nút tab, hãy dùng Tabs.register');
   }
   const ids = []; for (const f of uiFiles) for (const m of read(f).matchAll(/Tabs\.register\(\{id:'([^']+)'/g)) ids.push(m[1]);
-  assert.deepEqual(ids, ['dollhouse', 'farm', 'fish']);
+  assert.deepEqual(ids, ['daily', 'dollhouse', 'farm', 'fish']);
 });

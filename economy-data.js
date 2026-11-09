@@ -75,6 +75,17 @@ const EcoData=(()=>{
   walls:{cream:0,sky:15,mint:15,pink:20,lavender:20,stripe:30,dots:30,stars:45,brick:40,peachwall:25,moonwall:25,snowwall:25},
   floors:{wood:0,tile:15,carpet:25,pinkrug:25,blue:20,grass:30,marble:40},
   furniture:{sofa:45,bed:60,chair:15,tv:50,radio:20,lamp:15,door:30,window:30,fire:40,piano:90,books:35,mirror:35,vase:20,pot:20,teapot:20,cake:15,pizza:15,juice:10,bread:10,icecream:15,coffee:15,tub:70,shower:45,soap:10,brush:10,duck:15,toilet:40,teddy:25,ball:12,blocks:15,train:40,kite:20,guitar:50,paint:20,robot:45,doll:30,puzzle:20,horse:35,pot2:20,tulip:10,cactus:15,sunflower:15,tree:40,palm:40,bamboo:25,mushroom:15,rose:15,frame:25,ribbon:10,banner:20,sparkle:15,medal:15,star:10,moon:15,rainbow:30,clock:25,peach:35,kumquat:35,lantern:20,envelope:15,firework:25,circus:40,pinata:25,confetti:15,beach:40,melon:15,shades:10,beachball:15,shaved:15,moonlantern:20,mooncake:15,rabbit:30,fullmoon:25,bouquet:20,card:15,crayon:15,gradcap:25,xtree:50,santa:45,snowman:35,stocking:15,reindeer:30,unicorn:80,balloon:10,gift:20,crown:100,trophy:60,fountain:80,tent:70,castle:150,carousel:120,ferris:150}
+ },
+ /* Nhiệm vụ ngày: mỗi ngày bốn nhiệm vụ, mỗi khe chọn một mẫu theo ngày. metric đọc từ số sự kiện hôm nay (Adventure.daily).
+    bonus = thưởng khi xong cả 4; streakStep = cộng thêm mỗi ngày liên tiếp (tối đa streakCap ngày cộng). */
+ quests:{
+  bonus:30,streakStep:4,streakCap:5,
+  slots:[
+   [{id:'play2',icon:'🎮',label:'Hoàn thành 2 trò chơi',metric:'mini',target:2,reward:15},{id:'play3',icon:'🎮',label:'Hoàn thành 3 trò chơi',metric:'mini',target:3,reward:25},{id:'play4',icon:'🎮',label:'Hoàn thành 4 trò chơi',metric:'mini',target:4,reward:35}],
+   [{id:'care3',icon:'🍼',label:'Chăm thú 3 lần',metric:'care',target:3,reward:15},{id:'care5',icon:'🍼',label:'Chăm thú 5 lần',metric:'care',target:5,reward:25}],
+   [{id:'mix2',icon:'🧩',label:'Chơi 2 loại trò khác nhau',metric:'variety',target:2,reward:20},{id:'mix3',icon:'🧩',label:'Chơi 3 loại trò khác nhau',metric:'variety',target:3,reward:30}],
+   [{id:'fish1',icon:'🎣',label:'Đi câu 1 vé',metric:'fish',target:1,reward:20},{id:'fish2',icon:'🎣',label:'Đi câu 2 vé',metric:'fish',target:2,reward:35},{id:'hunt1',icon:'📸',label:'Thắng 1 lượt săn màu/hình',metric:'hunt',target:1,reward:25}]
+  ]
  }
  };
 })();
