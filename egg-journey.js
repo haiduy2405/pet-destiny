@@ -93,4 +93,3 @@ const beforeJourneyRender=render;render=function(){EggJourney.normalize(state);b
 };
 const beforeJourneyShop=drawShop;drawShop=function(){beforeJourneyShop();if(homeShopTab==='care'){const b=document.createElement('button');b.className='egg-shop-entry';b.textContent='🥚 Nhận trứng đặc biệt tại Viện ươm →';b.onclick=()=>{shopDialog.close();showEggJourney()};shopDialog.querySelector('.shop-items').before(b)}};
 const beforeJourneyPanel=drawGardenPanel;drawGardenPanel=function(){beforeJourneyPanel();if(gardenPanel?.mode==='eggs'){const b=document.createElement('button');b.textContent='🥚 Đến Viện ươm nhận trứng';b.onclick=showEggJourney;$('closeGardenBottom').before(b)}};
-render();

@@ -17,6 +17,5 @@ function drawArcade(){const s=miniSession;if(!s||s.slot!==activeSlot)return;cons
  adventureDialog.querySelectorAll('[data-number]').forEach(b=>b.onclick=()=>{if(Number(b.dataset.number)!==s.step+1){$('arcadeStatus').textContent='Hãy tìm số '+(s.step+1)+' trước nhé.';return}s.step++;sound('pet');if(s.step===9)return winMini();drawArcade()});
 }
 winMini=function(){if(!miniSession||miniSession.slot!==activeSlot)return;const type=miniSession.type,game=arcadeGames.find(g=>g[0]===type);miniSession=null;recordEvent('mini');recordEvent('mini_'+type);const gained=rewardQuest('mini-'+type,game[4]);save();adventureDialog.innerHTML=`<div class="mini-win">🏆</div><h2>Hoàn thành rồi! ✨</h2><p>${gained?'Bạn nhận được '+game[4]+' xu và thêm tiến độ nhiệm vụ.':'Đã nhận quà trò này hôm nay. Lượt chơi vẫn được tính vào nhiệm vụ tiến hóa.'}</p><button id="closeAdventure">Tuyệt!</button>`;$('closeAdventure').onclick=()=>{adventureDialog.close();render()}};
-render();
 
 

@@ -8,5 +8,4 @@ function drawShapes(){const s=miniSession;if(!s||s.slot!==activeSlot)return;s.ch
 const priorPolishedRender=render;render=function(){const openDialogs=[...document.querySelectorAll('dialog[open]')].map(el=>[el,el.scrollTop]);priorPolishedRender();for(const [el,scroll] of openDialogs)if(el.open)el.scrollTop=scroll;document.body.dataset.page=current;document.querySelectorAll('.resident-name').forEach(label=>{const p=state.pets.find(p=>p.id===label.parentElement.dataset.resident);if(p)label.style.setProperty('--pet-chip',COLORS[p.color][1])});document.querySelectorAll('nav [data-tab]').forEach(b=>{const handler=b.onclick;b.onclick=()=>{handler();window.scrollTo({top:0,behavior:'instant'})}})};
 // Pause decorative loops while a modal is open, and keep page controls clear of the thumb bar.
 const modalObserver=new MutationObserver(()=>document.body.classList.toggle('modal-open',!!document.querySelector('dialog[open]')));modalObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
-render();
 

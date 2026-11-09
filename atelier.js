@@ -236,4 +236,3 @@ const beforeAtelierRender=render;render=function(){clearInterval(idlePetTimer);i
 const beforeAnimatedCare=care;care=function(id,k){const before=state.pets.find(p=>p.id===id),xp=before?.totalXP,v=before?.[k];beforeAnimatedCare(id,k);const p=state.pets.find(p=>p.id===id);if(p&&(p.totalXP!==xp||p[k]!==v))petAct(({food:'eat',clean:'bath',joy:'dance',energy:'sleep'})[k])};
 const beforeAnimatedTraining=training;training=function(id){const xp=state.pets.find(p=>p.id===id)?.totalXP;beforeAnimatedTraining(id);if(state.pets.find(p=>p.id===id)?.totalXP!==xp)petAct('train')};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)clearInterval(idlePetTimer);else if(current==='garden')render()});
-render();
