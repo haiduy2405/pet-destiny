@@ -1,7 +1,9 @@
 # Pet Destiny — Handoff (cập nhật 2026-11-09, bản v42)
 
 ## Prompt dán vào session mới
-> Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Sau đó trình bày cho tôi 7 hướng phát triển ở mục "Gợi ý" (có chỉnh theo thực tế hiện tại, kèm công sức/tác động), rồi chờ tôi chọn trước khi làm. Trả lời tiếng Việt, ngắn gọn, TL;DR trước.
+> Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Làm 2 việc theo thứ tự:
+> **1. Tính năng câu cá (tab/khu mới, bản v43).** Người chơi phải mua cần câu mới câu được. Đi câu cần thuê hồ, mua mồi, và phụ kiện cần thiết (tự đề xuất hợp lý). Có 3 hồ: hồ rẻ thì cá ít tiền nhưng dễ câu; hồ đắt thì cá xịn hơn, tỉ lệ tốt hơn nhưng khó câu hơn về kỹ năng. Làm mini game câu cá thật hay (thao tác kỹ năng, không chỉ bấm may rủi; dùng được cả trên điện thoại). Tuân thủ thang kinh tế/`Balance` (thưởng theo công sức, giảm khi lặp, không cày một chỗ), có âm thanh (sfx.js), có test cho phần logic. Có vướng thì hỏi tôi.
+> **2. Sắp xếp lại cấu trúc game cho chuẩn và gọn.** Game đã thêm nhiều lần nên chưa được tính toán thống nhất từ đầu. Hãy rà soát (kiến trúc bọc chồng `render`/`startMini`/`recordEvent`, thứ tự nạp script, kinh tế/giá rải rác, các tab, CSS dư), đề xuất kế hoạch tái cấu trúc ngắn gọn, rồi làm từng bước an toàn (test xanh sau mỗi bước, không làm hỏng file lưu cũ), phù hợp hướng game đang đi (nuôi thú, học tập, nhà, nông trại, câu cá). Hỏi tôi nếu có quyết định lớn.
 
 ## Nguyên tắc sản phẩm (chủ dự án đã chốt — áp dụng cho mọi thay đổi)
 - **Đối tượng: từ 6 tuổi trở lên đến người lớn, không giới hạn tuổi.** Không phải game chỉ dành cho bé. Khi cân bằng nội dung, độ khó, giọng văn, hình thức và thưởng, phải nghĩ cho cả khoảng tuổi này: có mức dễ cho người mới/6 tuổi nhưng không "trẻ con hóa" quá đà, và có thử thách đủ cho người lớn (độ khó tăng dần, nội dung đa dạng). Giao diện và lời thoại nên thân thiện nhưng không áp đặt "bé ơi".
@@ -38,6 +40,16 @@ Nhãn phiên bản `vNN` nằm ở tiêu đề trang (index.html). **Mỗi lần
 
 ## Đã làm trong session trước
 dọn code chết + 82→93 test · cân bằng thưởng · giai đoạn lớn (🥚🌱🌿⭐👑) + animation tiến hóa · 4 game Tiếng Anh (Giải cứu từ, Xếp chữ, Nghe, Điền từ) · 5 game nói/nghe (Web Speech API, có chế độ tự đánh giá) · 8 game Tiếng Việt · Ngôi nhà của em (6 phòng, ~60 đồ, sao, tiệc tân gia, thú khen).
+
+## Đã làm trong session v39–v42
+v39: mức khó Dễ/Vừa/Khó (levels-core/levels/arcade-levels), cân bằng thưởng theo công sức + giảm khi lặp + thưởng đa dạng (balance-core), hộp quà may mắn (lucky-core/lucky), sửa đếm đom đóm (đếm đúng 5 lần). v40: nông trại + phối giống (farm-core/farm). v41–v42: engine âm thanh (sfx-core/sfx) + mẫu âm thật CC0/CC BY (`audio/`). 167 test. Chi tiết từng hệ thống nằm ở mục Kinh tế.
+
+## Gợi ý cho việc tái cấu trúc (ghi chú của session v42)
+- Thứ tự nạp hiện kết thúc: `... dollhouse, home-games, farm, sfx, rewards, arcade-levels, levels, lucky, evolution-fx, backup, slots, pwa`. Mỗi file ghi đè global (`render`, `startMini`, `recordEvent`, `sound`, `musicPlay`, `petArt`); thứ tự phụ thuộc ngầm, đừng đổi bừa.
+- Thưởng/giá rải ở: `balance-core.js` (thưởng game), `levels-core.js`, `lucky-core.js`, `farm-core.js`, `dollhouse-core.js`, `economy-core.js`, `income-core.js`. Hướng: gom bảng giá + hằng số kinh tế vào 1 module dữ liệu và 1 script mô phỏng kinh tế/ngày.
+- Tab nav được chèn bằng cách bọc `render` (dollhouse.js, farm.js): nên có 1 bộ định tuyến tab chung. Dialog dùng chung `adventureDialog`.
+- Mẫu giao dịch an toàn (`backup=SaveStore.copy(state)` → sửa → `save()` hỏng thì khôi phục) lặp lại ở nhiều UI: nên có helper chung (`fmDo` trong farm.js là bản mẫu).
+- Dữ liệu mới của người chơi lưu trong `state.<tên>` (farm, lucky, plays, levels, dollhouse); `SaveStore` giữ nguyên field lạ nên không cần migrate, nhưng mỗi core có `normalize` tự sửa dữ liệu hỏng.
 
 ## Đã làm trong session v38
 Đồ/tường theo mùa (6 dịp, 24 món + 3 tường), tặng đồ giữa các ô lưu, 2 game Toán trong nhà (nấu ăn, làm vườn). 119 test; kiểm bằng Chrome headless.
