@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v46)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v47)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -51,7 +51,7 @@ Rà soát cho thấy: `render` bị bọc ở 18 file, `startMini` 12 file, `rec
 Việc còn lại (theo thứ tự rủi ro tăng dần):
 1. Thay `dhTx`/các đoạn `SaveStore.copy(state)` lặp ở ~12 file bằng `txn()` (từng file một, test xanh mỗi lần).
 2. ~~Sổ đăng ký game~~ XONG (v46): `games-registry.js` (sau adventure.js). Game mới: `Games.on('loai' | ['a','b'] | t=>bool, type=>{...})`; đăng ký sau được hỏi trước; không khớp thì rơi về game gốc memory/count. Chỉ `arcade-levels.js` và `levels.js` (chọn mức khó) còn bọc `startMini` ngang. Nếu hỏng: quay về commit `859b450`.
-3. ~~Gom giá/thưởng~~ XONG một phần (v45): `economy-data.js` (EcoData) nạp đầu tiên; còn lại furniture của dollhouse-core và shop của economy-core. Cây ngắn nông trại đã siết; `tests/economy-balance.test.js` kiểm cân bằng chéo.
+3. ~~Gom giá/thưởng~~ XONG (v47): `economy-data.js` giữ cả shop cũ và giá Ngôi nhà (phòng, tường, sàn, 92 món); core tra giá bằng id và ném lỗi nếu thiếu. Cây ngắn nông trại đã siết; `tests/economy-balance.test.js` kiểm cân bằng chéo.
 3. Gom bảng giá/thưởng vào 1 module dữ liệu + mô phỏng kinh tế/ngày có ngưỡng trần (hiện chỉ có báo cáo).
 4. Tách `render` của các tab gốc (garden/quests/collection) vào `Tabs` như tab phụ, rồi bỏ `current='collection'` giả.
 5. Dọn CSS tiếp (còn các quy tắc chồng nhau theo `data-page`).

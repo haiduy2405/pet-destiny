@@ -1,7 +1,6 @@
 /* DỮ LIỆU KINH TẾ DUY NHẤT: mọi bảng giá, thưởng, vé, tỉ lệ nằm ở đây. Các *-core.js chỉ chứa luật (code), đọc số từ EcoData.
    Chỉnh cân bằng = sửa file này, rồi `npm test` (tests/economy-balance.test.js canh các ràng buộc chéo giữa các nguồn xu)
-   và `node tools/economy-report.js` để xem thu nhập từng nguồn. Load ĐẦU TIÊN (trước save-store.js). Chưa gom: giá đồ trong nhà
-   (dollhouse-core.js, ~60 món theo mùa) và cửa hàng cũ (economy-core.js) — gom sau nếu cần. */
+   và `node tools/economy-report.js` để xem thu nhập từng nguồn. Load ĐẦU TIÊN (trước save-store.js). Đã gom đủ: shop, dollhouse. */
 const EcoData=(()=>{
  const MIN=6e4,HOUR=36e5;
  return {
@@ -68,6 +67,14 @@ const EcoData=(()=>{
    reel:{zone:.74,speed:.62,dart:.3,gain:.22,loss:.24,maxT:32},
    fish:[{id:'thu',icon:'🐟',name:'Cá thu',w:38,v:15,cm:70,pw:.95},{id:'mu',icon:'🐠',name:'Cá mú',w:28,v:27,cm:80,pw:1.05},
          {id:'hong',icon:'🐡',name:'Cá hồng',w:20,v:45,cm:90,pw:1.15},{id:'ngu',icon:'🦈',name:'Cá ngừ vây vàng',w:10,v:72,cm:150,pw:1.3},
-         {id:'kiem',icon:'🗡️',name:'Cá kiếm',w:4,v:130,cm:260,pw:1.45}]}]}
+         {id:'kiem',icon:'🗡️',name:'Cá kiếm',w:4,v:130,cm:260,pw:1.45}]}]},
+ /* giá cửa hàng cũ (economy-core.js) và Ngôi nhà (dollhouse-core.js): id → xu. Code chỉ giữ tên/biểu tượng/luật. */
+ shop:{egg:30,sunset:80,moonlight:140,dream:220,flowers:40,lantern:75,fountain:120,treat:25,rush:15},
+ dollhouse:{
+  rooms:{living:0,bedroom:120,kitchen:150,bath:100,play:200,garden:250},
+  walls:{cream:0,sky:15,mint:15,pink:20,lavender:20,stripe:30,dots:30,stars:45,brick:40,peachwall:25,moonwall:25,snowwall:25},
+  floors:{wood:0,tile:15,carpet:25,pinkrug:25,blue:20,grass:30,marble:40},
+  furniture:{sofa:45,bed:60,chair:15,tv:50,radio:20,lamp:15,door:30,window:30,fire:40,piano:90,books:35,mirror:35,vase:20,pot:20,teapot:20,cake:15,pizza:15,juice:10,bread:10,icecream:15,coffee:15,tub:70,shower:45,soap:10,brush:10,duck:15,toilet:40,teddy:25,ball:12,blocks:15,train:40,kite:20,guitar:50,paint:20,robot:45,doll:30,puzzle:20,horse:35,pot2:20,tulip:10,cactus:15,sunflower:15,tree:40,palm:40,bamboo:25,mushroom:15,rose:15,frame:25,ribbon:10,banner:20,sparkle:15,medal:15,star:10,moon:15,rainbow:30,clock:25,peach:35,kumquat:35,lantern:20,envelope:15,firework:25,circus:40,pinata:25,confetti:15,beach:40,melon:15,shades:10,beachball:15,shaved:15,moonlantern:20,mooncake:15,rabbit:30,fullmoon:25,bouquet:20,card:15,crayon:15,gradcap:25,xtree:50,santa:45,snowman:35,stocking:15,reindeer:30,unicorn:80,balloon:10,gift:20,crown:100,trophy:60,fountain:80,tent:70,castle:150,carousel:120,ferris:150}
+ }
  };
 })();
