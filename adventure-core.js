@@ -4,7 +4,6 @@ const Adventure=(()=>{
  function normalize(s){if(s.homeVersion===1)return PetHomes.normalize(s);s.stats??={};s.habitJobs??={};s.gardenLevel=Number.isSafeInteger(s.gardenLevel)&&s.gardenLevel>=0?s.gardenLevel:0;const owned=new Set(s.pets.map(p=>p.id)),ids=[...new Set((s.pens||[]).filter(id=>id&&owned.has(id)))];s.pens=ids;if(ids.length<capacity(s))s.pens.push(null);for(const p of s.pets){p.xp=Math.max(0,Math.min(100,Number(p.xp)||0));p.evolution??=0}return s}
  function daily(s,date){if(s.questDay?.date!==date)s.questDay={date,counts:{},claimed:[]};return s.questDay}
  function event(s,type,date){normalize(s);const d=daily(s,date);s.stats[type]=(s.stats[type]||0)+1;d.counts[type]=(d.counts[type]||0)+1}
- function growth(s,amount){const p=s.pets.find(p=>p.id===s.pens.find(Boolean))||s.pets[0];if(p&&!p.evolution)p.xp=Math.min(100,p.xp+amount)}
  function startEvolution(s,id){normalize(s);const p=s.pets.find(p=>p.id===id);if(!p||p.xp<100||p.evolution||p.evoStart)return false;p.evoStart=clone(s.stats);return true}
  const careTypes=['food','clean','joy','energy'],careTarget=3,careVarietyTarget=2;
  function evolutionCount(s,p,key){return Math.max(0,(s.stats[key]||0)-(p.evoStart?.[key]||0))}
@@ -27,8 +26,7 @@ const Adventure=(()=>{
   ];
  }
  function evolve(s,id,date){const p=s.pets.find(p=>p.id===id);if(!p||!p.evoStart||p.evolution||evolution(s,p).some(([,n,target])=>n<target))return false;p.evolution=1;if(s.homeVersion===1)p.evolutionCredits=(p.evolutionCredits||0)+1;event(s,'evolve',date);return true}
- function assign(s,index,id){normalize(s);if(!Number.isInteger(index)||index<0||index>=capacity(s)||id!==null&&!s.pets.some(p=>p.id===id))return false;if(id)s.pens=s.pens.map(p=>p===id?null:p);s.pens[index]=id;return true}
- return {normalize,daily,event,growth,startEvolution,evolution,evolutionCount,evolutionCareOptions,evolve,assign,capacity};
+ return {normalize,daily,event,startEvolution,evolution,evolutionCount,evolutionCareOptions,evolve,capacity};
 })();
 
 
