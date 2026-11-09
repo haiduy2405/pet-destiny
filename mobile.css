@@ -149,3 +149,11 @@ html[data-display=dark] #gameSubject{background:#233b37;color:#e1ecd8;border-col
 @keyframes evoOut{to{opacity:0;transform:scale(1.6)}}
 @keyframes evoReveal{to{opacity:1;transform:scale(1)}}
 @keyframes evoFlash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+
+/* English games (english-games.js) */
+.hang-balloons{font-size:28px;letter-spacing:4px;text-align:center;margin:6px 0}
+.hang-word{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px 0}
+.hang-slot{min-width:30px;height:40px;border-bottom:3px solid #7a5cc7;font:700 24px/40px system-ui;text-align:center}
+.hang-keys{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}
+.hang-key{padding:8px 0;min-height:40px}.hang-key.ok{background:#bdf0c8;color:#14502a}.hang-key.bad{background:#f3c5c5;color:#7a2020}
+.hang-clue{background:#fff7d6;border-radius:12px;padding:8px 12px;font-size:14px}
