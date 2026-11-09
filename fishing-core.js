@@ -4,44 +4,22 @@
 const Fishing=(()=>{
  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
  const num=(v,d=0)=>Number.isFinite(v)?v:d;
- /* ---- cần câu: vùng xanh (zone) càng cao càng dễ giữ cá ---- */
- const rods=[
-  {id:'bamboo',icon:'🎋',name:'Cần tre',cost:40,zone:.24,note:'Cần cơ bản, đủ để câu ao làng.'},
-  {id:'fiber',icon:'🎣',name:'Cần sợi thủy tinh',cost:160,zone:.30,note:'Vùng giữ cá rộng hơn.'},
-  {id:'carbon',icon:'🏆',name:'Cần carbon',cost:480,zone:.36,note:'Nhẹ và nhạy, rộng nhất.'}];
+ /* ---- dữ liệu (giá, cá, độ khó) nằm trong economy-data.js ---- */
+ const rods=EcoData.fishing.rods;
  /* ---- phụ kiện (mua 1 lần, dùng mãi) ---- */
- const accs=[
-  {id:'float',icon:'🔴',name:'Phao nhạy',cost:60,note:'Có thêm 50% thời gian để giật cần khi cá cắn.'},
-  {id:'glasses',icon:'🕶️',name:'Kính râm',cost:90,note:'Thấy gợn nước báo trước khi cá cắn khoảng nửa giây.'},
-  {id:'net',icon:'🥅',name:'Lưới vợt',cost:140,note:'Mỗi vé cứu được 1 con tuột khỏi cần (kéo lại từ 35%).'}];
+ const accs=EcoData.fishing.accs;
  /* ---- mồi: dùng 1 cái mỗi lượt thả. boost>1 → dễ ra cá hiếm hơn ---- */
- const baits=[
-  {id:'worm',icon:'🪱',name:'Giun đất',cost:2,boost:1,note:'Rẻ, ra cá thường.'},
-  {id:'corn',icon:'🌽',name:'Bắp ngô',cost:3,boost:2.6,note:'Dễ ra cá hiếm hơn giun.'},
-  {id:'shrimp',icon:'🦐',name:'Tôm nhử',cost:6,boost:5,note:'Hấp dẫn cá hiếm nhất.'}];
- const BAIT_PACK=5,BAIT_CAP=40;
+ const baits=EcoData.fishing.baits;
+ const E=EcoData.fishing,BAIT_PACK=E.baitPack,BAIT_CAP=E.baitCap;
  /* ---- hồ: vé = số lượt thả. diff: độ khó kỹ năng (cá nhanh/nhảy hơn, vùng xanh hẹp lại) ---- */
- const lakes=[
-  {id:'pond',icon:'🪷',name:'Ao làng',rec:'bamboo',stars:1,ticket:10,casts:6,window:1.5,wait:[1.6,4],
-   reel:{zone:1,speed:.30,dart:.10,gain:.28,loss:.19,maxT:22},
-   fish:[{id:'rophi',icon:'🐟',name:'Cá rô',w:48,v:4,cm:12,pw:.9},{id:'diec',icon:'🐠',name:'Cá diếc',w:30,v:6,cm:18,pw:1},
-         {id:'chep',icon:'🐡',name:'Cá chép',w:16,v:11,cm:35,pw:1.15},{id:'tre',icon:'🐟',name:'Cá trê vàng',w:6,v:20,cm:42,pw:1.3}]},
-  {id:'forest',icon:'🌲',name:'Hồ rừng',rec:'fiber',stars:2,ticket:32,casts:6,window:1.25,wait:[1.8,4.4],
-   reel:{zone:.86,speed:.46,dart:.2,gain:.24,loss:.2,maxT:28},
-   fish:[{id:'loc',icon:'🐟',name:'Cá lóc',w:42,v:7,cm:40,pw:.95},{id:'tram',icon:'🐠',name:'Cá trắm đen',w:30,v:12,cm:60,pw:1.05},
-         {id:'lang',icon:'🐡',name:'Cá lăng',w:20,v:22,cm:75,pw:1.2},{id:'luon',icon:'🐍',name:'Lươn vàng',w:8,v:50,cm:80,pw:1.35}]},
-  {id:'deep',icon:'🌊',name:'Vịnh sâu',rec:'carbon',stars:3,ticket:85,casts:6,window:1.05,wait:[2,5],
-   reel:{zone:.74,speed:.62,dart:.3,gain:.22,loss:.24,maxT:32},
-   fish:[{id:'thu',icon:'🐟',name:'Cá thu',w:38,v:15,cm:70,pw:.95},{id:'mu',icon:'🐠',name:'Cá mú',w:28,v:27,cm:80,pw:1.05},
-         {id:'hong',icon:'🐡',name:'Cá hồng',w:20,v:45,cm:90,pw:1.15},{id:'ngu',icon:'🦈',name:'Cá ngừ vây vàng',w:10,v:72,cm:150,pw:1.3},
-         {id:'kiem',icon:'🗡️',name:'Cá kiếm',w:4,v:130,cm:260,pw:1.45}]}];
+ const lakes=E.lakes;
  const find=(arr,id)=>arr.find(x=>x.id===id);
  const rod=id=>find(rods,id),acc=id=>find(accs,id),bait=id=>find(baits,id),lake=id=>find(lakes,id);
  const allFish=()=>lakes.flatMap(l=>l.fish.map(f=>({...f,lake:l.id})));
  const fishInfo=id=>allFish().find(f=>f.id===id);
  /* hồ rẻ hơn thuê lại lần 2, 3... trong ngày thì cá bán rẻ dần (tránh cày 1 chỗ) */
- const DECAY=[1,.8,.6,.4,.25];
- const BUCKET_CAP=60,FIRST_BONUS=.5;
+ const DECAY=E.decay;
+ const BUCKET_CAP=E.bucketCap,FIRST_BONUS=E.firstBonus;
 
  function normalize(s){
   const f=(s.fishing&&typeof s.fishing==='object'&&!Array.isArray(s.fishing))?s.fishing:(s.fishing={});

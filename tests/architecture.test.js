@@ -15,6 +15,7 @@ const at = f => { const i = order.indexOf(f); assert.ok(i >= 0, f + ' chưa đư
 const before = (a, b, why) => assert.ok(at(a) < at(b), `${a} phải nạp trước ${b}: ${why}`);
 const uiFiles = fs.readdirSync(root).filter(f => f.endsWith('.js') && !f.endsWith('-core.js') && f !== 'sw.js');
 
+test('load order: economy-data.js is the very first script (cores read EcoData at load time)', () => { assert.equal(order[0], 'economy-data.js'); });
 test('load order: every logic core loads before the UI file that uses it', () => {
   for (const core of fs.readdirSync(root).filter(f => f.endsWith('-core.js'))) {
     const ui = core.replace('-core.js', '.js');

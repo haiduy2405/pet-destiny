@@ -2,17 +2,9 @@
    Cân bằng: kỳ vọng ~75% giá vé (cộng bảo hiểm pity thành ~90%) (hơi lỗ, ai cũng chơi vui nhưng không "cày" ra xu), có bảo hiểm (pity), giới hạn vé mua mỗi ngày
    và 1 vé miễn phí mỗi ngày. Pure: truyền rnd() trong [0,1) để test. */
 const LuckyBox=(()=>{
- const PRICE=60,DAILY_CAP=8,PITY_AFTER=7,HISTORY=12;
+ const PRICE=EcoData.lucky.price,DAILY_CAP=EcoData.lucky.dailyCap,PITY_AFTER=EcoData.lucky.pityAfter,HISTORY=EcoData.lucky.history;
  /* weight trên tổng 1000. value = giá trị quy đổi xu (đồ trang trí tính theo giá trị trung bình) */
- const prizes=[
-  {id:'c30',kind:'coins',coins:25,weight:340,rarity:'common',label:'25 xu',icon:'🪙'},
-  {id:'c45',kind:'coins',coins:35,weight:250,rarity:'common',label:'35 xu',icon:'🪙'},
-  {id:'c70',kind:'coins',coins:55,weight:150,rarity:'uncommon',label:'55 xu',icon:'💰'},
-  {id:'dec1',kind:'decor',tier:'common',value:30,weight:100,rarity:'uncommon',label:'Đồ trang trí',icon:'🎀'},
-  {id:'tick',kind:'ticket',value:PRICE*.88,weight:60,rarity:'uncommon',label:'Vé miễn phí',icon:'🎟️'},
-  {id:'c150',kind:'coins',coins:120,weight:60,rarity:'rare',label:'120 xu',icon:'💎'},
-  {id:'dec2',kind:'decor',tier:'rare',value:70,weight:30,rarity:'rare',label:'Đồ hiếm',icon:'🏆'},
-  {id:'c500',kind:'coins',coins:400,weight:10,rarity:'epic',label:'400 xu — Giải đặc biệt!',icon:'👑'}];
+ const prizes=EcoData.lucky.prizes;
  const isRare=p=>p.rarity==='rare'||p.rarity==='epic';
  const worth=p=>p.kind==='coins'?p.coins:p.value;
  const total=list=>list.reduce((a,p)=>a+p.weight,0);

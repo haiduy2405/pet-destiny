@@ -20,7 +20,7 @@ function memoryStorage(initial = {}) {
 
 /** load(['home-core.js', 'adventure-core.js'], ['PetHomes', 'Adventure']) -> {PetHomes, Adventure} */
 function load(files, names, { storage } = {}) {
-  const source = files.map(f => fs.readFileSync(path.join(root, f), 'utf8')).join('\n;\n');
+  const source = ['economy-data.js', ...files].map(f => fs.readFileSync(path.join(root, f), 'utf8')).join('\n;\n');
   const factory = new Function('localStorage', source + '\n;return {' + names.join(',') + '};');
   return factory(storage || memoryStorage());
 }

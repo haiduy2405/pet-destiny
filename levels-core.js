@@ -1,11 +1,11 @@
 /* Difficulty levels (Dễ / Vừa / Khó): pure rules. Harder levels pay more per round than easier ones, so trying the
    hard mode is always worth it. The UI lives in levels.js; this file has no DOM and is unit-tested. */
 const Levels=(()=>{
- const BASE_PAY=15,UNLOCK=.6;                     // BASE_PAY = what every game pays at the standard level (rewards.js PAY)
+ const BASE_PAY=EcoData.reward.pay,UNLOCK=EcoData.levels.unlock;                     // BASE_PAY = what every game pays at the standard level (rewards.js PAY)
  const defs=[
-  {id:1,name:'Dễ',icon:'🌱',mult:1,options:3,roundsAdd:-1,hints:true,about:'Nhẹ nhàng, có gợi ý'},
-  {id:2,name:'Vừa',icon:'⭐',mult:1.5,options:4,roundsAdd:0,hints:true,about:'Cân bằng, có gợi ý'},
-  {id:3,name:'Khó',icon:'🔥',mult:2.2,options:5,roundsAdd:2,hints:false,about:'Thử thách, không gợi ý'}];
+  {id:1,name:'Dễ',icon:'🌱',mult:EcoData.levels.mult[0],options:3,roundsAdd:-1,hints:true,about:'Nhẹ nhàng, có gợi ý'},
+  {id:2,name:'Vừa',icon:'⭐',mult:EcoData.levels.mult[1],options:4,roundsAdd:0,hints:true,about:'Cân bằng, có gợi ý'},
+  {id:3,name:'Khó',icon:'🔥',mult:EcoData.levels.mult[2],options:5,roundsAdd:2,hints:false,about:'Thử thách, không gợi ý'}];
  const clampLevel=n=>{n=Math.floor(+n);return n>=1&&n<=3?n:1};
  const def=n=>defs[clampLevel(n)-1];
  const bonus=(n,base=BASE_PAY)=>Math.round(base*(def(n).mult-1));                       // extra paid for finishing at this level

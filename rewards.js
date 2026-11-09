@@ -1,6 +1,6 @@
 /* Reward balance: every game pays the same (PAY), +up to 5 for first-try accuracy.
    Variety bonus: the first completion of each game each day pays +DAILY_FIRST. */
-const PAY=15,DAILY_FIRST=10;
+const PAY=EcoData.reward.pay,DAILY_FIRST=EcoData.reward.dailyFirst;
 arcadeGames.forEach(g=>{g[4]=PAY});
 Object.values(practiceGames).forEach(g=>{g.reward=PAY});
 const rewardEventBase=recordEvent;

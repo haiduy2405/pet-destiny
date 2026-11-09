@@ -27,7 +27,7 @@ test('plant -> grow -> harvest -> sell cycle', () => {
   assert.equal(F.sell(s, 'carrot', 1, 'd1').ok, false);
 });
 test('bonus harvest gives 2', () => {
-  const s = st(); F.plant(s, 0, 'cabbage', 0); const h = F.harvest(s, 0, 3 * F.MIN, () => 0); assert.equal(h.n, 2); assert.equal(s.farm.barn.cabbage, 2);
+  const s = st(); F.plant(s, 0, 'cabbage', 0); const h = F.harvest(s, 0, F.find('cabbage').grow, () => 0); assert.equal(h.n, 2); assert.equal(s.farm.barn.cabbage, 2);
 });
 test('cannot plant without coins, on busy or locked plots, or unknown seed', () => {
   const s = st({ coins: 5 }); assert.equal(F.plant(s, 0, 'cabbage', 0).ok, false); assert.equal(s.coins, 5);
@@ -38,7 +38,7 @@ test('watering cuts 20% once per plant and not when ripe', () => {
   const s = st(), t0 = 0; F.plant(s, 0, 'corn', t0);
   assert.equal(F.water(s, 0, t0).ok, true); assert.equal(F.water(s, 0, t0).ok, false);
   assert.equal(F.plotInfo(s.farm.plots[0], t0).left, F.find('corn').grow * 0.8);
-  F.plant(s, 1, 'cabbage', t0); assert.equal(F.water(s, 1, t0 + 4 * F.MIN).ok, false);
+  F.plant(s, 1, 'cabbage', t0); assert.equal(F.water(s, 1, t0 + F.find('cabbage').grow).ok, false);
 });
 test('clock set backwards never breaks (progress clamps, no negative time)', () => {
   const s = st(); F.plant(s, 0, 'pumpkin', 5e9); const i = F.plotInfo(s.farm.plots[0], 1e9);
@@ -93,4 +93,10 @@ test('cooldown after breeding keeps both parents resting', () => {
 test('collect survives a deleted parent', () => {
   const s = st({ pets: [adult('a', { species: 4, color: 4 }), adult('b')] }); F.startBreed(s, 'a', 'b', 0); s.pets = s.pets.filter(p => p.id === 'a');
   assert.equal(F.collect(s, F.BREED_MS, () => 0.5).ok, true);
+});
+test('balance: profit per plot-hour never rises with longer crops (short crops cannot beat long ones just by being tended often) and stays modest', () => {
+  const perHour = c => (c.sell - c.seed) / (c.grow / F.HOUR);
+  for (let i = 1; i < F.crops.length; i++) assert.ok(perHour(F.crops[i]) <= perHour(F.crops[i - 1]) + 1e-9, F.crops[i].id);
+  assert.ok(perHour(F.crops[0]) <= 40, 'cây ngắn nhất không quá 40 xu/giờ/thửa: ' + perHour(F.crops[0]));
+  assert.ok(F.crops[0].grow >= 5 * F.MIN, 'cây ngắn nhất không dưới 5 phút (không bắt người chơi canh từng phút)');
 });

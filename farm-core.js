@@ -2,17 +2,10 @@
    và phối giống 2 thú để ra trứng. Pure: truyền thời gian `at` (ms) và rnd() để test. */
 const Farm=(()=>{
  const MIN=6e4,HOUR=36e5;
- /* lãi ~+40–75% vốn; cây càng lâu càng lãi nhiều, nhưng trồng ngắn thì phải quay lại thường xuyên */
- const crops=[
-  {id:'cabbage',icon:'🥬',name:'Cải xanh',seed:8,grow:3*MIN,sell:12},
-  {id:'carrot',icon:'🥕',name:'Cà rốt',seed:15,grow:10*MIN,sell:23},
-  {id:'strawberry',icon:'🍓',name:'Dâu tây',seed:30,grow:30*MIN,sell:48},
-  {id:'corn',icon:'🌽',name:'Bắp ngô',seed:50,grow:HOUR,sell:82},
-  {id:'melon',icon:'🍉',name:'Dưa hấu',seed:120,grow:4*HOUR,sell:185},
-  {id:'pumpkin',icon:'🎃',name:'Bí ngô',seed:200,grow:10*HOUR,sell:300}];
- const START_PLOTS=3,PLOT_COSTS=[150,300,600],MAX_PLOTS=START_PLOTS+PLOT_COSTS.length;
- const WATER_CUT=.2,BONUS_CHANCE=.15,BARN_CAP=40;
- const BREED_COST=80,BREED_MS=20*MIN,BREED_COOLDOWN=3*HOUR,MIN_XP=25,MIN_CARE=40,MUTATION=.1,COLOR_MUT=.12;
+ const crops=EcoData.farm.crops;
+ const E=EcoData.farm,START_PLOTS=E.startPlots,PLOT_COSTS=E.plotCosts,MAX_PLOTS=START_PLOTS+PLOT_COSTS.length;
+ const WATER_CUT=E.waterCut,BONUS_CHANCE=E.bonusChance,BARN_CAP=E.barnCap;
+ const BREED_COST=E.breedCost,BREED_MS=E.breedMs,BREED_COOLDOWN=E.breedCooldown,MIN_XP=E.minXp,MIN_CARE=E.minCare,MUTATION=E.mutation,COLOR_MUT=E.colorMutation;
  const find=id=>crops.find(c=>c.id===id);
  const num=(v,d=0)=>Number.isFinite(v)?v:d;
  function normalize(s){

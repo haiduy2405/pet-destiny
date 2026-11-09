@@ -3,7 +3,7 @@
 // Mọi con số lấy thẳng từ *-core.js (không có bản sao), người chơi giả định "chăm" và chơi tốt.
 const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..');
-const load = (files, names) => new Function(files.map(f => fs.readFileSync(path.join(root, f), 'utf8')).join('\n;\n') + '\n;return {' + names.join(',') + '};')();
+const load = (files, names) => new Function(['economy-data.js', ...files].map(f => fs.readFileSync(path.join(root, f), 'utf8')).join('\n;\n') + '\n;return {' + names.join(',') + '};')();
 const { Balance: B } = load(['balance-core.js'], ['Balance']);
 const { Farm: F } = load(['farm-core.js'], ['Farm']);
 const { Fishing: X } = load(['fishing-core.js'], ['Fishing']);
@@ -18,7 +18,7 @@ console.log(`  10 game khác nhau (1 lượt mỗi game, mức Dễ) ≈ ${top10
 
 console.log('\n== 2. Nông trại: lãi/giờ trồng 1 thửa (giá chợ trung bình, đã trừ hạt) ==');
 for (const c of F.crops) { const h = c.grow / F.HOUR; console.log(`  ${pad(c.name, 10)} lãi ${pad(c.sell - c.seed, 4)} / ${pad(num(h, 2) + 'h', 7)} → ${num((c.sell - c.seed) / h, 1)} xu/giờ/thửa (cần quay lại đúng lúc)`); }
-console.log(`  ${F.MAX_PLOTS} thửa: loại 10 giờ chỉ ≈ ${F.MAX_PLOTS * (F.crops.at(-1).sell - F.crops.at(-1).seed)} xu/ngày; cải xanh 3 phút lãi/giờ cao nhất nhưng đòi người chơi quay lại liên tục (kiểm tra có đáng không).`);
+console.log(`  ${F.MAX_PLOTS} thửa: loại 10 giờ chỉ ≈ ${F.MAX_PLOTS * (F.crops.at(-1).sell - F.crops.at(-1).seed)} xu/ngày; cây ngắn lãi/giờ cao nhất (≤ 40) nhưng đòi quay lại liên tục.`);
 
 console.log('\n== 3. Câu cá: lãi 1 vé (6 lượt) theo tay nghề giả lập & cần ==');
 function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
