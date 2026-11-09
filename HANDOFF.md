@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v40)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v41)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Sau đó trình bày cho tôi 7 hướng phát triển ở mục "Gợi ý" (có chỉnh theo thực tế hiện tại, kèm công sức/tác động), rồi chờ tôi chọn trước khi làm. Trả lời tiếng Việt, ngắn gọn, TL;DR trước.
@@ -33,6 +33,7 @@ Nhãn phiên bản `vNN` nằm ở tiêu đề trang (index.html). **Mỗi lần
 - Đếm đom đóm: phải đếm đúng 5 lần mới nhận xu; sai mất 1 lần đúng và đổi đàn mới.
 - **Hộp quà may mắn** (lucky-core.js + lucky.js, thẻ đầu tab Kiếm xu): vé 60 xu, 1 lượt miễn phí/ngày, tối đa 8 vé mua/ngày, pity 7 hộp, kỳ vọng ~88% giá vé (mô phỏng trong test). Chỉ xu trong game.
 - **Nông trại (v40)**: `farm-core.js` + `farm.js`, tab thứ 5 🌾. 6 loại cây (cải 3 phút → bí ngô 10 giờ, lãi ~+40–90%), 3 thửa đất đầu + mở thêm 3 (150/300/600), tưới −20% thời gian, 15% thu hoạch gấp đôi, kho tối đa 40/loại, giá chợ đổi mỗi ngày 0.85–1.25 (xác định theo ngày). Thời gian dùng đồng hồ thiết bị (state.farm). Phối giống: 80 xu, 20 phút, thú ≥25 XP và chỉ số chăm sóc TB ≥40, nghỉ 3 giờ; trứng loài/màu của bố hoặc mẹ, 10% đột biến loài, 12% màu lạ, vào `state.eggs` với `bred:true`.
+- **Âm thanh (v41)**: `sfx-core.js` (công thức tiếng, tần số nốt, phân loại phản hồi, giới hạn tần suất) + `sfx.js` (engine WebAudio tổng hợp, không file). Thay `sound()`/`musicPlay()`; mặc định BẬT (khóa `pet-destiny-sound`=`off` thì tắt). Phím tên nốt (`data-note-answer`, `data-ear-note`) kêu như đàn; đáp án đúng/sai tự có tiếng nhờ đọc `[role=status]`/`*Feedback`; xu tăng/giảm → ding/spend; chuyển tab, lật thẻ, nhịp trống. Muốn thêm tiếng mới: thêm vào `Sfx.recipes` + `Sfx.gaps` rồi gọi `sfxPlay(tên)`. Có thể thay bằng thư viện mẫu âm thật (Howler + file ogg) nếu muốn chất lượng cao hơn.
 - Khi thêm game mới: thêm id vào `Balance.base` theo công sức, gọi `Balance.pay` TRƯỚC `recordEvent`.
 
 ## Đã làm trong session trước

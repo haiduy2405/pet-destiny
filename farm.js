@@ -70,19 +70,19 @@ function fmBindPlots(f){
   q('[data-sow]').forEach(b=>b.onclick=()=>{fmSeedFor=Number(b.dataset.sow);renderFarm();$('view').querySelector('.fm-seeds')?.scrollIntoView({block:'nearest',behavior:'smooth'})});
   q('[data-seed]').forEach(b=>b.onclick=()=>{
     const i=fmSeedFor,id=b.dataset.seed;fmSeedFor=null;
-    const r=fmDo(()=>Farm.plant(state,i,id,now()));if(r&&r.ok){try{sound('pet')}catch{}notice(`Đã gieo ${Farm.find(id).icon} ${Farm.find(id).name}. Quay lại sau ${fmMin(Farm.find(id).grow)} nhé!`)}renderFarm();
+    const r=fmDo(()=>Farm.plant(state,i,id,now()));if(r&&r.ok){sfxPlay('plant');notice(`Đã gieo ${Farm.find(id).icon} ${Farm.find(id).name}. Quay lại sau ${fmMin(Farm.find(id).grow)} nhé!`)}renderFarm();
   });
   const cancel=$('fmCancel');if(cancel)cancel.onclick=()=>{fmSeedFor=null;renderFarm()};
-  q('[data-water]').forEach(b=>b.onclick=()=>{fmDo(()=>Farm.water(state,Number(b.dataset.water),now()));renderFarm()});
+  q('[data-water]').forEach(b=>b.onclick=()=>{const r=fmDo(()=>Farm.water(state,Number(b.dataset.water),now()));if(r&&r.ok)sfxPlay('water');renderFarm()});
   q('[data-harvest]').forEach(b=>b.onclick=()=>fmHarvest([Number(b.dataset.harvest)]));
   const all=$('harvestAll');if(all)all.onclick=()=>fmHarvest(f.plots.map((p,i)=>Farm.plotInfo(p,now()).state==='ripe'?i:-1).filter(i=>i>=0));
-  const bp=$view('[data-buyplot]');if(bp)bp.onclick=()=>{const r=fmDo(()=>Farm.buyPlot(state));if(r&&r.ok){try{sound('reward')}catch{}notice('🌾 Đã mở thêm một thửa đất!')}renderFarm()};
+  const bp=$view('[data-buyplot]');if(bp)bp.onclick=()=>{const r=fmDo(()=>Farm.buyPlot(state));if(r&&r.ok){sfxPlay('win');notice('🌾 Đã mở thêm một thửa đất!')}renderFarm()};
 }
 const $view=s=>$('view').querySelector(s);
 function fmHarvest(list){
   let got={},bonus=0,err='';
   const r=fmDo(()=>{for(const i of list){const h=Farm.harvest(state,i,now());if(h.ok){got[h.crop]=(got[h.crop]||0)+h.n;if(h.bonus)bonus++}else if(!err)err=h.message}return Object.keys(got).length?{ok:true}:{ok:false,message:err}});
-  if(r&&r.ok){try{sound('pet')}catch{}notice('Thu hoạch: '+Object.entries(got).map(([k,n])=>`${Farm.find(k).icon}×${n}`).join(' ')+(bonus?' · 🎉 Được mùa!':''));}
+  if(r&&r.ok){sfxPlay('harvest');notice('Thu hoạch: '+Object.entries(got).map(([k,n])=>`${Farm.find(k).icon}×${n}`).join(' ')+(bonus?' · 🎉 Được mùa!':''));}
   renderFarm();
 }
 /* ---------- chợ & kho ---------- */
@@ -98,11 +98,11 @@ function fmMarket(f){
 function fmBindMarket(){
   $('view').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{
     const r=fmDo(()=>Farm.sell(state,b.dataset.sell,b.dataset.n==='all'?'all':1,day()));
-    if(r&&r.ok){try{sound('reward')}catch{}notice(`Đã bán · +${r.coins} xu`)}renderFarm();
+    if(r&&r.ok)notice(`Đã bán · +${r.coins} xu`);renderFarm();
   });
   const all=$('sellAll');if(all)all.onclick=()=>{
     let sum=0;const r=fmDo(()=>{for(const c of Farm.crops){if((fmF().barn[c.id]||0)>0){const x=Farm.sell(state,c.id,'all',day());if(x.ok)sum+=x.coins}}return sum?{ok:true}:{ok:false,message:'Kho trống.'}});
-    if(r&&r.ok){try{sound('reward')}catch{}notice(`Đã bán hết · +${sum} xu`)}renderFarm();
+    if(r&&r.ok)notice(`Đã bán hết · +${sum} xu`);renderFarm();
   };
 }
 /* ---------- phối giống ---------- */
@@ -137,11 +137,11 @@ function fmBindBreed(f){
   });
   const go=$('fmBreed');if(go)go.onclick=()=>{
     const r=fmDo(()=>Farm.startBreed(state,fmPickA,fmPickB,now()));
-    if(r&&r.ok){fmPickA=fmPickB=null;try{sound('pet')}catch{}notice('💞 Đã bắt đầu phối giống. Quay lại sau nhé!')}renderFarm();
+    if(r&&r.ok){fmPickA=fmPickB=null;sfxPlay('pet');notice('💞 Đã bắt đầu phối giống. Quay lại sau nhé!')}renderFarm();
   };
   const col=$('fmCollect');if(col)col.onclick=()=>{
     const r=fmDo(()=>Farm.collect(state,now(),Math.random,()=>crypto.randomUUID()));
-    if(r&&r.ok){fmReveal=r;try{sound('reward');burst('🥚')}catch{}}renderFarm();
+    if(r&&r.ok){fmReveal=r;sfxPlay('egg');try{burst('🥚')}catch{}}renderFarm();
   };
   const ok=$('fmRevealOk');if(ok)ok.onclick=()=>{fmReveal=null;renderFarm()};
 }

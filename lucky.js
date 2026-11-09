@@ -49,14 +49,14 @@ function luckyOpenNow(){
   if(!res.ok){state=backup;notice(res.message);drawLucky();return}
   if(res.item)DollHouse.normalize(state).owned.push(res.item);
   if(!save()){state=backup;notice('Chưa lưu được, hộp quà bị hủy.');drawLucky();return}
-  luckyBusy=true;
+  luckyBusy=true;sfxPlay('shake');
   const stage=luckyDialog.querySelector('.lucky-stage');
   if(stage)stage.innerHTML=`<div class="lucky-icon box shake" aria-hidden="true">🎁</div><small>Đang mở...</small>`;
   luckyDialog.querySelector('#luckyGo').disabled=true;
   setTimeout(()=>{
     luckyBusy=false;
     if(activeSlot!==slot||!luckyDialog.open)return;
-    luckyReveal=res;try{sound('pet')}catch{}
+    luckyReveal=res;sfxPlay(res.prize.rarity==='epic'?'reveal_epic':res.prize.rarity==='rare'?'reveal_rare':'good');
     if($('coins'))$('coins').textContent=state.coins;
     drawLucky();
     render();
