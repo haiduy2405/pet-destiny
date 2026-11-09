@@ -197,3 +197,27 @@ body[data-page=dollhouse] .hero{display:none}body[data-page=dollhouse] #view{pad
 .dh-confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}.dh-confetti i{position:absolute;top:-10%;font-style:normal;font-size:24px;animation:dhFall 3.2s linear infinite}
 @keyframes dhFall{to{transform:translateY(115vh) rotate(360deg)}}
 .dh-scene{position:sticky;top:6px;z-index:50}
+/* v37: backup panel, pet visits, room photo */
+.bk-panel{margin:16px 0 6px;padding:14px 16px;border-radius:16px;background:#f1f4e8;border:1px solid #dfe5d2}
+.bk-panel h3{margin:0 0 6px;font-size:16px}
+.bk-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.bk-actions button{flex:1 1 140px;min-height:44px}
+.bk-warn{margin:8px 0;padding:8px 10px;border-radius:10px;background:#fff1cf;color:#6b4b00;font-size:13px;line-height:1.5}
+.bk-list{display:grid;gap:10px;margin:12px 0}.bk-item{display:grid;gap:8px;padding:12px;border-radius:14px;background:#f5f4ea}.bk-item p{margin:4px 0}.bk-item select{display:block;width:100%;font:inherit;padding:10px;border-radius:10px;border:1px solid #cdd5c2;margin-top:4px;min-height:44px;background:#fff}
+.dh-acts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}.dh-acts button{flex:1 1 140px;min-height:44px}
+.dh-pet.free{right:auto;bottom:auto;left:calc(var(--px)*1% - 132px);top:calc(var(--py)*1% - 176px);transition:left 1.2s ease-in-out,top 1.2s ease-in-out}
+.dh-pet.face-left .pet-art>.sprite{transform:scaleX(-1) scale(var(--growth,1))}
+.dh-pet.pose-sit .pet-art,.dh-pet.pose-admire .pet-art{animation:dhSit 2.6s ease-in-out infinite}
+.dh-pet.pose-sleep .pet-art{animation:none;transform:rotate(-80deg) translate(6px,-18px)}
+.dh-pet.pose-eat .pet-art,.dh-pet.pose-sniff .pet-art{animation:dhNibble .6s ease-in-out infinite}
+.dh-pet.pose-play .pet-art{animation:dhHop .6s ease-out infinite}
+.dh-pet.pose-watch .pet-art{animation:dhSway 3s ease-in-out infinite}
+.dh-pet.pose-music .pet-art{animation:dhSway 1.1s ease-in-out infinite}
+.dh-pet.pose-bath .pet-art{animation:dhWiggle .5s linear infinite}
+@keyframes dhSit{50%{transform:translateY(6px) scaleY(.94)}}
+@keyframes dhNibble{50%{transform:translateY(8px) rotate(4deg)}}
+@keyframes dhSway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+@keyframes dhWiggle{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.dh-fx{position:absolute;right:0;top:-6px;font-size:64px;line-height:1;animation:dhFloat 1.8s ease-in-out infinite}
+@keyframes dhFloat{0%{opacity:0;transform:translateY(14px)}30%{opacity:1}100%{opacity:0;transform:translateY(-34px)}}
+.dh-shot img{display:block;width:100%;height:auto;border-radius:12px;margin:10px 0}
+@media (prefers-reduced-motion:reduce){.dh-pet.free{transition:none}.dh-pet .pet-art,.dh-fx{animation:none!important}}

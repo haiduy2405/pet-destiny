@@ -49,5 +49,12 @@ const DollHouse=(()=>{
  function pride(s){const b=builtRooms(s),stars=b.reduce((a,r)=>a+rate(s,r.id).stars,0);return {stars,max:b.length*3,rooms:b.length}}
  function partyReady(s){const b=builtRooms(s);return b.length>=3&&b.every(r=>rate(s,r.id).stars>=2)}
  function party(s){const d=normalize(s);if(!partyReady(s))return {ok:false};d.party++;let coins=0;if(!d.claimed.party){d.claimed.party=true;coins=PARTY_COINS;s.coins+=coins}return {ok:true,coins}}
- return {cats,items,walls,floors,rooms,roofs,find,room,normalize,buy,build,setStyle,place,update,remove,rate,claim,pride,partyReady,party,builtRooms,STAR_COINS,PARTY_COINS,MAX_OBJ};
+ /* The pet visits furniture: what it does there, where it stands, and what it visits next. */
+ const POSES=['sit','sleep','eat','play','watch','music','bath','sniff','admire'];
+ const catPose={furn:['sit','💖'],kitchen:['eat','😋'],bath:['bath','🫧'],toy:['play','🎉'],plant:['sniff','🌸'],wall:['admire','✨'],cute:['play','🌟']};
+ const idPose={bed:['sleep','💤'],tent:['sleep','💤'],sofa:['sit','💖'],chair:['sit','💖'],fire:['sit','🔥'],books:['sit','📖'],tv:['watch','📺'],radio:['music','🎵'],piano:['music','🎵'],guitar:['music','🎵'],lamp:['admire','💡'],mirror:['admire','✨'],door:['admire','👋'],window:['admire','☀️'],vase:['sniff','🌸'],train:['play','🚂'],paint:['play','🎨'],fountain:['play','💦'],robot:['play','🤖'],kite:['play','🪁']};
+ function reaction(id){const x=find(id);if(!x)return null;const [pose,fx]=idPose[id]||catPose[x.cat];return {pose,fx,line:x.line}}
+ function petSpot(obj,pose){const side=pose==='sit'||pose==='sleep'?0:6,lift=pose==='sleep'?3:pose==='sit'?0:-2;return {x:clamp(obj.x+side,13,87,50),y:clamp(obj.y+lift,36,98,70)}}
+ function pickTarget(objs,lastU,rnd=Math.random){const list=(Array.isArray(objs)?objs:[]).filter(o=>find(o.id)),pool=list.filter(o=>o.u!==lastU),from=pool.length?pool:list;return from.length?from[Math.min(from.length-1,Math.floor(rnd()*from.length))]:null}
+ return {cats,items,walls,floors,rooms,roofs,find,room,normalize,buy,build,setStyle,place,update,remove,rate,claim,pride,partyReady,party,builtRooms,reaction,petSpot,pickTarget,POSES,STAR_COINS,PARTY_COINS,MAX_OBJ};
 })();

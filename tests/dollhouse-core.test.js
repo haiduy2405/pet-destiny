@@ -127,3 +127,31 @@ test('house-warming party needs 3 built rooms, each with 2+ stars, and pays once
   assert.equal(D.normalize(s).party, 2);
   assert.deepEqual(D.pride(s), { stars: 6, max: 9, rooms: 3 });
 });
+
+test('every furniture item has a pet reaction with a known pose, an effect and a line', () => {
+  for (const x of D.items) {
+    const r = D.reaction(x.id);
+    assert.ok(D.POSES.includes(r.pose), x.id + ' pose ' + r.pose);
+    assert.ok(r.fx && r.line, x.id);
+  }
+  assert.equal(D.reaction('bed').pose, 'sleep');
+  assert.equal(D.reaction('sofa').pose, 'sit');
+  assert.equal(D.reaction('cake').pose, 'eat', 'falls back to the category default');
+  assert.equal(D.reaction('nope'), null);
+});
+
+test('petSpot keeps the pet fully inside the room, whatever the furniture position', () => {
+  for (const pose of D.POSES) for (const x of [2, 50, 98]) for (const y of [8, 60, 98]) {
+    const p = D.petSpot({ x, y }, pose);
+    assert.ok(p.x >= 13 && p.x <= 87 && p.y >= 36 && p.y <= 98, `${pose} ${x},${y} -> ${p.x},${p.y}`);
+  }
+  assert.ok(D.petSpot({ x: 50, y: 70 }, 'sleep').y > D.petSpot({ x: 50, y: 70 }, 'eat').y, 'sleeping pet lies on the bed, others stand in front');
+});
+
+test('pickTarget avoids the previous item when it can, and copes with empty rooms', () => {
+  const objs = [{ u: 1, id: 'sofa' }, { u: 2, id: 'bed' }, { u: 3, id: 'ghost' }];
+  for (const r of [0, .3, .5, .99, 1]) assert.equal(D.pickTarget(objs, 1, () => r).u, 2, 'ghost items are ignored, last visit is skipped');
+  assert.equal(D.pickTarget([{ u: 1, id: 'sofa' }], 1).u, 1, 'a single item is revisited');
+  assert.equal(D.pickTarget([], null), null);
+  assert.equal(D.pickTarget(undefined, null), null);
+});
