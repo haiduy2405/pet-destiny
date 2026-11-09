@@ -8,7 +8,10 @@ const DollPhotoCore=(()=>{
   stripe:{k:'stripes',dir:'v',a:'#ffe3ec',b:'#fff7fa',pa:18,pb:18},
   dots:{k:'dots',bg:'#fff6d9',c:'#ffd166',step:26,r:.155},
   stars:{k:'dots',bg:'#2f3a78',c:'#ffffff',step:34,r:.06},
-  brick:{k:'stripes',dir:'h',a:'#c8765a',b:'#e9d3c4',pa:14,pb:2,fromEnd:true}};
+  brick:{k:'stripes',dir:'h',a:'#c8765a',b:'#e9d3c4',pa:14,pb:2,fromEnd:true},
+  peachwall:{k:'dots',bg:'#ffe9ee',c:'#ff9eb5',step:30,r:.099},
+  moonwall:{k:'dots',bg:'#26306a',c:'#ffe08a',step:32,r:.057},
+  snowwall:{k:'dots',bg:'#8fb8e8',c:'#ffffff',step:28,r:.085}};
  const floors={wood:{k:'stripes',dir:'v',a:'#d9a566',b:'#c98f52',pa:38,pb:2},
   tile:{k:'checker',a:'#ffffff',b:'#d7e4ea',size:48},
   carpet:S('#d9605e'),pinkrug:S('#f3a6c3'),blue:S('#8fc1e8'),

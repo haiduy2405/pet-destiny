@@ -46,10 +46,10 @@ function dhOverview(d){
   $('view').innerHTML=`<section class="dh"><div class="eyebrow">NGÔI NHÀ CỦA EM</div>
   <input class="dh-name" id="dhName" maxlength="24" value="${Atelier.escape(d.name)}" placeholder="${Atelier.escape(name)}" aria-label="Tên ngôi nhà">
   <p class="muted">❤️ Độ tự hào: <b>${pr.stars}/${pr.max}</b> sao · ${pr.rooms}/${DollHouse.rooms.length} phòng</p>
-  <div class="dh-house"><div class="dh-roof" style="--roof:${d.roof}"></div><div class="dh-roofs">${DollHouse.roofs.map(c=>`<button class="dh-dot ${c===d.roof?'on':''}" data-roof="${c}" style="background:${c}" aria-label="Màu mái"></button>`).join('')}</div><div class="dh-grid">${cards}</div></div>
+  ${dhSeasonNote()}<div class="dh-house"><div class="dh-roof" style="--roof:${d.roof}"></div><div class="dh-roofs">${DollHouse.roofs.map(c=>`<button class="dh-dot ${c===d.roof?'on':''}" data-roof="${c}" style="background:${c}" aria-label="Màu mái"></button>`).join('')}</div><div class="dh-grid">${cards}</div></div>
   <button id="dhParty" ${ready?'':'disabled'}>🎊 Tổ chức tiệc tân gia${d.party?` (đã tổ chức ${d.party} lần)`:''}</button>
   <p class="muted">${ready?'Nhà đẹp lắm rồi! Mời các bạn thú đến chung vui nhé.':'Mở khóa tiệc: xây ít nhất 3 phòng và mỗi phòng đạt từ ★★.'}</p>
-  <button class="secondary" id="dhEarn">🎮 Chơi game kiếm thêm xu</button></section>`;
+  <button class="secondary" id="dhEarn">🎮 Chơi game kiếm thêm xu</button>${dhGiftTargets().length?'<button class="secondary" id="dhGift">🎁 Tặng đồ cho ô lưu khác</button>':''}</section>`;
   $('dhName').onchange=e=>dhTx(()=>{dhD().name=Atelier.cleanName(e.target.value)});
   document.querySelectorAll('[data-roof]').forEach(b=>b.onclick=()=>{if(dhTx(()=>{dhD().roof=b.dataset.roof}))render()});
   document.querySelectorAll('[data-room]').forEach(b=>b.onclick=()=>{dhRoom=b.dataset.room;dhSel=null;dhTab='mine';render();window.scrollTo(0,0);setTimeout(()=>dhSay(`Chào ${dhWho()}! Hôm nay mình trang trí gì nào?`),200)});
@@ -60,18 +60,20 @@ function dhOverview(d){
     setTimeout(()=>dhSay(`Wow, ${r.name} mới tinh! Mình sẽ giúp ${dhWho()} trang trí nhé!`),200)});
   $('dhParty').onclick=dhPartyStart;
   $('dhEarn').onclick=()=>{current='quests';render();window.scrollTo(0,0)};
+  if($('dhGift'))$('dhGift').onclick=dhGiftOpen;
 }
 function dhEditor(d){
   if(dhPetRoom!==dhRoom){dhPetPos=null;dhLast=null;dhPetRoom=dhRoom}
   const r=DollHouse.room(dhRoom),o=d.rooms[dhRoom],rt=DollHouse.rate(state,dhRoom);
   $('view').innerHTML=`<section class="dh"><div class="dh-top"><button class="secondary" id="dhBack">← Về nhà</button><div><b>${r.icon} ${r.name}</b> <span class="dh-stars">${dhStars(rt.stars)}</span></div></div>
   <div class="dh-scene" id="dhScene"><div class="dh-wall" style="background:${dhBg(DollHouse.walls,o.wall)}"></div><div class="dh-floor" style="background:${dhBg(DollHouse.floors,o.floor)}"></div>${o.objs.map(x=>dhObjHtml(x,false)).join('')}<div class="dh-pet${dhPetPos?' free':''}"${dhPetPos?` style="--px:${dhPetPos.x};--py:${dhPetPos.y}"`:''}>${dhPetArt()}</div><div class="dh-bubble" id="dhBubble" hidden></div></div>
-  <p class="muted dh-need">${rt.need}</p><div class="dh-acts"><button class="secondary" id="dhCall">🐾 Gọi thú đi chơi</button><button class="secondary" id="dhShot">📸 Chụp ảnh phòng</button></div><div id="dhTools"></div>
+  <p class="muted dh-need">${rt.need}</p><div class="dh-acts"><button class="secondary" id="dhCall">🐾 Gọi thú đi chơi</button><button class="secondary" id="dhShot">📸 Chụp ảnh phòng</button>${dhRoom==='kitchen'?'<button id="dhPlay">🍳 Nấu ăn đồ hàng</button>':dhRoom==='garden'?'<button id="dhPlay">🌱 Làm vườn vui</button>':''}</div><div id="dhTools"></div>
   <div class="dh-tabs" role="tablist">${[['mine','🎒 Đồ của em'],['shop','🛒 Mua sắm'],['style','🎨 Tường & sàn']].map(([k,n])=>`<button class="${dhTab===k?'on':'secondary'}" data-dhtab="${k}">${n}</button>`).join('')}</div><div id="dhPanel"></div></section>`;
   $('dhBack').onclick=()=>{dhRoom=null;dhSel=null;render();window.scrollTo(0,0)};
   document.querySelectorAll('[data-dhtab]').forEach(b=>b.onclick=()=>{dhTab=b.dataset.dhtab;dhPanel()});
   dhBindObjects();dhPanel();dhTools();
   $('dhCall').onclick=dhVisitPick;$('dhShot').onclick=dpShoot;dhStartWander();
+  if($('dhPlay'))$('dhPlay').onclick=()=>startMini(dhRoom==='kitchen'?'cook':'garden');
 }
 function dhPanel(){
   const d=dhD(),o=d.rooms[dhRoom],p=$('dhPanel');if(!p)return;
@@ -79,9 +81,9 @@ function dhPanel(){
   if(dhTab==='mine'){
     p.innerHTML=d.owned.length?`<div class="dh-items">${d.owned.map(id=>{const x=DollHouse.find(id);return `<button class="dh-item" data-place="${id}"><span>${x.icon}</span><small>${x.name}</small></button>`}).join('')}</div>`:'<p class="muted">Em chưa có đồ nào. Sang tab “Mua sắm” chọn vài món nhé!</p>';
   }else if(dhTab==='shop'){
-    p.innerHTML=`<div class="dh-cats">${Object.entries(DollHouse.cats).map(([k,n])=>`<button class="${dhCat===k?'on':'secondary'}" data-cat="${k}">${n}</button>`).join('')}</div><div class="dh-items">${DollHouse.items.filter(x=>x.cat===dhCat).map(x=>{const own=d.owned.includes(x.id);return `<button class="dh-item ${own?'own':''}" data-buy="${x.id}"><span>${x.icon}</span><small>${x.name}</small><b>${own?'Đặt thêm':'🪙 '+x.price}</b></button>`}).join('')}</div>`;
+    p.innerHTML=`<div class="dh-cats">${Object.entries(DollHouse.cats).map(([k,n])=>`<button class="${dhCat===k?'on':'secondary'}" data-cat="${k}">${k==='season'&&DollHouse.activeSeasons().length?'✨ '+n:n}</button>`).join('')}</div>${dhCat==='season'?dhSeasonNote(true):''}<div class="dh-items">${DollHouse.items.filter(x=>x.cat===dhCat).map(x=>{const own=d.owned.includes(x.id),off=!own&&!DollHouse.inSeason(x);return `<button class="dh-item ${own?'own':''} ${off?'locked':''}" data-buy="${x.id}"><span>${x.icon}</span><small>${x.name}</small><b>${own?'Đặt thêm':off?'🔒 '+DollHouse.seasonName(x.season):'🪙 '+x.price}</b></button>`}).join('')}</div>`;
   }else{
-    const sw=(kind,list,cur)=>list.map(x=>{const own=x.price===0||d.styles.includes(x.id);return `<button class="dh-sw ${cur===x.id?'on':''}" data-style="${kind}:${x.id}" style="background:${x.bg}" aria-label="${x.name}"><small>${cur===x.id?'✔':own?'':'🪙'+x.price}</small></button>`}).join('');
+    const sw=(kind,list,cur)=>list.map(x=>{const own=x.price===0||d.styles.includes(x.id),off=!own&&!DollHouse.inSeason(x);return `<button class="dh-sw ${cur===x.id?'on':''} ${off?'locked':''}" data-style="${kind}:${x.id}" style="background:${x.bg}" aria-label="${x.name}${x.season?' · '+DollHouse.seasonName(x.season):''}"><small>${cur===x.id?'✔':own?'':off?'🔒':'🪙'+x.price}</small></button>`}).join('');
     p.innerHTML=`<p class="muted">Tường</p><div class="dh-swatches">${sw('wall',DollHouse.walls,o.wall)}</div><p class="muted">Sàn nhà</p><div class="dh-swatches">${sw('floor',DollHouse.floors,o.floor)}</div>`;
   }
   p.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{dhCat=b.dataset.cat;dhPanel()});
@@ -133,6 +135,31 @@ function dhTools(){
     if(dhTx(()=>DollHouse.update(state,dhRoom,u,patch)))dhRefresh(t==='big'?'To hơn nhìn nổi bật hẳn!':t==='small'?'Nhỏ xinh xắn!':'Quay hướng khác nhìn lạ ghê!');
   });
 }
+/* seasons + gifts */
+function dhSeasonNote(full){
+  const a=DollHouse.activeSeasons();
+  if(!a.length)return full?'<p class="dh-season off">Hiện chưa có dịp đặc biệt. Đồ theo mùa sẽ quay lại vào Tết, Trung thu, Giáng sinh...</p>':'';
+  const names=a.map(z=>z.icon+' '+z.name).join(' · ');
+  return `<p class="dh-season">${full?names+' đang diễn ra! Đồ theo mùa chỉ bán trong dịp này, mua rồi là giữ mãi.':'✨ Cửa hàng có đồ theo mùa: '+names}</p>`;
+}
+const dhGiftTargets=()=>slotData.slots.map((s,i)=>s&&i!==activeSlot?{i,name:s.state.saveName||'Game '+(i+1)}:null).filter(Boolean);
+function dhGiftOpen(){
+  if(!save())return;
+  const targets=dhGiftTargets(),d=dhD();
+  if(!targets.length)return;
+  if(!d.owned.length){notice('Em chưa có đồ nào để tặng. Hãy mua vài món trước nhé!');return}
+  const o=dhOverlay(`<div class="dh-cele-card dh-gift"><h2>🎁 Tặng đồ</h2><p class="muted">Món đồ sẽ chuyển sang ô kia và rời khỏi nhà của em. Xu không bị chuyển.</p><label>Món đồ<select id="giftItem">${d.owned.map(id=>{const x=DollHouse.find(id);return `<option value="${id}">${x.icon} ${x.name}</option>`}).join('')}</select></label><label>Tặng cho<select id="giftTo">${targets.map(t=>`<option value="${t.i}">Ô ${t.i+1} · ${Atelier.escape(t.name)}</option>`).join('')}</select></label><div class="actions"><button id="giftGo">Tặng ngay</button><button class="secondary" id="giftNo">Hủy</button></div></div>`,'quiet');
+  o.querySelector('#giftNo').onclick=()=>o.remove();
+  o.querySelector('#giftGo').onclick=()=>{
+    const id=o.querySelector('#giftItem').value,to=Number(o.querySelector('#giftTo').value),x=DollHouse.find(id);
+    const next=SaveStore.copy(slotData),res=DollHouse.gift(next.slots[activeSlot].state,next.slots[to].state,id);
+    if(!res.ok){notice(res.message);return}
+    next.slots[to].updatedAt=now();
+    if(!persistSlots(next))return;
+    state=SaveStore.copy(slotData.slots[activeSlot].state);o.remove();render();sound('reward');burst('🎁');notice(`Đã tặng ${x.icon} ${x.name} cho ô ${to+1}!`);
+  };
+  o.querySelector('#giftItem').focus();
+}
 /* the pet visits furniture: walks over, strikes a pose, says its line */
 const dhReduce=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 function dhClearPose(pet){DollHouse.POSES.forEach(p=>pet.classList.remove('pose-'+p));pet.querySelectorAll('.dh-fx').forEach(e=>e.remove())}
@@ -158,7 +185,7 @@ function dhStartWander(){
   clearInterval(dhWander);if(dhReduce())return;
   dhWander=setInterval(()=>{
     if(!$('dhScene')){clearInterval(dhWander);return}
-    if(document.hidden||dhDrag||dhSel||document.querySelector('.dh-cele'))return;
+    if(document.hidden||dhDrag||dhSel||document.querySelector('.dh-cele,dialog[open]'))return;
     const o=dhD().rooms[dhRoom];if(o&&o.objs.length)dhVisit(DollHouse.pickTarget(o.objs,dhLast));
   },14000);
 }
@@ -170,7 +197,7 @@ const dhPraise=[
 function dhOverlay(html,cls=''){
   document.querySelector('.dh-cele')?.remove();
   const o=document.createElement('div');o.className='dh-cele '+cls;o.setAttribute('role','dialog');o.innerHTML=html;document.body.append(o);
-  const rain=reduce=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;o.insertAdjacentHTML('beforeend','<div class="dh-confetti">'+Array.from({length:26},(_,i)=>`<i style="left:${(i*37)%100}%;animation-delay:${(i%9)*.25}s">${['🎉','⭐','✨','🎊','💖'][i%5]}</i>`).join('')+'</div>')};
+  const rain=()=>{if(cls.includes('quiet')||matchMedia('(prefers-reduced-motion: reduce)').matches)return;o.insertAdjacentHTML('beforeend','<div class="dh-confetti">'+Array.from({length:26},(_,i)=>`<i style="left:${(i*37)%100}%;animation-delay:${(i%9)*.25}s">${['🎉','⭐','✨','🎊','💖'][i%5]}</i>`).join('')+'</div>')};
   rain();return o;
 }
 function dhCelebrate(rid,awards){

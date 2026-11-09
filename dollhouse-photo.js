@@ -56,7 +56,7 @@ async function dpShoot(){
   const blob=await new Promise(ok=>canvas.toBlob(ok,'image/png'));
   if(!blob){notice('Chưa chụp được ảnh. Thử lại nhé.');return}
   const url=URL.createObjectURL(blob),name=DollPhotoCore.fileName(rid,day()),canShare=(()=>{try{return !!navigator.canShare&&navigator.canShare({files:[new File([blob],name,{type:'image/png'})]})}catch{return false}})();
-  const o=dhOverlay(`<div class="dh-cele-card dh-shot"><h2>📸 Ảnh phòng của bạn</h2><img src="${url}" alt="Ảnh căn phòng ${Atelier.escape(DollHouse.room(rid).name)}"><div class="actions"><button id="dpSave">⬇ Lưu ảnh</button>${canShare?'<button class="secondary" id="dpShare">📤 Chia sẻ</button>':''}<button class="secondary" id="dpClose">Đóng</button></div></div>`);
+  const o=dhOverlay(`<div class="dh-cele-card dh-shot"><h2>📸 Ảnh phòng của bạn</h2><img src="${url}" alt="Ảnh căn phòng ${Atelier.escape(DollHouse.room(rid).name)}"><div class="actions"><button id="dpSave">⬇ Lưu ảnh</button>${canShare?'<button class="secondary" id="dpShare">📤 Chia sẻ</button>':''}<button class="secondary" id="dpClose">Đóng</button></div></div>`,'quiet');
   const close=()=>{o.remove();URL.revokeObjectURL(url)};
   o.querySelector('#dpClose').onclick=close;
   o.querySelector('#dpSave').onclick=()=>{bkSaveBlob(blob,name);notice('Đã lưu ảnh '+name)};

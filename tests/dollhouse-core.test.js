@@ -155,3 +155,67 @@ test('pickTarget avoids the previous item when it can, and copes with empty room
   assert.equal(D.pickTarget([], null), null);
   assert.equal(D.pickTarget(undefined, null), null);
 });
+
+const day = (m, d, y = 2026) => new Date(y, m - 1, d, 12);
+
+test('seasons: windows are valid, ordered and activeSeasons follows the date', () => {
+  for (const z of D.seasons) assert.ok(z.from[0] * 100 + z.from[1] <= z.to[0] * 100 + z.to[1], z.id + ' must not wrap the year');
+  const ids = at => D.activeSeasons(at).map(z => z.id);
+  assert.deepEqual(ids(day(11, 9)), ['teacher']);
+  assert.deepEqual(ids(day(12, 25)), ['xmas']);
+  assert.deepEqual(ids(day(1, 20)), ['tet']);
+  assert.deepEqual(ids(day(6, 2)).sort(), ['kids', 'summer']);
+  assert.deepEqual(ids(day(4, 1)), []);
+  assert.deepEqual(ids(day(11, 25)), ['teacher']);
+  assert.deepEqual(ids(day(11, 26)), []);
+  assert.deepEqual(ids(day(8, 31)).sort(), ['moon', 'summer']);
+});
+
+test('every seasonal item and wall belongs to a real season, and every season has stock', () => {
+  const sid = new Set(D.seasons.map(z => z.id));
+  for (const x of D.items.filter(i => i.cat === 'season')) assert.ok(sid.has(x.season), x.id);
+  assert.ok(D.items.filter(i => i.season).every(i => i.cat === 'season'));
+  for (const z of D.seasons) assert.ok(D.items.some(i => i.season === z.id), z.id + ' has no items');
+  for (const w of D.walls.filter(w => w.season)) assert.ok(sid.has(w.season), w.id);
+});
+
+test('seasonal items can only be bought in season, but stay usable forever once owned', () => {
+  const s = fresh();
+  const off = D.buy(s, 'xtree', day(7, 10));
+  assert.equal(off.ok, false); assert.match(off.message, /Giáng sinh/); assert.equal(s.coins, 1000);
+  assert.equal(D.buy(s, 'xtree', day(12, 5)).paid, 50); assert.equal(s.coins, 950);
+  assert.ok(D.place(s, 'living', 'xtree'), 'owned seasonal item is placeable out of season');
+  assert.deepEqual(D.buy(s, 'xtree', day(7, 10)), { ok: true, paid: 0 }, 're-buying an owned item is free');
+  assert.equal(D.buy(s, 'sofa', day(7, 10)).ok, true, 'regular items are never seasonal');
+});
+
+test('seasonal walls follow the same rule and are kept once bought', () => {
+  const s = fresh();
+  assert.equal(D.setStyle(s, 'living', 'wall', 'snowwall', day(7, 10)).ok, false);
+  assert.equal(D.setStyle(s, 'living', 'wall', 'snowwall', day(12, 5)).paid, 25);
+  D.setStyle(s, 'living', 'wall', 'cream');
+  const again = D.setStyle(s, 'living', 'wall', 'snowwall', day(7, 10));
+  assert.deepEqual([again.ok, again.paid], [true, 0]);
+});
+
+test('gift moves an item between saves without ever duplicating it', () => {
+  const a = fresh(), b = fresh();
+  fill(a, 'living', ['sofa', 'tv']); a.coins = 7;
+  const r = D.gift(a, b, 'sofa');
+  assert.equal(r.ok, true);
+  assert.ok(!a.dollhouse.owned.includes('sofa') && b.dollhouse.owned.includes('sofa'));
+  assert.deepEqual(a.dollhouse.rooms.living.objs.map(o => o.id), ['tv'], 'placed copies leave the giver');
+  assert.deepEqual([a.coins, b.coins], [7, 1000], 'coins never move');
+  const owned = D.normalize(a).owned.length + D.normalize(b).owned.length;
+  assert.equal(owned, 2);
+  assert.equal(D.gift(a, b, 'sofa').ok, false, 'giver no longer owns it');
+  assert.equal(D.gift(b, a, 'sofa').ok, true, 'it can be given back');
+});
+
+test('gift refuses bad requests and changes nothing', () => {
+  const a = fresh(), b = fresh(); fill(a, 'living', ['sofa']); fill(b, 'living', ['sofa']);
+  const snap = JSON.stringify([a, b]);
+  for (const args of [[a, b, 'sofa'], [a, a, 'sofa'], [a, b, 'ghost'], [a, b, 'tv'], [null, b, 'sofa'], [a, undefined, 'sofa']])
+    assert.equal(D.gift(...args).ok, false, JSON.stringify(args.map(x => x && typeof x)));
+  assert.equal(JSON.stringify([a, b]), snap);
+});
