@@ -3,8 +3,12 @@
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Sau đó trình bày cho tôi 7 hướng phát triển ở mục "Gợi ý" (có chỉnh theo thực tế hiện tại, kèm công sức/tác động), rồi chờ tôi chọn trước khi làm. Trả lời tiếng Việt, ngắn gọn, TL;DR trước.
 
+## Nguyên tắc sản phẩm (chủ dự án đã chốt — áp dụng cho mọi thay đổi)
+- **Đối tượng: từ 6 tuổi trở lên đến người lớn, không giới hạn tuổi.** Không phải game chỉ dành cho bé. Khi cân bằng nội dung, độ khó, giọng văn, hình thức và thưởng, phải nghĩ cho cả khoảng tuổi này: có mức dễ cho người mới/6 tuổi nhưng không "trẻ con hóa" quá đà, và có thử thách đủ cho người lớn (độ khó tăng dần, nội dung đa dạng). Giao diện và lời thoại nên thân thiện nhưng không áp đặt "bé ơi".
+- **Giữ miễn phí**: không dùng dịch vụ có chi phí (không backend/đăng nhập email trả phí). Lưu cục bộ + file sao lưu + PWA là giải pháp đã chọn.
+
 ## Dự án
-Web game nuôi thú + học tập cho trẻ (Toán, Âm nhạc, Tiếng Anh, Tiếng Việt). Tĩnh, không build, không framework. Chạy tại https://haiduy2405.github.io/pet-destiny/ (push `main` là tự deploy, ~1–2 phút). Lưu game trong localStorage (`pet-destiny-slots-v1`, 4 ô). Cài được như app (PWA, chạy offline).
+Web game nuôi thú + học tập (Toán, Âm nhạc, Tiếng Anh, Tiếng Việt). Tĩnh, không build, không framework. Chạy tại https://haiduy2405.github.io/pet-destiny/ (push `main` là tự deploy, ~1–2 phút). Lưu game trong localStorage (`pet-destiny-slots-v1`, 4 ô). Cài được như app (PWA, chạy offline).
 Nhãn phiên bản `vNN` nằm ở tiêu đề trang (index.html). **Mỗi lần phát hành: tăng `?v=` của file đã sửa, nhãn vNN, và `VERSION` trong `sw.js`** (test `tests/pwa.test.js` bắt nếu lệch nhãn, thiếu file trong `ASSETS` của sw.js, hoặc script thiếu `?v=`). File mới (js/css/ảnh) phải thêm vào `ASSETS` trong sw.js.
 
 ## Kiến trúc (quan trọng)
@@ -44,7 +48,7 @@ Xuất/nhập file lưu (+ nhắc sao lưu), PWA cài app + offline, thú ghé t
 - localStorage là nơi duy nhất lưu game: **chưa có xuất/nhập file lưu** → mất dữ liệu nếu xóa dữ liệu trình duyệt.
 - Kiến trúc bọc chồng khó đoán; CSS còn dư (shared-enclosure, pen-board...); thưởng nằm rải rác (rewards.js chỉ đè bảng).
 - Nội dung học (từ vựng, chính tả, tục ngữ) do AI soạn, cần người lớn rà soát. Nhận diện giọng nói chỉ tốt trên Chrome Android.
-- Đồ theo mùa chưa có dữ liệu chơi thật về giá; các dịp ngoài mùa hiện bị khóa nên bé chỉ thấy món khóa trong tab "Theo mùa".
+- Đồ theo mùa chưa có dữ liệu chơi thật về giá; các dịp ngoài mùa hiện bị khóa nên người chơi chỉ thấy món khóa trong tab "Theo mùa".
 - Chưa test trên điện thoại thật: kéo thả đồ trong nhà, micro, animation tiến hóa, **tải/chia sẻ file sao lưu, cài PWA, lưu ảnh phòng** (Safari có thể không áp màu thú trong ảnh vì thiếu `ctx.filter`); thang thưởng/giá chưa có dữ liệu chơi thật.
 - Thu nhập thụ động dựa đồng hồ thiết bị (có thể bị chỉnh giờ).
 
