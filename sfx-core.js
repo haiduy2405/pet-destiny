@@ -26,11 +26,17 @@ const Sfx=(()=>{
   reveal_rare:[chime(659,0,.12,.09),chime(880,.1,.12,.09),chime(1175,.2,.12,.09),chime(1568,.3,.4,.1)],
   reveal_epic:[chime(523,0,.12,.09),chime(659,.1,.12,.09),chime(784,.2,.12,.09),chime(1047,.3,.12,.09),chime(1319,.4,.14,.1),chime(1568,.5,.14,.1),chime(2093,.6,.6,.11),chime(784,.6,.6,.07),chime(1047,.6,.6,.07)],
   place:[{f:[400,260],t:0,d:.07,w:'triangle',g:.07}],
+  cast:[{f:[900,300],t:0,d:.2,w:'triangle',g:.05},{f:[520,180],t:.2,d:.12,w:'sine',g:.07}],
+  ripple:[{f:[330,420],t:0,d:.18,w:'sine',g:.03},{f:[360,460],t:.14,d:.2,w:'sine',g:.025}],
+  bite:[{f:[210,120],t:0,d:.1,w:'triangle',g:.09},chime(1175,.08,.22,.08)],
+  reel:[{f:[760,900],t:0,d:.03,w:'triangle',g:.03}],
+  catch:[chime(659,0,.1,.08),chime(880,.08,.1,.08),chime(1175,.16,.3,.09)],
+  escape:[{f:[500,150],t:0,d:.3,w:'triangle',g:.06}],
   drum:[{f:[190,95],t:0,d:.12,w:'triangle',g:.16}]
  };
  recipes.reward=recipes.win;
  /* nhóm giới hạn: cùng nhóm không phát lại trong khoảng minGap ms */
- const gaps={tap:45,flip:60,nav:120,good:140,bad:140,win:900,reward:900,coin:260,spend:200,plant:150,water:120,harvest:150,pet:150,shake:600,egg:300,reveal_rare:600,reveal_epic:600,place:100,drum:70};
+ const gaps={tap:45,flip:60,nav:120,good:140,bad:140,win:900,reward:900,coin:260,spend:200,plant:150,water:120,harvest:150,pet:150,shake:600,egg:300,reveal_rare:600,reveal_epic:600,place:100,drum:70,cast:300,ripple:300,bite:400,reel:110,catch:300,escape:300};
  const alias={reward:'win'};
  const group=n=>alias[n]||n;
  function shouldPlay(name,at,last){

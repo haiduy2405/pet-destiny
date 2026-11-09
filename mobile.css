@@ -237,7 +237,7 @@ body[data-page=dollhouse] .hero{display:none}body[data-page=dollhouse] #view{pad
 @keyframes luckyShake{0%,100%{transform:rotate(-9deg) scale(1.05)}50%{transform:rotate(9deg) scale(1.1)}}@keyframes luckyPop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
 .level-list{display:grid;gap:10px;margin:12px 0}.level-card{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;text-align:left;padding:12px;background:#f1f5e8;color:#2f5a45;border-color:#dce6cd;box-shadow:0 3px 0 #d0dcc0}.level-card.lv2{background:#fff6d9;border-color:#f3dd9b;box-shadow:0 3px 0 #e6cf86}.level-card.lv3{background:#ffe3d6;border-color:#f3b9a0;box-shadow:0 3px 0 #e2a688}.level-card.locked{opacity:.55}.level-icon{font-size:30px;text-align:center}.level-main{display:grid;gap:1px}.level-main small{font-size:12px;color:#6e7f68;font-weight:600}.level-pay{font-weight:800;font-size:14px;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.lucky-icon.box.shake{animation:none}}
-body[data-page=farm] .hero{display:none}body[data-page=farm] #view{padding-top:12px}
+body[data-page=farm] .hero,body[data-page=fish] .hero{display:none}body[data-page=farm] #view,body[data-page=fish] #view{padding-top:12px}
 .fm-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:8px 0 12px}.fm-tabs button{font-size:12.5px;padding:8px 4px;min-height:46px}
 .fm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
 .fm-plot{display:grid;justify-items:center;align-content:center;gap:5px;min-height:150px;padding:12px 8px;border-radius:22px;background:linear-gradient(#e8d9b5,#d7c08e);border:3px solid #f6ecd0;box-shadow:0 4px 0 #bfa56d;color:#5b4527;text-align:center}
@@ -256,3 +256,26 @@ body[data-page=farm] .hero{display:none}body[data-page=farm] #view{padding-top:1
 .fm-job,.fm-reveal{text-align:center}.egg-preview .sprite{margin:6px auto;width:130px;height:130px}.fm-reveal{animation:luckyPop .5s cubic-bezier(.2,1.5,.4,1)}
 @keyframes fmBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.08)}}
 @media(prefers-reduced-motion:reduce){.fm-bounce,.fm-reveal{animation:none}}
+/* Câu cá (fishing.js) */
+.fs-gear{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;font-size:14px}.fs-off{opacity:.3;filter:grayscale(1)}
+.fs-lakes{display:grid;gap:10px;margin:10px 0}.fs-lake{display:grid;gap:6px}.fs-lhead{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center}
+.fs-fishes{display:flex;flex-wrap:wrap;gap:4px;font-size:22px;margin:2px 0}.fs-ticket,.fs-bucket{margin:10px 0}.fs-ticket h3,.fs-bucket h3{margin:0 0 6px}
+.fs-one{grid-template-columns:1fr}.fs-book{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:8px}
+.fs-card{display:grid;justify-items:center;gap:2px;padding:10px 6px;background:#fffff8;border:2px solid #fff;border-radius:18px;box-shadow:0 3px 0 #e0e8d2;text-align:center}.fs-card.locked{opacity:.55}.fs-card small{font-size:11.5px;color:#6e7f68;font-weight:600}
+.fs-big{font-size:48px;line-height:1}
+.fs-play{display:grid;gap:10px;user-select:none;-webkit-user-select:none}.fs-top{display:flex;justify-content:space-between;align-items:center}.fs-top h2{margin:0}
+.fs-baits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.fs-baits button{min-height:44px;font-size:15px}
+.fs-scene{position:relative;height:190px;border-radius:24px;overflow:hidden;background:linear-gradient(#e6f6ff 0 38%,#6cc0de 38% 100%);border:3px solid #fff;box-shadow:0 4px 0 #9bcfe0;display:grid;place-items:center}
+.fs-sky{position:absolute;top:10px;left:16px;font-size:30px}.fs-lakebig{font-size:64px;margin-top:50px}
+.fs-water2{position:absolute;inset:38% 0 0;display:grid;place-items:start center}.fs-float{font-size:30px;margin-top:20px;animation:fsBob 2s ease-in-out infinite}.fs-float.ripple{box-shadow:0 0 0 8px rgba(255,255,255,.55);border-radius:50%}
+.fs-scene.bite .fs-float{animation:fsDip .25s ease-in-out infinite}
+.fs-status{margin:0;font-weight:700;text-align:center;min-height:2.6em}.fs-win{height:10px;border-radius:6px;background:#dfe9da;overflow:hidden}.fs-win i{display:block;height:100%;width:100%;background:#e6ac47}
+.fs-main{min-height:84px;font-size:21px;font-weight:800;width:100%;touch-action:none}.fs-main.go{background:linear-gradient(#ffd96a,#f0a83a);color:#5a3a06;box-shadow:0 5px 0 #c7842a}
+.fs-reel{display:grid;grid-template-columns:1fr 22px;gap:12px;height:clamp(200px,calc(100dvh - 400px),340px);touch-action:none}
+.fs-water{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(#d8f3fc,#2f93bd);border:3px solid #fff;box-shadow:0 4px 0 #9bcfe0}
+.fs-zone{position:absolute;left:6px;right:6px;bottom:0;border-radius:16px;background:rgba(112,214,138,.5);border:3px solid #3fae62}.fs-zone.in{background:rgba(112,214,138,.8);border-color:#2e9a52}
+.fs-fish{position:absolute;left:50%;bottom:50%;transform:translate(-50%,50%);font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.fs-prog{position:relative;border-radius:12px;background:#dfe9da;border:2px solid #fff;overflow:hidden}.fs-prog i{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(#ffd96a,#4cb86e)}
+.fs-result{text-align:center}.fs-result.win{animation:luckyPop .5s cubic-bezier(.2,1.5,.4,1)}
+@keyframes fsBob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}@keyframes fsDip{0%,100%{transform:translateY(0)}50%{transform:translateY(18px)}}
+@media(prefers-reduced-motion:reduce){.fs-float,.fs-scene.bite .fs-float,.fs-result.win{animation:none}}
