@@ -120,3 +120,10 @@ test('homes-era saves delegate to the home model (capacity = number of pages)', 
   assert.equal(s.homeVersion, 1);
   assert.equal(Adventure.capacity(s), 5);
 });
+
+test('any mini_<game> event counts as a distinct game for the evolution quest (new games need no registration)', () => {
+  const s = grown();
+  Adventure.startEvolution(s, 'p');
+  times(s, 'mini_hangman', 1); times(s, 'mini_buildsen', 3);
+  assert.equal(Adventure.evolution(s, s.pets[0])[4][1], 2);
+});
