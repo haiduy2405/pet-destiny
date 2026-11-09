@@ -166,3 +166,34 @@ html[data-display=dark] #gameSubject{background:#233b37;color:#e1ecd8;border-col
 .spk-mic{display:block;width:100%;font-size:20px;padding:16px;margin:12px 0;border-radius:18px}
 .spk-mic.on{animation:spkPulse 1s ease-in-out infinite;background:#d94f4f;color:#fff}
 @keyframes spkPulse{50%{transform:scale(1.03);box-shadow:0 0 0 10px #d94f4f33}}
+
+/* Ngôi nhà của em (dollhouse.js) */
+body[data-page=dollhouse] .hero{display:none}body[data-page=dollhouse] #view{padding-top:12px}
+.dh-name{width:100%;font-weight:700;font-size:22px;border:2px dashed #b9d6c9;border-radius:14px;padding:8px 12px;background:transparent;color:inherit;box-sizing:border-box}
+.dh-house{margin:8px 0 14px}.dh-roof{height:56px;margin:0 6%;background:var(--roof);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.dh-roofs{display:flex;gap:10px;justify-content:center;margin:8px 0}.dh-dot{width:28px;height:28px;min-height:28px;padding:0;border-radius:50%;border:3px solid #fff}.dh-dot.on{outline:3px solid #294c48}
+.dh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;background:#f4e9d2;border:4px solid #c9a56b;border-radius:10px;padding:10px}
+.dh-card{display:flex;flex-direction:column;gap:6px;align-items:center;padding:8px;border-radius:12px;min-height:0;background:#fff;color:inherit;text-align:center}
+.dh-card.locked{background:#ece6d8;border:2px dashed #b3a27a;justify-content:center;min-height:120px}.dh-lock{font-size:30px}
+.dh-mini,.dh-scene{position:relative;overflow:hidden;border-radius:10px}.dh-mini{width:100%;aspect-ratio:4/3}
+.dh-mini i,.dh-wall,.dh-floor{position:absolute;left:0;right:0}.dh-mini i:first-child,.dh-wall{top:0;height:64%}.dh-mini i:nth-child(2),.dh-floor{bottom:0;height:36%}
+.dh-scene{width:100%;aspect-ratio:4/3;touch-action:none;user-select:none;border:3px solid #fff;box-shadow:0 2px 10px #0002}
+.dh-obj{position:absolute;display:block;transform:translate(-50%,-100%) scaleX(var(--f,1));font-size:calc(min(11vw,50px)*var(--s,1));line-height:1;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;filter:drop-shadow(0 2px 1px #0003)}
+.dh-obj.mini{font-size:calc(min(4.6vw,22px)*var(--s,1));pointer-events:none}.dh-obj.sel{outline:2px dashed #ff7a59;outline-offset:3px;border-radius:8px}
+.dh-pet{position:absolute;right:1%;bottom:2%;width:176px;height:176px;transform:scale(.5);transform-origin:100% 100%;z-index:2000;pointer-events:none}.dh-pet .pet-art{width:176px;height:176px;animation:none}.dh-pet.cheer .pet-art{animation:dhHop .6s ease-out 2}
+@keyframes dhHop{40%{transform:translateY(-18px) rotate(-5deg)}}
+.dh-bubble{position:absolute;left:4%;top:5%;max-width:62%;z-index:2100;background:#fff;color:#294c48;border-radius:16px;padding:8px 12px;font-size:14px;line-height:1.35;box-shadow:0 2px 8px #0003}
+.dh-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.dh-stars{color:#f0b429;letter-spacing:2px}
+.dh-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}.dh-tools span{flex:1;font-weight:700}.dh-tools button{min-height:44px}
+.dh-tabs,.dh-cats{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.dh-tabs button,.dh-cats button{flex:1;font-size:13px;padding:8px 6px;min-height:40px}.dh-tabs .on,.dh-cats .on{background:#4e9a73;color:#fff}
+.dh-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.dh-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;min-height:92px;background:#fff;color:inherit;border-radius:12px}.dh-item span{font-size:32px}.dh-item small{font-size:12px;line-height:1.2;text-align:center}.dh-item b{font-size:12px;color:#b57d00}.dh-item.own b{color:#3f8a60}
+.dh-swatches{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:10px}.dh-sw{aspect-ratio:1;min-height:0;border:3px solid #fff;border-radius:10px;display:grid;place-items:end center;color:#294c48;box-shadow:0 1px 4px #0003}.dh-sw.on{outline:3px solid #ff7a59}.dh-sw small{background:#fffc;border-radius:6px;padding:0 4px;font-size:11px}
+.dh-cele{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#1c1038d9;padding:16px;animation:evoIn .3s}
+.dh-cele-card{position:relative;z-index:2;max-width:380px;width:100%;background:#fff9ec;color:#3d2c63;border-radius:24px;padding:20px;text-align:center;box-shadow:0 10px 40px #0008}
+.dh-cele-stars{font-size:44px;color:#f0b429;letter-spacing:6px}.dh-cele-stars b{display:inline-block;animation:dhPop .6s both}.dh-cele-stars b:nth-child(2){animation-delay:.25s}.dh-cele-stars b:nth-child(3){animation-delay:.5s}
+@keyframes dhPop{from{transform:scale(0) rotate(-90deg)}to{transform:scale(1)}}
+.dh-cele-pet{display:grid;place-items:center;height:130px;overflow:visible}.dh-cele-pet .pet-art{width:176px;height:176px;transform:scale(.7);animation:dhHop .8s ease-out infinite}.dh-speech{font-size:17px;font-weight:700;line-height:1.4}
+.dh-party{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:90px}.dh-party>div{width:88px;height:88px;animation:dhHop .7s ease-in-out infinite}.dh-party .pet-art{width:176px;height:176px;transform:scale(.5);transform-origin:0 0;animation:none}
+.dh-confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}.dh-confetti i{position:absolute;top:-10%;font-style:normal;font-size:24px;animation:dhFall 3.2s linear infinite}
+@keyframes dhFall{to{transform:translateY(115vh) rotate(360deg)}}
+.dh-scene{position:sticky;top:6px;z-index:50}
