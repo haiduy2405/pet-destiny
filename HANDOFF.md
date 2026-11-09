@@ -1,9 +1,7 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v42)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v44)
 
 ## Prompt dán vào session mới
-> Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Làm 2 việc theo thứ tự:
-> **1. Tính năng câu cá (tab/khu mới, bản v43).** Người chơi phải mua cần câu mới câu được. Đi câu cần thuê hồ, mua mồi, và phụ kiện cần thiết (tự đề xuất hợp lý). Có 3 hồ: hồ rẻ thì cá ít tiền nhưng dễ câu; hồ đắt thì cá xịn hơn, tỉ lệ tốt hơn nhưng khó câu hơn về kỹ năng. Làm mini game câu cá thật hay (thao tác kỹ năng, không chỉ bấm may rủi; dùng được cả trên điện thoại). Tuân thủ thang kinh tế/`Balance` (thưởng theo công sức, giảm khi lặp, không cày một chỗ), có âm thanh (sfx.js), có test cho phần logic. Có vướng thì hỏi tôi.
-> **2. Sắp xếp lại cấu trúc game cho chuẩn và gọn.** Game đã thêm nhiều lần nên chưa được tính toán thống nhất từ đầu. Hãy rà soát (kiến trúc bọc chồng `render`/`startMini`/`recordEvent`, thứ tự nạp script, kinh tế/giá rải rác, các tab, CSS dư), đề xuất kế hoạch tái cấu trúc ngắn gọn, rồi làm từng bước an toàn (test xanh sau mỗi bước, không làm hỏng file lưu cũ), phù hợp hướng game đang đi (nuôi thú, học tập, nhà, nông trại, câu cá). Hỏi tôi nếu có quyết định lớn.
+> Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
 
 ## Nguyên tắc sản phẩm (chủ dự án đã chốt — áp dụng cho mọi thay đổi)
 - **Đối tượng: từ 6 tuổi trở lên đến người lớn, không giới hạn tuổi.** Không phải game chỉ dành cho bé. Khi cân bằng nội dung, độ khó, giọng văn, hình thức và thưởng, phải nghĩ cho cả khoảng tuổi này: có mức dễ cho người mới/6 tuổi nhưng không "trẻ con hóa" quá đà, và có thử thách đủ cho người lớn (độ khó tăng dần, nội dung đa dạng). Giao diện và lời thoại nên thân thiện nhưng không áp đặt "bé ơi".
@@ -18,7 +16,8 @@ Nhãn phiên bản `vNN` nằm ở tiêu đề trang (index.html). **Mỗi lần
 - Các file còn lại là UI, **bọc chồng lên nhau** (mỗi file ghi đè `render`, `startMini`, `petArt`, `recordEvent`... theo thứ tự nạp trong index.html). Thứ tự hiện tại kết thúc: `... pet-bond, english-games, vietnamese-games, english-speaking, dollhouse-core, dollhouse-photo-core, home-games-core, dollhouse, dollhouse-photo, home-games, rewards, evolution-fx, backup, slots, pwa`. File mới thêm **trước `backup.js`**; `rewards.js` và `evolution-fx.js` nên ở sau các file game, `slots.js` gần cuối (nó mở hộp thoại ô lưu khi nạp).
 - Thêm game mini: đăng ký vào `arcadeGames` (`[id,icon,tên,mô tả,15]`), thêm id vào `gameSubjects` (pet-loop.js) để hiện đúng môn, gọi `recordEvent('mini')` + `recordEvent('mini_<id>')` khi xong (nhiệm vụ tiến hóa tự đếm mọi `mini_*`). Game trắc nghiệm đơn giản: thêm vào `practiceGames` (xem `english-games.js`, `vietnamese-games.js`).
 - Mẫu giao dịch an toàn: `backup=SaveStore.copy(state)` → sửa → `if(!save()){state=backup;return}`.
-- Tab thứ 4 "Ngôi nhà" được chèn bằng cách bọc `render` (dollhouse.js) vì `render()` gốc dùng bảng tab cố định.
+- **Tab phụ (v44)**: `app-kit.js` có `Tabs.register({id,icon,label,open,leave,canDraw,draw})` (Ngôi nhà, Nông trại, Câu cá). Một wrapper `render` duy nhất lo việc đổi `current` tạm, chèn nút nav, `data-page`, gọi `leave()` mỗi lần vẽ lại. **Tab mới: dùng `Tabs.register`, đừng bọc `render` nữa** (test `architecture.test.js` bắt). Cũng ở đó: `txn(fn)` = sao lưu → sửa → lưu, hỏng thì hoàn lại (fn trả `{ok,message}`); dùng cho mọi giao dịch mới.
+- **Test kiến trúc** (`tests/architecture.test.js`): khóa thứ tự nạp script (core trước UI, rewards/levels, backup/slots/pwa ở cuối) và danh sách file được ghi đè `render/startMini/recordEvent/petArt/notice/sound`. Thêm file bọc mới thì phải cập nhật danh sách đó CÓ CHỦ ĐÍCH.
 - **Sao lưu/khôi phục**: logic thuần ở `save-store.js` (`exportData`, `parseBackup`, `importInto`, có test); giao diện ở `backup.js` (`bkPanel()`/`bkBind()` do `slots.js` gọi trong hộp thoại ô lưu; `bkSaveBlob` dùng chung để tải file). File sao lưu = JSON `{app:'pet-destiny',format:1,slots:[4]}`. Khôi phục không bao giờ ghi đè ô có dữ liệu nếu chưa bấm xác nhận lần 2; kể cả khi localStorage hỏng vẫn khôi phục được.
 - **PWA**: `manifest.webmanifest`, `sw.js` (network-first, rơi về cache khi offline; cache đặt tên theo VERSION nên bản cũ tự bị xóa), `pwa.js` (đăng ký SW + xin `storage.persist()`), icon `icon-*.png`.
 - **Thú ghé thăm đồ** (`dollhouse-core.js`: `reaction`, `petSpot`, `pickTarget`; `dollhouse.js`: `dhVisit`, `dhStartWander`): thú tự đi đến món đồ mỗi 14 giây (không khi đang chọn/kéo đồ, tắt khi bật giảm chuyển động), hoặc bấm "🐾 Gọi thú đi chơi" / nút 🐾 trên đồ đang chọn. Tư thế + hiệu ứng theo món (`bed`→ngủ, `sofa`→ngồi, `cake`→ăn...); món mới tự rơi về mặc định theo nhóm, test bắt thiếu.
@@ -36,6 +35,8 @@ Nhãn phiên bản `vNN` nằm ở tiêu đề trang (index.html). **Mỗi lần
 - **Hộp quà may mắn** (lucky-core.js + lucky.js, thẻ đầu tab Kiếm xu): vé 60 xu, 1 lượt miễn phí/ngày, tối đa 8 vé mua/ngày, pity 7 hộp, kỳ vọng ~88% giá vé (mô phỏng trong test). Chỉ xu trong game.
 - **Nông trại (v40)**: `farm-core.js` + `farm.js`, tab thứ 5 🌾. 6 loại cây (cải 3 phút → bí ngô 10 giờ, lãi ~+40–90%), 3 thửa đất đầu + mở thêm 3 (150/300/600), tưới −20% thời gian, 15% thu hoạch gấp đôi, kho tối đa 40/loại, giá chợ đổi mỗi ngày 0.85–1.25 (xác định theo ngày). Thời gian dùng đồng hồ thiết bị (state.farm). Phối giống: 80 xu, 20 phút, thú ≥25 XP và chỉ số chăm sóc TB ≥40, nghỉ 3 giờ; trứng loài/màu của bố hoặc mẹ, 10% đột biến loài, 12% màu lạ, vào `state.eggs` với `bred:true`.
 - **Âm thanh (v41)**: `sfx-core.js` (công thức tiếng, tần số nốt, phân loại phản hồi, giới hạn tần suất) + `sfx.js` (engine WebAudio tổng hợp, không file). Thay `sound()`/`musicPlay()`; mặc định BẬT (khóa `pet-destiny-sound`=`off` thì tắt). Phím tên nốt (`data-note-answer`, `data-ear-note`) kêu như đàn; đáp án đúng/sai tự có tiếng nhờ đọc `[role=status]`/`*Feedback`; xu tăng/giảm → ding/spend; chuyển tab, lật thẻ, nhịp trống. Muốn thêm tiếng mới: thêm vào `Sfx.recipes` + `Sfx.gaps` rồi gọi `sfxPlay(tên)`. **v42**: dùng mẫu âm thật khi đã tải (mp3, tải nền sau lần chạm đầu): `audio/ui/` (bộ "organic" của UI SFX, CC0) cho tap/đúng/sai/thắng/xu...; `audio/piano/` (Salamander Grand Piano, CC BY 3.0, 9 mẫu cắt 3,2s, dịch cao độ ≤3 nửa cung) cho phím đàn và nốt nghe mẫu. Chưa tải xong hoặc lỗi thì tự dùng tiếng tổng hợp. Ghi công: `audio/CREDITS.md` + footer. Trống/lắc hộp/tưới nước vẫn là tiếng tổng hợp.
+- **Câu cá (v43)**: `fishing-core.js` + `fishing.js`, tab 🎣. Cần tre/sợi/carbon (40/160/480, vùng giữ cá 24/30/36%), 3 phụ kiện (phao nhạy, kính râm, lưới vợt), mồi giun/ngô/tôm (2/3/6 xu mỗi con, mua gói 5), 3 hồ: Ao làng/Hồ rừng/Vịnh sâu (vé 10/32/85 = 6 lượt thả; càng sâu cá càng nhanh, vùng giữ càng hẹp, thời gian giật càng ngắn). Mini game: thả câu → chờ phao chìm → giật cần trong cửa sổ thời gian (giật sớm/trễ mất lượt + mồi) → giữ cá trong vùng xanh (giữ = vùng đi lên, thả = hạ; điều khiển cảm ứng/Space). Cá to/đắt hơn khi kéo giỏi. Thu nhập chỉ qua bán cá (giá chốt lúc bắt, nhân hệ số giảm khi thuê lại cùng hồ trong ngày: ×1/.8/.6/.4/.25) + thưởng một lần khi gặp loài mới. Hết vé thì `recordEvent('mini_fishing')` (nhiệm vụ, +10 xu trò mới/ngày, thưởng đa dạng). Chỉnh giá: dùng `tools/economy-report.js` và các test mô phỏng trong `tests/fishing-core.test.js` (người chơi giả theo tay nghề).
+- **Báo cáo kinh tế**: `node tools/economy-report.js` gom thu nhập mini game / nông trại / câu cá để so sánh khi chỉnh giá.
 - Khi thêm game mới: thêm id vào `Balance.base` theo công sức, gọi `Balance.pay` TRƯỚC `recordEvent`.
 
 ## Đã làm trong session trước
@@ -44,12 +45,20 @@ dọn code chết + 82→93 test · cân bằng thưởng · giai đoạn lớn 
 ## Đã làm trong session v39–v42
 v39: mức khó Dễ/Vừa/Khó (levels-core/levels/arcade-levels), cân bằng thưởng theo công sức + giảm khi lặp + thưởng đa dạng (balance-core), hộp quà may mắn (lucky-core/lucky), sửa đếm đom đóm (đếm đúng 5 lần). v40: nông trại + phối giống (farm-core/farm). v41–v42: engine âm thanh (sfx-core/sfx) + mẫu âm thật CC0/CC BY (`audio/`). 167 test. Chi tiết từng hệ thống nằm ở mục Kinh tế.
 
-## Gợi ý cho việc tái cấu trúc (ghi chú của session v42)
-- Thứ tự nạp hiện kết thúc: `... dollhouse, home-games, farm, sfx, rewards, arcade-levels, levels, lucky, evolution-fx, backup, slots, pwa`. Mỗi file ghi đè global (`render`, `startMini`, `recordEvent`, `sound`, `musicPlay`, `petArt`); thứ tự phụ thuộc ngầm, đừng đổi bừa.
-- Thưởng/giá rải ở: `balance-core.js` (thưởng game), `levels-core.js`, `lucky-core.js`, `farm-core.js`, `dollhouse-core.js`, `economy-core.js`, `income-core.js`. Hướng: gom bảng giá + hằng số kinh tế vào 1 module dữ liệu và 1 script mô phỏng kinh tế/ngày.
-- Tab nav được chèn bằng cách bọc `render` (dollhouse.js, farm.js): nên có 1 bộ định tuyến tab chung. Dialog dùng chung `adventureDialog`.
-- Mẫu giao dịch an toàn (`backup=SaveStore.copy(state)` → sửa → `save()` hỏng thì khôi phục) lặp lại ở nhiều UI: nên có helper chung (`fmDo` trong farm.js là bản mẫu).
-- Dữ liệu mới của người chơi lưu trong `state.<tên>` (farm, lucky, plays, levels, dollhouse); `SaveStore` giữ nguyên field lạ nên không cần migrate, nhưng mỗi core có `normalize` tự sửa dữ liệu hỏng.
+## Tái cấu trúc: đã làm (v44) và việc còn lại
+Đã làm (kiểm bằng ảnh chụp trước/sau 7 màn hình — giống từng điểm ảnh): bộ định tuyến tab + `txn` (app-kit.js, thay 3 bản copy), test kiến trúc, xóa 36 lớp CSS không dùng (-5 KB), báo cáo kinh tế.
+Rà soát cho thấy: `render` bị bọc ở 18 file, `startMini` 12 file, `recordEvent` 2 file; mẫu "sao lưu → sửa → lưu" lặp ở ~15 file; thưởng/giá rải ở 10 core.
+Việc còn lại (theo thứ tự rủi ro tăng dần):
+1. Thay `dhTx`/các đoạn `SaveStore.copy(state)` lặp ở ~12 file bằng `txn()` (từng file một, test xanh mỗi lần).
+2. Sổ đăng ký game (`Games.register`) thay chuỗi bọc `startMini` (12 file) — cần quyết định kiến trúc, xem câu hỏi trong tin nhắn bàn giao.
+3. Gom bảng giá/thưởng vào 1 module dữ liệu + mô phỏng kinh tế/ngày có ngưỡng trần (hiện chỉ có báo cáo).
+4. Tách `render` của các tab gốc (garden/quests/collection) vào `Tabs` như tab phụ, rồi bỏ `current='collection'` giả.
+5. Dọn CSS tiếp (còn các quy tắc chồng nhau theo `data-page`).
+Ghi chú thứ tự nạp hiện tại: `... dollhouse(app-kit trước nó), home-games, farm, fishing, sfx, rewards, arcade-levels, levels, lucky, evolution-fx, backup, slots, pwa`. Thứ tự phụ thuộc ngầm; test kiến trúc đang canh.
+- Dữ liệu mới của người chơi lưu trong `state.<tên>` (farm, fishing, lucky, plays, levels, dollhouse); `SaveStore` giữ field lạ nên không cần migrate, mỗi core có `normalize` tự sửa dữ liệu hỏng. File lưu cũ (không có `state.fishing`) chạy bình thường (có test).
+
+## Đã làm trong session v43–v44
+v43: tab Câu cá (fishing-core/fishing, 15 test mô phỏng), âm thanh cast/ripple/bite/reel/catch/escape. v44: app-kit (Tabs + txn), test kiến trúc, dọn CSS, tools/economy-report.js. 188 test. Kiểm bằng Chrome headless (khung 390px): chơi trọn một vé câu cá, chuyển 6 tab, mua/trồng qua `txn`, tải lại giữ dữ liệu.
 
 ## Đã làm trong session v38
 Đồ/tường theo mùa (6 dịp, 24 món + 3 tường), tặng đồ giữa các ô lưu, 2 game Toán trong nhà (nấu ăn, làm vườn). 119 test; kiểm bằng Chrome headless.
@@ -69,7 +78,7 @@ Xuất/nhập file lưu (+ nhắc sao lưu), PWA cài app + offline, thú ghé t
 - Kiến trúc bọc chồng khó đoán; CSS còn dư (shared-enclosure, pen-board...); thưởng nằm rải rác (rewards.js chỉ đè bảng).
 - Nội dung học (từ vựng, chính tả, tục ngữ) do AI soạn, cần người lớn rà soát. Nhận diện giọng nói chỉ tốt trên Chrome Android.
 - Đồ theo mùa chưa có dữ liệu chơi thật về giá; các dịp ngoài mùa hiện bị khóa nên người chơi chỉ thấy món khóa trong tab "Theo mùa".
-- Chưa test trên điện thoại thật: kéo thả đồ trong nhà, micro, animation tiến hóa, **tải/chia sẻ file sao lưu, cài PWA, lưu ảnh phòng** (Safari có thể không áp màu thú trong ảnh vì thiếu `ctx.filter`); thang thưởng/giá chưa có dữ liệu chơi thật.
+- Chưa test trên điện thoại thật: **mini game câu cá (giữ để kéo bằng ngón tay, rung, độ khó thật của từng hồ)**, kéo thả đồ trong nhà, micro, animation tiến hóa, **tải/chia sẻ file sao lưu, cài PWA, lưu ảnh phòng** (Safari có thể không áp màu thú trong ảnh vì thiếu `ctx.filter`); thang thưởng/giá chưa có dữ liệu chơi thật.
 - Thu nhập thụ động dựa đồng hồ thiết bị (có thể bị chỉnh giờ).
 
 ## Gợi ý phát triển tiếp (xếp theo giá trị / công sức)

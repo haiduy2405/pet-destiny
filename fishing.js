@@ -2,35 +2,11 @@
    Điều khiển: chạm/giữ chuột hoặc phím Space/↑ (dùng được trên điện thoại). Logic + cân bằng: fishing-core.js.
    Load after farm.js, before sfx.js/rewards.js (recordEvent('mini_fishing') tự có +10 xu lần đầu mỗi ngày nhờ rewards.js và thưởng đa dạng nhờ levels.js). */
 let fsTab='dock',fsG=null,fsRaf=0,fsHold=false;
-const fsBaseRender=render;
-render=function(){
-  const mine=current==='fish';
-  if(mine)current='collection';
-  fsBaseRender();
-  if(mine)current='fish';
-  fsStop();
-  fsNav();
-  if(mine){document.body.dataset.page='fish';renderFish()}
-};
-function fsNav(){
-  const nav=$('nav');if(!nav)return;let b=nav.querySelector('[data-tab="fish"]');
-  if(!b){b=document.createElement('button');b.dataset.tab='fish';b.innerHTML='<span class="nav-icon" aria-hidden="true">🎣</span><span>Câu cá</span>';b.onclick=()=>{current='fish';fsTab='dock';render();window.scrollTo(0,0)};nav.append(b)}
-  if(current==='fish')nav.querySelectorAll('[data-tab]').forEach(x=>{const on=x.dataset.tab==='fish';x.classList.toggle('active',on);on?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current')});
-  const vis=[...nav.children].filter(x=>getComputedStyle(x).display!=='none').length||4;nav.style.gridTemplateColumns=`repeat(${vis},minmax(0,1fr))`;
-}
+Tabs.register({id:'fish',icon:'🎣',label:'Câu cá',open(){fsTab='dock'},leave(){fsStop()},draw(){renderFish()}});
 const fsF=()=>Fishing.normalize(state);
 const fsStop=()=>{if(fsRaf){cancelAnimationFrame(fsRaf);fsRaf=0}fsHold=false};
 const fsBuzz=ms=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch{}};
 const fsReduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* giao dịch an toàn: lưu hỏng thì hoàn lại */
-function fsDo(fn){
-  if(activeSlot===null)return null;
-  const backup=SaveStore.copy(state),res=fn();
-  if(!res||!res.ok){state=backup;if(res&&res.message)notice(res.message);return res}
-  if(!save()){state=backup;notice('Chưa lưu được, thử lại nhé.');return {ok:false}}
-  if($('coins'))$('coins').textContent=state.coins;
-  return res;
-}
 function renderFish(){
   const f=fsF();
   /* vé đã hết lượt nhưng chưa tất toán (đóng trang giữa chừng) */
@@ -68,11 +44,11 @@ function fsDock(f){
 function fsBindDock(f){
   const q=s=>$('view').querySelectorAll(s);
   q('[data-rent]').forEach(b=>b.onclick=()=>{
-    const r=fsDo(()=>Fishing.rent(state,b.dataset.rent,day()));
+    const r=txn(()=>Fishing.rent(state,b.dataset.rent,day()));
     if(r&&r.ok){sfxPlay('place');fsEnter()}else renderFish();
   });
   const go=$('fsGo');if(go)go.onclick=fsEnter;
-  const sell=$('fsSell');if(sell)sell.onclick=()=>{const r=fsDo(()=>Fishing.sellAll(state));if(r&&r.ok)notice(`Đã bán ${r.n} con cá · +${r.coins} xu`);renderFish()};
+  const sell=$('fsSell');if(sell)sell.onclick=()=>{const r=txn(()=>Fishing.sellAll(state));if(r&&r.ok)notice(`Đã bán ${r.n} con cá · +${r.coins} xu`);renderFish()};
 }
 /* ---------- cửa hàng ---------- */
 function fsShop(f){
@@ -84,7 +60,7 @@ function fsShop(f){
   return `<h3>Cần câu</h3><div class="fm-rows">${rods}</div><h3>Phụ kiện</h3><div class="fm-rows">${accs}</div><h3>Mồi</h3><p class="muted">Mồi tốt giúp ra cá hiếm hơn nhưng đắt hơn: giun hợp ao làng, bắp ngô hợp hồ lớn.</p><div class="fm-rows">${baits}</div>`;
 }
 function fsBindShop(){
-  const q=s=>$('view').querySelectorAll(s),buy=(fn,ok)=>{const r=fsDo(fn);if(r&&r.ok){sfxPlay('place');notice(ok)}renderFish()};
+  const q=s=>$('view').querySelectorAll(s),buy=(fn,ok)=>{const r=txn(fn);if(r&&r.ok){sfxPlay('place');notice(ok)}renderFish()};
   q('[data-buyrod]').forEach(b=>b.onclick=()=>buy(()=>Fishing.buyRod(state,b.dataset.buyrod),'Đã mua '+Fishing.rod(b.dataset.buyrod).name));
   q('[data-buyacc]').forEach(b=>b.onclick=()=>buy(()=>Fishing.buyAcc(state,b.dataset.buyacc),'Đã mua '+Fishing.acc(b.dataset.buyacc).name));
   q('[data-buybait]').forEach(b=>b.onclick=()=>buy(()=>Fishing.buyBait(state,b.dataset.buybait),'Đã mua mồi '+Fishing.bait(b.dataset.buybait).name));
@@ -103,7 +79,7 @@ function fsFrameTick(fn){fsRaf=requestAnimationFrame(ts=>{fsRaf=0;fn(ts)})}
 function fsStartCast(){
   const f=fsF(),bait=Fishing.activeBait(state);
   if(!bait){notice('Hết mồi rồi! Ghé 🛒 Cửa hàng mua thêm nhé.');return}
-  const r=fsDo(()=>Fishing.cast(state,bait));if(!r||!r.ok)return;
+  const r=txn(()=>Fishing.cast(state,bait));if(!r||!r.ok)return;
   fsG={stage:'wait',lake:fsG.lake,bait,wait:r.wait,window:r.window,warn:r.warn,warned:false,t0:performance.now(),res:null};
   sfxPlay('cast');fsPlayRender();fsFrameTick(fsWaitLoop);
 }
@@ -147,7 +123,7 @@ function fsReelLoop(ts){
 }
 function fsLanded(){
   const g=fsG,r=g.reel;fsHold=false;
-  const res=fsDo(()=>Fishing.land(state,g.fish.id,r.quality));
+  const res=txn(()=>Fishing.land(state,g.fish.id,r.quality));
   if(!res||!res.ok)return fsCastEnd({caught:false,msg:'Chưa lưu được con cá này, thử lại nhé.'});
   const lake=Fishing.lake(g.lake),top=g.fish.id===lake.fish[lake.fish.length-1].id;
   sfxPlay(top?'reveal_rare':'catch');fsBuzz(80);try{burst(g.fish.icon)}catch{}
@@ -162,7 +138,7 @@ function fsCastEnd(out){
 /* sau mỗi lượt: hết lượt thì tất toán vé (tính vào nhiệm vụ + thưởng đa dạng trong ngày) */
 function fsSettle(){
   let st=null;
-  fsDo(()=>{
+  txn(()=>{
     st=Fishing.settle(state);
     /* recordEvent đã lo: nhiệm vụ/tiến hóa, +10 xu trò mới hôm nay (rewards.js), thưởng đa dạng 3/6/10 trò (levels.js) */
     if(st.done){recordEvent('mini');recordEvent('mini_fishing')}

@@ -1,33 +1,9 @@
 /* Tab "Nông trại": trồng cây chờ thời gian, bán ở chợ (giá đổi mỗi ngày), mở thêm thửa đất, phối giống ra trứng.
-   Logic + cân bằng: farm-core.js. Load after dollhouse.js, before rewards.js/slots.js. */
+   Logic + cân bằng: farm-core.js. Tab đăng ký qua Tabs (app-kit.js); giao dịch qua txn(). Load after dollhouse.js, before rewards.js/slots.js. */
 let fmTab='plots',fmSeedFor=null,fmTimer=null,fmPickA=null,fmPickB=null,fmReveal=null;
-const fmBaseRender=render;
-render=function(){
-  const mine=current==='farm';
-  if(mine)current='collection';
-  fmBaseRender();
-  if(mine)current='farm';
-  clearInterval(fmTimer);fmTimer=null;
-  fmNav();
-  if(mine){document.body.dataset.page='farm';renderFarm()}
-};
-function fmNav(){
-  const nav=$('nav');if(!nav)return;let b=nav.querySelector('[data-tab="farm"]');
-  if(!b){b=document.createElement('button');b.dataset.tab='farm';b.innerHTML='<span class="nav-icon" aria-hidden="true">🌾</span><span>Nông trại</span>';b.onclick=()=>{current='farm';fmSeedFor=null;render();window.scrollTo(0,0)};nav.append(b)}
-  if(current==='farm')nav.querySelectorAll('[data-tab]').forEach(x=>{const on=x.dataset.tab==='farm';x.classList.toggle('active',on);on?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current')});
-  const vis=[...nav.children].filter(x=>getComputedStyle(x).display!=='none').length||4;nav.style.gridTemplateColumns=`repeat(${vis},minmax(0,1fr))`;
-}
+Tabs.register({id:'farm',icon:'🌾',label:'Nông trại',open(){fmSeedFor=null},leave(){clearInterval(fmTimer);fmTimer=null},draw(){renderFarm()}});
 const fmF=()=>Farm.normalize(state);
 const fmMin=ms=>{const s=Math.ceil(ms/1000);if(s>=3600)return Math.floor(s%3600/60)?`${Math.floor(s/3600)} giờ ${Math.floor(s%3600/60)} phút`:`${Math.floor(s/3600)} giờ`;if(s>=60)return s%60?`${Math.floor(s/60)} phút ${s%60} giây`:`${Math.floor(s/60)} phút`;return `${s} giây`};
-/* giao dịch an toàn: lưu hỏng thì hoàn lại */
-function fmDo(fn){
-  if(activeSlot===null)return null;
-  const backup=SaveStore.copy(state),res=fn();
-  if(!res||!res.ok){state=backup;if(res&&res.message)notice(res.message);return res}
-  if(!save()){state=backup;notice('Chưa lưu được, thử lại nhé.');return {ok:false}}
-  if($('coins'))$('coins').textContent=state.coins;
-  return res;
-}
 function renderFarm(){
   const f=fmF(),at=now(),t=fmTab;
   const tabs=[['plots','🌱 Trồng trọt'],['market','🧺 Chợ & kho'],['breed','🥚 Phối giống']];
@@ -70,18 +46,18 @@ function fmBindPlots(f){
   q('[data-sow]').forEach(b=>b.onclick=()=>{fmSeedFor=Number(b.dataset.sow);renderFarm();$('view').querySelector('.fm-seeds')?.scrollIntoView({block:'nearest',behavior:'smooth'})});
   q('[data-seed]').forEach(b=>b.onclick=()=>{
     const i=fmSeedFor,id=b.dataset.seed;fmSeedFor=null;
-    const r=fmDo(()=>Farm.plant(state,i,id,now()));if(r&&r.ok){sfxPlay('plant');notice(`Đã gieo ${Farm.find(id).icon} ${Farm.find(id).name}. Quay lại sau ${fmMin(Farm.find(id).grow)} nhé!`)}renderFarm();
+    const r=txn(()=>Farm.plant(state,i,id,now()));if(r&&r.ok){sfxPlay('plant');notice(`Đã gieo ${Farm.find(id).icon} ${Farm.find(id).name}. Quay lại sau ${fmMin(Farm.find(id).grow)} nhé!`)}renderFarm();
   });
   const cancel=$('fmCancel');if(cancel)cancel.onclick=()=>{fmSeedFor=null;renderFarm()};
-  q('[data-water]').forEach(b=>b.onclick=()=>{const r=fmDo(()=>Farm.water(state,Number(b.dataset.water),now()));if(r&&r.ok)sfxPlay('water');renderFarm()});
+  q('[data-water]').forEach(b=>b.onclick=()=>{const r=txn(()=>Farm.water(state,Number(b.dataset.water),now()));if(r&&r.ok)sfxPlay('water');renderFarm()});
   q('[data-harvest]').forEach(b=>b.onclick=()=>fmHarvest([Number(b.dataset.harvest)]));
   const all=$('harvestAll');if(all)all.onclick=()=>fmHarvest(f.plots.map((p,i)=>Farm.plotInfo(p,now()).state==='ripe'?i:-1).filter(i=>i>=0));
-  const bp=$view('[data-buyplot]');if(bp)bp.onclick=()=>{const r=fmDo(()=>Farm.buyPlot(state));if(r&&r.ok){sfxPlay('win');notice('🌾 Đã mở thêm một thửa đất!')}renderFarm()};
+  const bp=$view('[data-buyplot]');if(bp)bp.onclick=()=>{const r=txn(()=>Farm.buyPlot(state));if(r&&r.ok){sfxPlay('win');notice('🌾 Đã mở thêm một thửa đất!')}renderFarm()};
 }
 const $view=s=>$('view').querySelector(s);
 function fmHarvest(list){
   let got={},bonus=0,err='';
-  const r=fmDo(()=>{for(const i of list){const h=Farm.harvest(state,i,now());if(h.ok){got[h.crop]=(got[h.crop]||0)+h.n;if(h.bonus)bonus++}else if(!err)err=h.message}return Object.keys(got).length?{ok:true}:{ok:false,message:err}});
+  const r=txn(()=>{for(const i of list){const h=Farm.harvest(state,i,now());if(h.ok){got[h.crop]=(got[h.crop]||0)+h.n;if(h.bonus)bonus++}else if(!err)err=h.message}return Object.keys(got).length?{ok:true}:{ok:false,message:err}});
   if(r&&r.ok){sfxPlay('harvest');notice('Thu hoạch: '+Object.entries(got).map(([k,n])=>`${Farm.find(k).icon}×${n}`).join(' ')+(bonus?' · 🎉 Được mùa!':''));}
   renderFarm();
 }
@@ -97,11 +73,11 @@ function fmMarket(f){
 }
 function fmBindMarket(){
   $('view').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{
-    const r=fmDo(()=>Farm.sell(state,b.dataset.sell,b.dataset.n==='all'?'all':1,day()));
+    const r=txn(()=>Farm.sell(state,b.dataset.sell,b.dataset.n==='all'?'all':1,day()));
     if(r&&r.ok)notice(`Đã bán · +${r.coins} xu`);renderFarm();
   });
   const all=$('sellAll');if(all)all.onclick=()=>{
-    let sum=0;const r=fmDo(()=>{for(const c of Farm.crops){if((fmF().barn[c.id]||0)>0){const x=Farm.sell(state,c.id,'all',day());if(x.ok)sum+=x.coins}}return sum?{ok:true}:{ok:false,message:'Kho trống.'}});
+    let sum=0;const r=txn(()=>{for(const c of Farm.crops){if((fmF().barn[c.id]||0)>0){const x=Farm.sell(state,c.id,'all',day());if(x.ok)sum+=x.coins}}return sum?{ok:true}:{ok:false,message:'Kho trống.'}});
     if(r&&r.ok)notice(`Đã bán hết · +${sum} xu`);renderFarm();
   };
 }
@@ -136,11 +112,11 @@ function fmBindBreed(f){
     renderFarm();
   });
   const go=$('fmBreed');if(go)go.onclick=()=>{
-    const r=fmDo(()=>Farm.startBreed(state,fmPickA,fmPickB,now()));
+    const r=txn(()=>Farm.startBreed(state,fmPickA,fmPickB,now()));
     if(r&&r.ok){fmPickA=fmPickB=null;sfxPlay('pet');notice('💞 Đã bắt đầu phối giống. Quay lại sau nhé!')}renderFarm();
   };
   const col=$('fmCollect');if(col)col.onclick=()=>{
-    const r=fmDo(()=>Farm.collect(state,now(),Math.random,()=>crypto.randomUUID()));
+    const r=txn(()=>Farm.collect(state,now(),Math.random,()=>crypto.randomUUID()));
     if(r&&r.ok){fmReveal=r;sfxPlay('egg');try{burst('🥚')}catch{}}renderFarm();
   };
   const ok=$('fmRevealOk');if(ok)ok.onclick=()=>{fmReveal=null;renderFarm()};

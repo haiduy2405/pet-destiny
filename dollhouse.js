@@ -1,20 +1,6 @@
 /* "Ngôi nhà của em": build rooms, buy furniture, decorate; the pet cheers every step. */
 let dhRoom=null,dhSel=null,dhTab='mine',dhCat='furn',dhDrag=null,dhBubbleTimer=null,dhPetPos=null,dhPetRoom=null,dhLast=null,dhVisitTimer=null,dhWander=null;
-const dhBaseRender=render;
-render=function(){
-  const mine=current==='dollhouse';
-  if(mine)current='collection';
-  dhBaseRender();
-  if(mine)current='dollhouse';
-  dhNav();
-  if(mine&&!dhDrag){document.body.dataset.page='dollhouse';renderDollhouse()}
-};
-function dhNav(){
-  const nav=$('nav');if(!nav)return;let b=nav.querySelector('[data-tab="dollhouse"]');
-  if(!b){b=document.createElement('button');b.dataset.tab='dollhouse';b.innerHTML='<span class="nav-icon" aria-hidden="true">🏡</span><span>Ngôi nhà</span>';b.onclick=()=>{current='dollhouse';dhRoom=null;dhSel=null;render();window.scrollTo(0,0)};nav.append(b)}
-  if(current==='dollhouse')nav.querySelectorAll('[data-tab]').forEach(x=>{const on=x.dataset.tab==='dollhouse';x.classList.toggle('active',on);on?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current')});
-  const vis=[...nav.children].filter(x=>getComputedStyle(x).display!=='none').length||4;nav.style.gridTemplateColumns=`repeat(${vis},minmax(0,1fr))`;
-}
+Tabs.register({id:'dollhouse',icon:'🏡',label:'Ngôi nhà',open(){dhRoom=null;dhSel=null},canDraw(){return !dhDrag},draw(){renderDollhouse()}});
 const dhD=()=>DollHouse.normalize(state);
 const dhRawName=()=>{const n=state.saveName||'';return /^Game \d+$/.test(n)?'':n};
 const dhWho=()=>Atelier.escape(dhRawName()||'bạn');
