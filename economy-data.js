@@ -33,9 +33,12 @@ const EcoData=(()=>{
    crops:[
   {id:'cabbage',icon:'🥬',name:'Cải xanh',seed:8,grow:5*MIN,sell:11},
   {id:'carrot',icon:'🥕',name:'Cà rốt',seed:15,grow:10*MIN,sell:20},
+  {id:'tomato',icon:'🍅',name:'Cà chua',seed:24,grow:20*MIN,sell:34},
   {id:'strawberry',icon:'🍓',name:'Dâu tây',seed:30,grow:30*MIN,sell:44},
   {id:'corn',icon:'🌽',name:'Bắp ngô',seed:50,grow:HOUR,sell:76},
+  {id:'grape',icon:'🍇',name:'Nho tím',seed:90,grow:2*HOUR,sell:135},
   {id:'melon',icon:'🍉',name:'Dưa hấu',seed:120,grow:4*HOUR,sell:175},
+  {id:'sunflower',icon:'🌻',name:'Hướng dương',seed:140,grow:6*HOUR,sell:210},
   {id:'pumpkin',icon:'🎃',name:'Bí ngô',seed:200,grow:10*HOUR,sell:290}],
    startPlots:3,plotCosts:[150,300,600],waterCut:.2,bonusChance:.15,barnCap:40,
    breedCost:80,breedMs:20*MIN,breedCooldown:3*HOUR,minXp:25,minCare:40,mutation:.1,colorMutation:.12},
@@ -74,7 +77,26 @@ const EcoData=(()=>{
   rooms:{living:0,bedroom:120,kitchen:150,bath:100,play:200,garden:250},
   walls:{cream:0,sky:15,mint:15,pink:20,lavender:20,stripe:30,dots:30,stars:45,brick:40,peachwall:25,moonwall:25,snowwall:25},
   floors:{wood:0,tile:15,carpet:25,pinkrug:25,blue:20,grass:30,marble:40},
-  furniture:{sofa:45,bed:60,chair:15,tv:50,radio:20,lamp:15,door:30,window:30,fire:40,piano:90,books:35,mirror:35,vase:20,pot:20,teapot:20,cake:15,pizza:15,juice:10,bread:10,icecream:15,coffee:15,tub:70,shower:45,soap:10,brush:10,duck:15,toilet:40,teddy:25,ball:12,blocks:15,train:40,kite:20,guitar:50,paint:20,robot:45,doll:30,puzzle:20,horse:35,pot2:20,tulip:10,cactus:15,sunflower:15,tree:40,palm:40,bamboo:25,mushroom:15,rose:15,frame:25,ribbon:10,banner:20,sparkle:15,medal:15,star:10,moon:15,rainbow:30,clock:25,peach:35,kumquat:35,lantern:20,envelope:15,firework:25,circus:40,pinata:25,confetti:15,beach:40,melon:15,shades:10,beachball:15,shaved:15,moonlantern:20,mooncake:15,rabbit:30,fullmoon:25,bouquet:20,card:15,crayon:15,gradcap:25,xtree:50,santa:45,snowman:35,stocking:15,reindeer:30,unicorn:80,balloon:10,gift:20,crown:100,trophy:60,fountain:80,tent:70,castle:150,carousel:120,ferris:150}
+  furniture:{aquarium:55,cabinet:35,woolrug:25,noodle:20,banhmi:12,coconut:12,bubble:10,yoyo:15,jigsaw:20,drumtoy:25,lotus:25,orchid:22,scroll:30,hangstar:15,comet:65,rocket:70,sofa:45,bed:60,chair:15,tv:50,radio:20,lamp:15,door:30,window:30,fire:40,piano:90,books:35,mirror:35,vase:20,pot:20,teapot:20,cake:15,pizza:15,juice:10,bread:10,icecream:15,coffee:15,tub:70,shower:45,soap:10,brush:10,duck:15,toilet:40,teddy:25,ball:12,blocks:15,train:40,kite:20,guitar:50,paint:20,robot:45,doll:30,puzzle:20,horse:35,pot2:20,tulip:10,cactus:15,sunflower:15,tree:40,palm:40,bamboo:25,mushroom:15,rose:15,frame:25,ribbon:10,banner:20,sparkle:15,medal:15,star:10,moon:15,rainbow:30,clock:25,peach:35,kumquat:35,lantern:20,envelope:15,firework:25,circus:40,pinata:25,confetti:15,beach:40,melon:15,shades:10,beachball:15,shaved:15,moonlantern:20,mooncake:15,rabbit:30,fullmoon:25,bouquet:20,card:15,crayon:15,gradcap:25,xtree:50,santa:45,snowman:35,stocking:15,reindeer:30,unicorn:80,balloon:10,gift:20,crown:100,trophy:60,fountain:80,tent:70,castle:150,carousel:120,ferris:150}
+ },
+ /* Làng: đơn hàng ngày (thưởng = giá gốc × hệ số, chỉ cao hơn bán thường 30–50%), điểm danh 7 ngày xoay vòng, thành tựu nhận một lần. */
+ village:{
+  orderMult:[1.3,1.35,1.5],
+  crops:[{crop:'cabbage',n:6},{crop:'carrot',n:5},{crop:'tomato',n:4},{crop:'strawberry',n:3},{crop:'corn',n:3},{crop:'grape',n:2}],
+  fish:[{n:2,min:8},{n:3,min:8},{n:2,min:19},{n:2,min:30}],
+  mixed:[{crop:'carrot',c:3,n:2,min:8},{crop:'tomato',c:2,n:2,min:8},{crop:'strawberry',c:2,n:2,min:19}],
+  checkin:[{coins:10},{coins:15},{bait:'worm',n:5},{coins:20},{coins:30},{bait:'corn',n:5},{coins:60}],
+  ach:[
+   {id:'species',icon:'🐟',label:'Loài cá đã câu',metric:'species',tiers:[[3,20],[7,50],[13,120]]},
+   {id:'fish',icon:'🎣',label:'Số cá đã câu',metric:'fish',tiers:[[10,15],[50,40],[200,100]]},
+   {id:'harvest',icon:'🌾',label:'Nông sản đã thu',metric:'harvest',tiers:[[20,15],[100,45],[400,120]]},
+   {id:'collect',icon:'📖',label:'Bạn nhỏ trong sưu tập',metric:'collect',tiers:[[5,20],[20,60],[60,150]]},
+   {id:'pets',icon:'🐾',label:'Bạn nhỏ đang nuôi',metric:'pets',tiers:[[2,15],[5,40],[10,100]]},
+   {id:'streak',icon:'🔥',label:'Chuỗi nhiệm vụ dài nhất',metric:'streak',tiers:[[3,20],[7,60],[14,150]]},
+   {id:'orders',icon:'📦',label:'Đơn hàng đã giao',metric:'orders',tiers:[[3,20],[15,60],[50,150]]},
+   {id:'checkin',icon:'📅',label:'Ngày đã điểm danh',metric:'checkin',tiers:[[7,30],[30,100]]},
+   {id:'rooms',icon:'🏠',label:'Phòng đã xây',metric:'rooms',tiers:[[2,30],[6,120]]}
+  ]
  },
  /* Nhiệm vụ ngày: mỗi ngày bốn nhiệm vụ, mỗi khe chọn một mẫu theo ngày. metric đọc từ số sự kiện hôm nay (Adventure.daily).
     bonus = thưởng khi xong cả 4; streakStep = cộng thêm mỗi ngày liên tiếp (tối đa streakCap ngày cộng). */
