@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v49)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v50)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -103,3 +103,6 @@ v45: EcoData (bảng kinh tế một nguồn), siết cải bắp. v46: Games re
 
 ## v49: câu cá dễ hơn, thưởng cao hơn
 Người chơi báo quá khó và thưởng ít. Chỉnh toàn bộ ở `EcoData.fishing`: cần kéo chậm/rộng hơn, cửa sổ giật cần dài hơn, vé rẻ hơn (6/22/60), giá cá tăng. Lãi 1 vé đầu ngày (tay trung bình, cần gợi ý): Ao ≈ 45, Hồ rừng ≈ 85–100, Vịnh sâu ≈ 130–180 (trước đó 17–23 / 14–52 / −46–80). Bắt được: Ao làng người mới ≥94%; Hồ rừng cần sợi tay 0.4 ≈ 89%; Vịnh sâu cần carbon tay 0.4 ≈ 71%. Vẫn chống cày: vé thứ 4 trong ngày lãi rất ít, vé 5 không lời. Trần mới trong `tests/economy-balance.test.js`: ao ≤ 50, hồ rừng ≤ 115, vịnh ≤ 230 (bắt trọn 6/6). Chưa có dữ liệu chơi thật trên điện thoại: nếu vẫn khó/dễ, chỉnh `reel.speed/zone/gain/loss` rồi chạy `node tools/economy-report.js`.
+
+## v50: tiếng piano không còn bị chồng chuông lạ
+Lỗi: bấm đáp án nốt nhạc thì nốt piano và chuông "đúng/sai", xu, thưởng phát cùng lúc (khác cao độ) nên nghe có âm lạ kêu theo. Sửa trong `sfx.js` (`sfxPianoUntil`): lúc nốt đang ngân, tiếng chạm/lật/chuyển tab bị bỏ, các chuông kết quả dời sang sau khi nốt dứt. Chưa nghe thử trên máy thật; nếu vẫn lạ tai, nghi tiếp: mẫu piano chỉ có 9 file (mỗi 6 bán cung) nên nốt xa mẫu bị đổi tốc độ tối đa ±3 bán cung (`Sfx.nearestPiano`), có thể thêm mẫu hoặc giảm biên độ đổi.

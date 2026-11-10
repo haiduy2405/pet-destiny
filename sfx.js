@@ -44,8 +44,15 @@ function sfxVoice(freq,start,dur,wave,gain,bell){
   };
   mk(1,gain,wave);if(bell)mk(2,gain*.28,'sine');
 }
-function sfxPlay(name){
+/* Piano phát một mình: chuông "đúng/sai", xu, thưởng không được kêu CHỒNG lên nốt đàn (khác cao độ nghe như có âm lạ kêu cùng).
+   Trong lúc nốt đang ngân: tiếng chạm/lật/chuyển tab bỏ qua, các chuông kết quả dời sang sau khi nốt dứt. */
+let sfxPianoUntil=0;
+const sfxDropWhilePiano=new Set(['tap','flip','nav','place','plant','water','harvest']);
+const sfxDeferWhilePiano=new Set(['good','bad','coin','spend','reward','win','pet','egg','reveal_rare','reveal_epic']);
+function sfxPlay(name,fromDefer){
   if(!soundOn)return;
+  if(!fromDefer){const left=sfxPianoUntil-performance.now();
+    if(left>0){if(sfxDropWhilePiano.has(name))return;if(sfxDeferWhilePiano.has(name)){setTimeout(()=>sfxPlay(name,true),left+40);return}}}
   const r=Sfx.recipes[name],at=performance.now();if(!r)return;
   /* tiếng xu không chồng lên màn thắng vừa phát */
   if(name==='coin'&&sfxLast.win!==undefined&&at-sfxLast.win<800)return;
@@ -59,6 +66,7 @@ function sfxPlay(name){
 }
 /* nốt đàn: thân + họa âm 2,3,4, tắt dần ~1 giây */
 function sfxPiano(freq,delay=0,dur=1.05,gain=.17){
+  sfxPianoUntil=Math.max(sfxPianoUntil,performance.now()+delay*1000+Math.min(dur,.9)*1000);
   try{
     const ctx=sfxEnsure();if(!ctx)return;
     const np=Sfx.nearestPiano(freq),pb=sfxBuf[Sfx.pianoFile(np.name)];
