@@ -115,7 +115,7 @@ const Fishing=(()=>{
  }
  /* vị trí: 0 = đáy, 1 = mặt nước. z = đáy vùng xanh, f = vị trí cá (tâm) */
  function reelStart(p,rnd=Math.random){
-  return {p,z:0,zv:0,f:clamp(.55+rnd()*.3,.1,.9),tgt:.5,tspd:p.speed,tt:0,prog:.3,T:0,inT:0,over:null,quality:0};
+  return {p,z:0,zv:0,f:clamp(.55+rnd()*.3,.1,.9),tgt:.5,tspd:p.speed,tt:0,prog:.4,T:0,inT:0,over:null,quality:0};
  }
  function reelStep(r,dt,hold,rnd=Math.random){
   if(r.over)return r;
@@ -128,13 +128,15 @@ const Fishing=(()=>{
   r.tt-=dt;
   if(r.tt<=0){
    const dart=rnd()<p.dart;
-   r.tgt=dart?(r.f>.5?.08+rnd()*.3:.62+rnd()*.3):.08+rnd()*.84;
+   r.tgt=dart?(r.f>.5?.08+rnd()*.3:.62+rnd()*.3):.22+rnd()*.56; /* cá bơi quanh tầng giữa: ôm đáy hay ôm mặt đều không bắt được, phải giữ cần vừa phải */
    r.tspd=p.speed*(dart?1.9:1)*(.8+rnd()*.4);
    r.tt=dart?.35+rnd()*.5:.7+rnd()*1.3;
   }
   const d=r.tgt-r.f,stp=r.tspd*dt;r.f+=Math.abs(d)<=stp?d:Math.sign(d)*stp;
   const inside=r.f>=r.z&&r.f<=r.z+p.h;
-  r.prog=clamp(r.prog+(inside?p.gain:-p.loss)*dt,0,1);
+  /* đỡ người mới: tiến độ sắp cạn thì cá tuột chậm lại (còn thời gian sửa tay), tiến độ khá thì mất bình thường */
+  const lossNow=p.loss*(.5+.5*clamp(r.prog/.3,0,1));
+  r.prog=clamp(r.prog+(inside?p.gain:-lossNow)*dt,0,1);
   r.T+=dt;if(inside)r.inT+=dt;
   if(r.prog>=1){r.over='caught';r.quality=r.T>0?r.inT/r.T:1}
   else if(r.prog<=0||r.T>=p.maxT)r.over='escaped';

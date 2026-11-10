@@ -26,6 +26,12 @@ function rate(lake, rodId, skill, n = 120) {
   for (let i = 0; i < n; i++) { const fish = F.pickFish(lake, 'worm', rng(i * 7 + 1)); if (reel(lake, fish.id, rodId, r => bot(skill, r), i + 1).over === 'caught') ok++; }
   return ok / n;
 }
+/* người chơi "lười": bấm giữ đều đều 0,3 giây rồi thả 0,3 giây, không nhìn cá. Đại diện người mới thật trên điện thoại */
+const lazy = (lake, rodId, n = 120) => {
+  let ok = 0;
+  for (let i = 0; i < n; i++) { const fish = F.pickFish(lake, 'worm', rng(i * 7 + 1)); if (reel(lake, fish.id, rodId, () => { let t = 0; return (r, dt) => (t += dt, t % .6 < .3); }, i + 1).over === 'caught') ok++; }
+  return ok / n;
+};
 const ready = (extra = {}) => { const s = st(extra); F.buyRod(s, 'bamboo'); F.buyBait(s, 'worm'); F.buyBait(s, 'worm'); return s; };
 
 test('data: tiers get pricier, every lake has 4+ fish and fish values grow with the lake', () => {
@@ -57,7 +63,7 @@ test('shop: rod needed first, rods only upgrade, accessories once, bait in packs
 test('rent: costs the ticket, one ticket at a time, price per lake, decays for repeat rentals of the same lake in a day', () => {
   const s = ready({ coins: 5000 }), mults = [];
   for (let i = 0; i < 6; i++) { const r = F.rent(s, 'pond', D); assert.equal(r.ok, true); mults.push(r.mult); assert.equal(F.rent(s, 'forest', D).ok, false, 'còn vé'); F.dropTicket(s); }
-  assert.deepEqual(mults, [1, .8, .6, .4, .25, .25]);
+  assert.deepEqual(mults, [1, .75, .5, .3, .2, .2]);
   assert.equal(F.ticketsToday(s, D, 'pond'), 6); assert.equal(F.ticketsToday(s, D, 'forest'), 0);
   assert.equal(F.rent(s, 'forest', D).mult, 1, 'hồ khác tính riêng'); F.dropTicket(s);
   assert.equal(F.rent(s, 'pond', '2026-11-10').mult, 1, 'sang ngày mới thì đặt lại');
@@ -97,8 +103,8 @@ test('reel: holding does nothing without skill — never holding or always holdi
       if (reel(l.id, fish, rodId, () => () => false, i + 1).over === 'caught') idle++;
       if (reel(l.id, fish, rodId, () => () => true, i + 1).over === 'caught') held++;
     }
-    assert.ok(idle <= 6, `${l.id}/${rodId}: không bấm gì mà vẫn được ${idle}/40`);
-    assert.ok(held <= 6, `${l.id}/${rodId}: giữ mãi mà vẫn được ${held}/40`);
+    assert.ok(idle <= (l.id === 'pond' ? 10 : 6), `${l.id}/${rodId}: không bấm gì mà vẫn được ${idle}/40`);
+    assert.ok(held <= (l.id === 'pond' ? 10 : 6), `${l.id}/${rodId}: giữ mãi mà vẫn được ${held}/40`);
   }
 });
 test('reel: deterministic for the same seed, always terminates, positions stay inside the bar', () => {
@@ -109,30 +115,22 @@ test('reel: deterministic for the same seed, always terminates, positions stay i
   assert.ok(r.T <= r.p.maxT + 1 / 30);
   const done = F.reelStep(r, 1, true); assert.equal(done, r, 'đã xong thì không đổi nữa');
 });
-test('difficulty: easy lake is easy for beginners; pricier lakes need real skill; a better rod helps; skill always helps', () => {
-  assert.ok(rate('pond', 'bamboo', .4) >= .8 && rate('pond', 'bamboo', .2) >= .6, 'ao làng dễ cho người mới');
-  assert.ok(rate('forest', 'bamboo', .2) <= .55, 'hồ rừng không dễ với cần tre + tay mới');
-  assert.ok(rate('forest', 'fiber', .4) >= .8, 'nhưng hồ rừng với cần gợi ý thì tay trung bình làm được');
-  assert.ok(rate('deep', 'carbon', .4) >= .6, 'vịnh sâu với cần gợi ý: tay trung bình vẫn bắt được kha khá');
-  assert.ok(rate('deep', 'bamboo', .4) <= .25, 'vịnh sâu rất khó với cần tre');
-  assert.ok(rate('deep', 'carbon', .95) >= .6, 'nhưng cao thủ + cần tốt vẫn làm được');
+test('difficulty: easy and forgiving for beginners, but lakes still get harder and gear/skill still matter', () => {
+  assert.ok(rate('pond', 'bamboo', .2) >= .9, 'ao làng: người mới nhìn cá là bắt được');
+  assert.ok(lazy('pond', 'bamboo') >= .5, 'ao làng: bấm đại đều đều cũng bắt được hơn nửa');
+  assert.ok(rate('forest', 'bamboo', .2) >= .85 && lazy('forest', 'fiber') >= .7, 'hồ rừng: dễ với cần gợi ý');
+  assert.ok(lazy('deep', 'bamboo') <= .25, 'vịnh sâu bấm đại + cần tre thì khó');
+  assert.ok(lazy('deep', 'carbon') >= .5, 'vịnh sâu + cần gợi ý: bấm đại vẫn bắt được kha khá');
+  assert.ok(rate('deep', 'carbon', .9) >= .95, 'cao thủ + cần tốt thì gần như chắc chắn');
   for (const l of ['forest', 'deep']) {
-    assert.ok(rate(l, 'carbon', .6) > rate(l, 'bamboo', .6) + .1, l + ': cần tốt hơn thì dễ hơn');
-    assert.ok(rate(l, 'bamboo', .9) > rate(l, 'bamboo', .3) + .1, l + ': kỹ năng cao hơn thì dễ hơn');
+    assert.ok(lazy(l, 'carbon') > lazy(l, 'bamboo') + .1, l + ': cần tốt hơn thì dễ hơn');
+    assert.ok(rate(l, 'bamboo', .9) > lazy(l, 'bamboo') + .1, l + ': chơi giỏi hơn bấm đại thì dễ hơn');
   }
   for (const rodId of ['bamboo', 'fiber', 'carbon']) assert.ok(rate('pond', rodId, .6) >= rate('forest', rodId, .6) && rate('forest', rodId, .6) >= rate('deep', rodId, .6), rodId + ': hồ đắt khó hơn');
+  assert.ok(lazy('pond', 'bamboo') > lazy('deep', 'bamboo') + .3, 'ao dễ hơn vịnh rõ rệt với người mới');
   /* kéo giỏi thì cá to hơn (chất lượng cao hơn) */
   const q = skill => { let s = 0, n = 0; for (let i = 0; i < 60; i++) { const r = reel('pond', 'diec', 'fiber', r2 => bot(skill, r2), i + 1); if (r.over === 'caught') { s += r.quality; n++; } } return s / n; };
-  assert.ok(q(.95) > q(.3) + .1);
-});
-test('rescue: net saves one escaped fish per ticket, only if owned', () => {
-  const s = ready({ coins: 5000 }); F.rent(s, 'forest', D);
-  const lost = () => { const r = F.reelStart(F.reelParams('forest', 'loc', 'bamboo')); r.over = 'escaped'; r.T = 30; return r; };
-  assert.equal(F.rescue(s, lost()), false, 'chưa có lưới');
-  F.buyAcc(s, 'net'); const r = lost(); assert.equal(F.rescue(s, r), true); assert.equal(r.over, null); assert.equal(r.prog, .35); assert.ok(r.T <= r.p.maxT - 8 + 1e-9);
-  assert.equal(F.rescue(s, lost()), false, 'chỉ 1 lần mỗi vé');
-  const c = lost(); c.over = 'caught'; F.dropTicket(s); F.rent(s, 'forest', D); assert.equal(F.rescue(s, c), false, 'cá đã bắt được thì không cần');
-  assert.equal(F.rescue(s, lost()), true, 'vé mới có lưới lại');
+  assert.ok(q(.95) > q(.3) + .05);
 });
 test('land + sell: value scales with quality and the day multiplier, first catch gives a one-time bonus, selling pays the bucket', () => {
   const s = ready({ coins: 5000 }); F.rent(s, 'pond', D);
@@ -142,8 +140,8 @@ test('land + sell: value scales with quality and the day multiplier, first catch
   assert.equal(F.normalize(s).caught.chep, 2); assert.equal(F.normalize(s).record.chep, a.cm); assert.equal(F.normalize(s).ticket.catches, 2);
   const cash = s.coins, sold = F.sellAll(s); assert.equal(sold.ok, true); assert.equal(sold.n, 2); assert.equal(sold.coins, a.value + b.value); assert.equal(s.coins, cash + sold.coins);
   assert.equal(F.sellAll(s).ok, false, 'giỏ trống');
-  F.dropTicket(s); F.rent(s, 'pond', D); F.dropTicket(s); F.rent(s, 'pond', D); /* vé thứ 3 trong ngày ×0.6 */
-  const d = F.land(s, 'chep', .5); assert.equal(d.mult, .6); assert.equal(d.value, Math.round(V * 1 * .6));
+  F.dropTicket(s); F.rent(s, 'pond', D); F.dropTicket(s); F.rent(s, 'pond', D); /* vé thứ 3 trong ngày ×0.5 */
+  const d = F.land(s, 'chep', .5); assert.equal(d.mult, .5); assert.equal(d.value, Math.round(V * 1 * .5));
   assert.equal(F.land(s, 'nope', .5).ok, false); assert.equal(F.land(st(), 'chep', .5).ok, false, 'không có vé');
 });
 test('settle: ticket ends only when no casts are left', () => {
@@ -153,14 +151,15 @@ test('settle: ticket ends only when no casts are left', () => {
 });
 test('economy: a decent player profits at the easy lake once or twice a day, then repeating the same lake stops paying (no grinding)', () => {
   const l = F.lake('pond'), ev = F.expectedValue('pond', 'worm') * 1.08, net = n => l.casts * ev * F.decayFor(n) - l.ticket - l.casts * F.bait('worm').cost;
-  assert.ok(net(0) >= 30 && net(0) <= 55, 'vé đầu: lãi vừa phải ' + net(0));
+  assert.ok(net(0) >= 45 && net(0) <= 70, 'vé đầu: lãi vừa phải ' + net(0));
   assert.ok(net(1) > 0, 'vé 2 vẫn còn lãi nhẹ');
   assert.ok(net(2) < net(1) && net(3) < net(0) * .35 && net(4) <= 0, 'vé 4 lãi còn rất ít, từ vé 5 không còn lời (không cày một hồ)');
   /* hồ khó: người chơi kém lỗ, cao thủ + cần tốt lời hơn hồ ao */
   const lakeNet = (id, rodId, skill, bait = 'corn') => { const k = F.lake(id), p = rate(id, rodId, skill, 100); return k.casts * p * F.expectedValue(id, bait) * 1.08 - k.ticket - k.casts * F.bait(bait).cost; };
-  assert.ok(lakeNet('deep', 'bamboo', .4) < net(0), 'tay mới + cần tre ở vịnh sâu thì kém hơn cả ao làng');
+  const lazyNet = (id, rodId) => { const k = F.lake(id); return k.casts * lazy(id, rodId) * F.expectedValue(id, 'corn') * 1.08 - k.ticket - k.casts * F.bait('corn').cost; };
+  assert.ok(lazyNet('deep', 'bamboo') < net(0), 'bấm đại + cần tre ở vịnh sâu thì kém hơn cả ao làng');
   assert.ok(lakeNet('deep', 'carbon', .85) > net(0), 'cao thủ + cần tốt lời hơn ao làng');
-  assert.ok(lakeNet('forest', 'fiber', .6) > net(0) * .8 && lakeNet('forest', 'fiber', .6) < 125);
+  assert.ok(lakeNet('forest', 'fiber', .6) > net(0) * .8 && lakeNet('forest', 'fiber', .6) < 150);
   assert.ok(lakeNet('deep', 'carbon', .95) < 230, 'trần thu nhập hợp lý');
   /* mồi: ở hồ rẻ giun lời nhất, mồi xịn dành cho hồ lớn */
   const bn = (id, b) => F.lake(id).casts * F.expectedValue(id, b) * 1.08 - F.lake(id).casts * F.bait(b).cost;

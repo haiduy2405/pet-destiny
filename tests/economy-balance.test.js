@@ -20,9 +20,9 @@ test('passive/slow sources never out-earn active play: farm per plot-hour and fi
   assert.ok(Math.max(...F.crops.map(perHour)) <= 40, 'nông trại ≤ 40 xu/giờ/thửa');
   assert.ok(F.MAX_PLOTS * 40 <= 280, 'tối đa 6 thửa không vượt 280 xu/giờ ngay cả khi chăm liên tục');
   const net = (id, bait) => { const l = X.lake(id); return l.casts * X.expectedValue(id, bait) * 1.08 - l.ticket - l.casts * X.bait(bait).cost; };
-  assert.ok(net('pond', 'worm') <= 50, 'vé ao làng lãi tối đa 50 xu: ' + net('pond', 'worm'));
-  assert.ok(net('forest', 'corn') <= 115, 'vé hồ rừng lãi tối đa 115 xu: ' + net('forest', 'corn'));
-  assert.ok(net('deep', 'corn') <= 230, 'vé vịnh sâu, bắt trọn 6/6 (thực tế cao thủ ~70–85%) lãi tối đa 230 xu: ' + net('deep', 'corn'));
+  assert.ok(net('pond', 'worm') <= 65, 'vé ao làng lãi tối đa 65 xu: ' + net('pond', 'worm'));
+  assert.ok(net('forest', 'corn') <= 135, 'vé hồ rừng lãi tối đa 135 xu: ' + net('forest', 'corn'));
+  assert.ok(net('deep', 'corn') <= 215, 'vé vịnh sâu, bắt trọn 6/6 (thực tế cao thủ ~70–85%) lãi tối đa 215 xu: ' + net('deep', 'corn'));
 });
 test('sinks and gambles: lucky box is a mild loss, fishing tickets/rods cost more than one decent session earns at the bottom tier', () => {
   assert.ok(L.expected() < E.lucky.price, 'hộp quà kỳ vọng dưới giá vé');

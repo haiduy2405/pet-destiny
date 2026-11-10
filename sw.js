@@ -2,7 +2,7 @@
 /* Pet Destiny service worker. VERSION must equal the vNN label in index.html (a test checks it);
    bumping it makes the browser drop the old cache. Strategy: network first (always fresh when online),
    falling back to the cache so the game still opens offline. */
-const VERSION = 'v50';
+const VERSION = 'v51';
 const CACHE = 'pet-destiny-' + VERSION;
 const ASSETS = [
   './', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',
@@ -13,8 +13,7 @@ const ASSETS = [
   'pet-loop.js', 'shape-camera.js', 'music.js', 'learning.js', 'homes.js', 'egg-journey.js', 'atelier.js',
   'prosperity.js', 'practice-games.js', 'game-packs-core.js', 'game-packs.js', 'pet-bond.js',
   'english-games.js', 'vietnamese-games.js', 'english-speaking.js', 'dollhouse-core.js', 'dollhouse-photo-core.js', 'home-games-core.js', 'dollhouse.js', 'dollhouse-photo.js', 'home-games.js', 'levels-core.js', 'balance-core.js', 'arcade-levels.js', 'levels.js', 'lucky-core.js', 'sfx-core.js', 'sfx.js', 'app-kit.js', 'quests-core.js', 'daily.js', 'game-theme.css', 'games-registry.js', 'farm-core.js', 'farm.js', 'fishing-core.js', 'fishing.js', 'lucky.js',
-  'audio/ui/press.mp3', 'audio/ui/snap.mp3', 'audio/ui/forward.mp3', 'audio/ui/check.mp3', 'audio/ui/blocked.mp3', 'audio/ui/level-up.mp3', 'audio/ui/reward.mp3', 'audio/ui/purchase.mp3', 'audio/ui/drop.mp3', 'audio/ui/bonus.mp3', 'audio/ui/reaction.mp3', 'audio/ui/unlock.mp3', 'audio/ui/badge.mp3', 'audio/ui/achievement.mp3', 'audio/ui/receive.mp3', 'audio/piano/C2.mp3', 'audio/piano/Fs2.mp3', 'audio/piano/C3.mp3', 'audio/piano/Fs3.mp3', 'audio/piano/C4.mp3', 'audio/piano/Fs4.mp3', 'audio/piano/C5.mp3', 'audio/piano/Fs5.mp3', 'audio/piano/C6.mp3',
-  'rewards.js', 'evolution-fx.js', 'backup.js', 'slots.js', 'pwa.js',
+  'audio/piano/A2.mp3', 'audio/piano/A3.mp3', 'audio/piano/A4.mp3', 'audio/piano/A5.mp3', 'audio/piano/C2.mp3', 'audio/piano/C3.mp3', 'audio/piano/C4.mp3', 'audio/piano/C5.mp3', 'audio/piano/C6.mp3', 'audio/piano/Ds2.mp3', 'audio/piano/Ds3.mp3', 'audio/piano/Ds4.mp3', 'audio/piano/Ds5.mp3', 'audio/piano/Fs2.mp3', 'audio/piano/Fs3.mp3', 'audio/piano/Fs4.mp3', 'audio/piano/Fs5.mp3', 'audio/ui/press.mp3', 'audio/ui/snap.mp3', 'audio/ui/forward.mp3', 'audio/ui/check.mp3', 'audio/ui/blocked.mp3', 'audio/ui/level-up.mp3', 'audio/ui/reward.mp3', 'audio/ui/purchase.mp3', 'audio/ui/drop.mp3', 'audio/ui/bonus.mp3', 'audio/ui/reaction.mp3', 'audio/ui/unlock.mp3', 'audio/ui/badge.mp3', 'audio/ui/achievement.mp3', 'audio/ui/receive.mp3', 'rewards.js', 'evolution-fx.js', 'backup.js', 'slots.js', 'pwa.js',
 ];
 
 self.addEventListener('install', event => {

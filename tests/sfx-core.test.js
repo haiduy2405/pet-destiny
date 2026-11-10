@@ -62,8 +62,50 @@ test('every sampled cue and piano sample exists on disk, and each cue has a synt
   for (const [, n] of S.pianoMidi) assert.ok(fs.existsSync(path.join(root, S.pianoFile(n))), n);
   assert.ok(fs.existsSync(path.join(root, 'audio/CREDITS.md')), 'credits file');
 });
-test('piano: nearest sample and pitch shift stay within 3 semitones across the staff range', () => {
+test('piano: nearest sample and pitch shift stay within 1.5 semitones across the staff range (timbre stays natural)', () => {
   assert.equal(S.nearestPiano(S.freq('C', 4)).name, 'C4'); assert.ok(Math.abs(S.nearestPiano(S.freq('C', 4)).rate - 1) < 1e-9);
-  const d = S.nearestPiano(S.freq('D', 4)); assert.equal(d.name, 'C4'); assert.ok(Math.abs(d.rate - 2 ** (2 / 12)) < 1e-6);
-  for (let m = 40; m <= 83; m++) assert.ok(Math.abs(S.nearestPiano(S.midi(m)).shift) <= 3.0001, 'midi ' + m);
+  const d = S.nearestPiano(S.freq('D', 4)); assert.equal(d.name, 'Ds4'); assert.ok(Math.abs(d.rate - 2 ** (-1 / 12)) < 1e-6);
+  for (let m = 36; m <= 84; m++) assert.ok(Math.abs(S.nearestPiano(S.midi(m)).shift) <= 1.5001, 'midi ' + m);
+  assert.equal(S.pianoMidi.length, 17); for (let i = 1; i < S.pianoMidi.length - 1; i++) assert.equal(S.pianoMidi[i][0] - S.pianoMidi[i - 1][0], 3);
+});
+
+
+test('director: one main idea at a time — piano silences UI, fanfare silences weaker sounds, results chain instead of stacking', () => {
+  const t = (name, at, st, deferred) => S.decide(name, at, st, deferred).act;
+  let st = S.newDirector();
+  S.holdPiano(st, 1000, 900);
+  assert.equal(t('tap', 1100, st), 'drop', 'tiếng nút bị bỏ khi piano đang ngân');
+  assert.equal(t('nav', 1200, st), 'drop');
+  const d = S.decide('good', 1200, st); assert.equal(d.act, 'defer'); assert.ok(d.ms >= 740 && d.ms <= 760, 'chuông đúng dời tới sau nốt: ' + d.ms);
+  assert.equal(t('win', 1300, st), 'defer');
+  assert.equal(t('good', 1950, st, true), 'play', 'sau khi nốt dứt thì phát bình thường');
+  assert.equal(t('coin', 1950, st, true), 'defer', 'hai chuông bị dời cùng lúc vẫn nối đuôi nhau, không chồng');
+  assert.equal(t('coin', 2180, st, true), 'play');
+  assert.equal(S.decide('tap', 2000, S.newDirector()).act, 'play');
+  st = S.newDirector();
+  assert.equal(t('win', 5000, st), 'play');
+  assert.equal(t('coin', 5100, st), 'drop', 'xu không chồng lên fanfare');
+  assert.equal(t('good', 5400, st), 'drop'); assert.equal(t('tap', 5500, st), 'drop');
+  assert.equal(t('tap', 5800, st), 'play', 'hết thời gian giữ thì tiếng nhẹ trở lại');
+  st = S.newDirector();
+  assert.equal(t('good', 100, st), 'play');
+  assert.equal(S.decide('coin', 160, st).act, 'defer', 'hai tiếng kết quả sát nhau thì nối đuôi');
+  assert.equal(t('tap', 120, st), 'drop', 'tiếng nút ngay sau tiếng kết quả bị bỏ');
+  assert.equal(t('coin', 400, st), 'play');
+  assert.equal(t('win', 410, st), 'play', 'tiếng nặng hơn luôn được phát');
+});
+test('notices: celebrate only real good news, spend/coin/neutral get the right small sound', () => {
+  assert.equal(S.noticeKind('Chưa đủ xu cho món này.'), 'info');
+  assert.equal(S.noticeKind('Đã lưu'), 'info');
+  assert.equal(S.noticeKind('Nhiệm vụ xong · +20 xu'), 'coin');
+  assert.equal(S.noticeKind('Hoàn thành ngày · chuỗi 3 · +38 xu'), 'win');
+  assert.equal(S.noticeKind('Một bạn nhỏ đã nở!'), 'win');
+  assert.equal(S.noticeKind('Đã mua Bồn hoa · −40 xu'), 'spend');
+  assert.equal(S.noticeKind(''), null); assert.equal(S.noticeKind(undefined), null);
+});
+test('volume levels: off then rising, haptics are short, every cue has a priority', () => {
+  assert.equal(S.LEVELS[0].v, 0); for (let i = 1; i < S.LEVELS.length; i++) assert.ok(S.LEVELS[i].v > S.LEVELS[i - 1].v);
+  assert.equal(S.LEVELS.length, 4);
+  for (const v of Object.values(S.HAPTIC)) assert.ok([].concat(v).reduce((a, b) => a + b, 0) <= 300);
+  for (const n of Object.keys(S.recipes)) assert.ok(S.PRI[n] >= 1 && S.PRI[n] <= 4, n + ' thiếu độ ưu tiên');
 });

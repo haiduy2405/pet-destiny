@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v50)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v51)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -106,3 +106,15 @@ Người chơi báo quá khó và thưởng ít. Chỉnh toàn bộ ở `EcoData
 
 ## v50: tiếng piano không còn bị chồng chuông lạ
 Lỗi: bấm đáp án nốt nhạc thì nốt piano và chuông "đúng/sai", xu, thưởng phát cùng lúc (khác cao độ) nên nghe có âm lạ kêu theo. Sửa trong `sfx.js` (`sfxPianoUntil`): lúc nốt đang ngân, tiếng chạm/lật/chuyển tab bị bỏ, các chuông kết quả dời sang sau khi nốt dứt. Chưa nghe thử trên máy thật; nếu vẫn lạ tai, nghi tiếp: mẫu piano chỉ có 9 file (mỗi 6 bán cung) nên nốt xa mẫu bị đổi tốc độ tối đa ±3 bán cung (`Sfx.nearestPiano`), có thể thêm mẫu hoặc giảm biên độ đổi.
+
+## v51: nâng cấp âm thanh toàn app + câu cá dễ hơn, nhiều xu hơn
+**Âm thanh** (`sfx-core.js` + `sfx.js`, mobile.js chỉ đổi 3 chỗ gọi hàm):
+- **Bộ điều phối** (`Sfx.decide`, test `sfx-core.test.js`): mỗi lúc chỉ nghe một ý chính. Ưu tiên 1 giao diện < 2 hành động < 3 kết quả (đúng/sai/xu) < 4 ăn mừng < 5 piano. Đang có nốt piano thì bỏ tiếng nút/hành động, chuông kết quả dời sang sau nốt và nối đuôi nhau; sau fanfare thì bỏ tiếng nhẹ hơn; tiếng nút chờ 40ms để bị hủy nếu có tiếng kết quả ngay sau.
+- **Thông báo (toast)**: `noticeKind()` phân loại (ăn mừng chỉ khi chuyện vui, `+xu` → tiếng xu, `−xu` → tiếng chi, còn lại tiếng "info" rất nhẹ). Trước đây MỌI toast đều phát tiếng thưởng/thú cưng.
+- **Mixer**: hồ âm tự tạo (convolver), lọc cắt dải chói 9 kHz, nén. Nút loa chuyển 4 mức Tắt/Nhẹ/Vừa/To (nhớ lại, `pet-destiny-volume`). Rung nhẹ trên điện thoại (`Sfx.HAPTIC`), tôn trọng giảm chuyển động. Tiếng chạm đổi cao độ ngẫu nhiên ±4%.
+- **Piano**: 17 mẫu Salamander cách 3 bán cung (C2–C6, chuẩn hóa âm lượng, 245 KB), dịch cao độ tối đa ±1,5 bán cung (trước ±3) nên âm sắc tự nhiên hơn.
+**Câu cá**: ba chỉnh lớn.
+- Cá bơi quanh tầng giữa (không còn "ôm đáy/ôm mặt là thắng"), tiến độ sắp cạn thì tuột chậm lại (đỡ người mới), tiến độ khởi đầu 40%, vùng giữ cá rộng hơn, cá chậm hơn, cửa sổ giật cần dài hơn (2,2/1,9/1,6 s), thưởng lần đầu bắt loài mới ×0,8 giá cá.
+- Lãi vé đầu ngày khi bắt trọn 6/6: Ao ≈ 59, Hồ rừng ≈ 123, Vịnh ≈ 190–200 (trước 45/100/180). Hệ số vé lặp trong ngày [1, .75, .5, .3, .2].
+- "Người chơi lười" (`lazy()` trong test: bấm giữ 0,3s/thả 0,3s, không nhìn cá) là mốc người mới thật: Ao + cần tre bắt ≥ 50%, Hồ rừng + cần sợi ≥ 70%, Vịnh + cần carbon ≥ 50%. Trần kinh tế trong `economy-balance.test.js`: ao ≤ 65, rừng ≤ 135, vịnh ≤ 215 mỗi vé.
+Chưa thử trên điện thoại thật: nếu vẫn khó, giảm `reel.speed`/tăng `reel.zone` ở `EcoData.fishing.lakes`, chạy `node tools/economy-report.js`.
