@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v48)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v49)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -100,3 +100,6 @@ v45: EcoData (bảng kinh tế một nguồn), siết cải bắp. v46: Games re
 - `Tabs` có hook mới `badge()` (chấm đỏ trên nút tab, dùng cho nhiệm vụ có thể nhận).
 - **Giao diện**: `game-theme.css` là lớp phủ nạp sau `mobile.css` (HUD đầu trang, nút nổi khối, thẻ có độ sâu, dock tab nổi, chế độ tối). Màu ở biến `:root`. Quay về cũ: bỏ thẻ link trong index.html. Chưa làm lại: các màn mini-game riêng lẻ (vẫn dùng style cũ, chỉ thừa hưởng nút/thẻ mới).
 - 202 test.
+
+## v49: câu cá dễ hơn, thưởng cao hơn
+Người chơi báo quá khó và thưởng ít. Chỉnh toàn bộ ở `EcoData.fishing`: cần kéo chậm/rộng hơn, cửa sổ giật cần dài hơn, vé rẻ hơn (6/22/60), giá cá tăng. Lãi 1 vé đầu ngày (tay trung bình, cần gợi ý): Ao ≈ 45, Hồ rừng ≈ 85–100, Vịnh sâu ≈ 130–180 (trước đó 17–23 / 14–52 / −46–80). Bắt được: Ao làng người mới ≥94%; Hồ rừng cần sợi tay 0.4 ≈ 89%; Vịnh sâu cần carbon tay 0.4 ≈ 71%. Vẫn chống cày: vé thứ 4 trong ngày lãi rất ít, vé 5 không lời. Trần mới trong `tests/economy-balance.test.js`: ao ≤ 50, hồ rừng ≤ 115, vịnh ≤ 230 (bắt trọn 6/6). Chưa có dữ liệu chơi thật trên điện thoại: nếu vẫn khó/dễ, chỉnh `reel.speed/zone/gain/loss` rồi chạy `node tools/economy-report.js`.

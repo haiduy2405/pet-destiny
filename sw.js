@@ -2,7 +2,7 @@
 /* Pet Destiny service worker. VERSION must equal the vNN label in index.html (a test checks it);
    bumping it makes the browser drop the old cache. Strategy: network first (always fresh when online),
    falling back to the cache so the game still opens offline. */
-const VERSION = 'v48';
+const VERSION = 'v49';
 const CACHE = 'pet-destiny-' + VERSION;
 const ASSETS = [
   './', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',
