@@ -41,8 +41,8 @@ test('petBox stays inside the photo for every spot the pet can reach', () => {
 test('sprite cells cover the 4x3 sheet and file names are safe', () => {
   assert.deepEqual(P.sheetCell(0), { sx: 0, sy: 0, sw: 300, sh: 300 });
   assert.deepEqual(P.sheetCell(11), { sx: 900, sy: 600, sw: 300, sh: 300 });
-  assert.equal(P.fileName('living', '2026-11-09'), 'pet-destiny-living-2026-11-09.png');
-  assert.equal(P.fileName('../x y', '2026/11'), 'pet-destiny-xy-202611.png');
+  assert.equal(P.fileName('living', '2026-11-09'), 'lang-ban-nho-living-2026-11-09.png');
+  assert.equal(P.fileName('../x y', '2026/11'), 'lang-ban-nho-xy-202611.png');
 });
 
 test('drawOrder paints back to front without mutating the room', () => {

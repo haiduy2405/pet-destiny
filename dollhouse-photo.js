@@ -46,7 +46,7 @@ async function dpRender(rid){
   ctx.fillStyle='#193d36';ctx.textAlign='left';ctx.textBaseline='middle';
   ctx.font='700 44px system-ui,sans-serif';ctx.fillText(`${r.icon} ${r.name} · ${'★'.repeat(rt.stars)}${'☆'.repeat(3-rt.stars)}`,36,y0-26);
   ctx.font='32px system-ui,sans-serif';ctx.fillStyle='#4d6556';ctx.fillText(name,36,y0+26);
-  ctx.textAlign='right';ctx.font='700 30px Georgia,serif';ctx.fillStyle='#235c48';ctx.fillText('Pet Destiny ✦',W-36,y0-18);
+  ctx.textAlign='right';ctx.font='700 30px Georgia,serif';ctx.fillStyle='#235c48';ctx.fillText('Làng Bạn Nhỏ ✦',W-36,y0-18);
   ctx.font='26px system-ui,sans-serif';ctx.fillStyle='#4d6556';ctx.fillText(new Date().toLocaleDateString('vi-VN'),W-36,y0+22);
   return c;
 }

@@ -1,7 +1,7 @@
 {
-  "name": "pet-destiny",
+  "name": "lang-ban-nho",
   "private": true,
-  "description": "Pet Destiny: a static browser game. No build step; this file only runs the tests.",
+  "description": "Làng Bạn Nhỏ (tên cũ: Pet Destiny): a static browser game. No build step; this file only runs the tests.",
   "scripts": {
     "test": "node --test \"tests/*.test.js\""
   }

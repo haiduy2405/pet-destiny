@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v53)
+# Làng Bạn Nhỏ (tên cũ: Pet Destiny) — Handoff (cập nhật 2026-11-09, bản v54)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -124,3 +124,6 @@ Chưa thử trên điện thoại thật: nếu vẫn khó, giảm `reel.speed`/
 
 ## v53: toàn màn hình / cài app
 Web KHÔNG thể tự vào toàn màn hình khi chưa có thao tác chạm (quy định trình duyệt). `pwa.js` làm hết mức có thể: (1) chạm đầu tiên tự bật Fullscreen API (Android/máy tính); thoát bằng tay thì nhớ `pet-destiny-fs=off` và không tự bật lại; nút ⛶ trên đầu trang bật/tắt; (2) Android/Chrome hiện nút "📲 Cài app" (beforeinstallprompt); (3) iPhone không có Fullscreen API nên hiện hướng dẫn "Thêm vào MH chính" một lần (`pet-destiny-ios-hint`). Cài ra màn hình chính là cách triệt để: manifest `display: fullscreen` (+ `display_override` fallback standalone), `viewport-fit=cover`, status bar `black-translucent`, header/nav tự đệm vùng an toàn (`env(safe-area-inset-*)`), `theme-color` #0f6f7a khớp header. Đã chạy như app (standalone/fullscreen) thì pwa.js không làm gì thêm. Chưa thử trên iPhone/Android thật.
+
+## v54: đổi tên game thành "Làng Bạn Nhỏ"
+Đổi mọi chữ người chơi thấy: tiêu đề trang, header, manifest, tên app iOS, nút cài app, ô lưu, ảnh chụp nhà (dấu nước), thông báo sao lưu, tên file tải về (`lang-ban-nho-*.json/.png`), kho cache của service worker (`lang-ban-nho-VERSION`, kho cũ `pet-destiny-*` vẫn được dọn). **GIỮ NGUYÊN có chủ đích**: khoá localStorage `pet-destiny-*`, `KEY='pet-destiny-v1'`, `FILE_APP='pet-destiny'` trong file sao lưu, tên kho GitHub và URL GitHub Pages (đổi các thứ này sẽ làm mất file lưu hoặc không nhập được sao lưu cũ, và gãy link/app đã cài). Đừng "dọn" các chuỗi `pet-destiny` còn lại trong code. Đổi tên kho GitHub là bước riêng, làm tay (Settings → Rename) và sẽ đổi đường dẫn trang.

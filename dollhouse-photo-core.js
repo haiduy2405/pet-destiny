@@ -27,7 +27,7 @@ const DollPhotoCore=(()=>{
   return {x:Math.round(cx-w/2),y:Math.round(bottom-h),w,h,g};
  }
  const sheetCell=species=>({sx:(species%4)*300,sy:Math.floor(species/4)*300,sw:300,sh:300});
- const fileName=(roomId,date)=>`pet-destiny-${String(roomId).replace(/[^a-z0-9]/gi,'')||'room'}-${String(date).replace(/[^0-9-]/g,'')}.png`;
+ const fileName=(roomId,date)=>`lang-ban-nho-${String(roomId).replace(/[^a-z0-9]/gi,'')||'room'}-${String(date).replace(/[^0-9-]/g,'')}.png`;
  const drawOrder=objs=>[...objs].sort((a,b)=>a.y-b.y||a.u-b.u);
  return {W,H,CAP,FRAME,scale,WALL_FRAC,walls,floors,wallSpec,floorSpec,objSize,petBox,sheetCell,fileName,drawOrder};
 })();

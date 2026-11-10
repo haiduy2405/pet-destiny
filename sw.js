@@ -1,9 +1,9 @@
 'use strict';
-/* Pet Destiny service worker. VERSION must equal the vNN label in index.html (a test checks it);
+/* Làng Bạn Nhỏ service worker. VERSION must equal the vNN label in index.html (a test checks it);
    bumping it makes the browser drop the old cache. Strategy: network first (always fresh when online),
    falling back to the cache so the game still opens offline. */
-const VERSION = 'v53';
-const CACHE = 'pet-destiny-' + VERSION;
+const VERSION = 'v54';
+const CACHE = 'lang-ban-nho-' + VERSION; /* tên kho mới; kho cũ 'pet-destiny-*' vẫn được dọn bên dưới */
 const ASSETS = [
   './', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',
   'mobile.css', 'pets.png', 'garden.jpg', 'Bravura.woff',
@@ -27,7 +27,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k.startsWith('pet-destiny-') && k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => (k.startsWith('pet-destiny-') || k.startsWith('lang-ban-nho-')) && k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

@@ -21,18 +21,18 @@ function bkBind(){
   if(q('bkLoad'))q('bkLoad').onclick=()=>q('bkFile').click();
   if(q('bkFile'))q('bkFile').onchange=async e=>{
     const file=e.target.files[0];e.target.value='';if(!file)return;
-    if(file.size>8e6){notice('File quá lớn, không phải file sao lưu Pet Destiny.');return}
+    if(file.size>8e6){notice('File quá lớn, không phải file sao lưu Làng Bạn Nhỏ.');return}
     let incoming;
-    try{incoming=SaveStore.parseBackup(await file.text())}catch{notice('File này không phải bản sao lưu Pet Destiny hợp lệ.');return}
+    try{incoming=SaveStore.parseBackup(await file.text())}catch{notice('File này không phải bản sao lưu Làng Bạn Nhỏ hợp lệ.');return}
     bkReview(incoming);
   };
 }
 async function bkExport(share){
   if(activeSlot!==null&&!save())return;
   let text;try{text=SaveStore.exportData(slotData)}catch{notice('Chưa có game nào để sao lưu.');return}
-  const name=`pet-destiny-${day()}.json`;
+  const name=`lang-ban-nho-${day()}.json`;
   if(share){
-    try{const file=new File([text],name,{type:'application/json'});await navigator.share({files:[file],title:'Sao lưu Pet Destiny'});bkMark();notice('Đã chia sẻ file sao lưu.');drawSlots()}
+    try{const file=new File([text],name,{type:'application/json'});await navigator.share({files:[file],title:'Sao lưu Làng Bạn Nhỏ'});bkMark();notice('Đã chia sẻ file sao lưu.');drawSlots()}
     catch(err){if(err&&err.name!=='AbortError')notice('Không chia sẻ được. Hãy thử “Tải file sao lưu”.')}
     return;
   }

@@ -34,7 +34,7 @@
 
   /* 2) Android/Chrome: nút cài app */
   let deferred=null;
-  addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;addBtn('installBtn','📲 Cài app','Cài Pet Destiny ra màn hình chính để chơi toàn màn hình',async()=>{try{deferred.prompt();await deferred.userChoice}catch{}deferred=null;document.getElementById('installBtn')?.remove()})});
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;addBtn('installBtn','📲 Cài app','Cài Làng Bạn Nhỏ ra màn hình chính để chơi toàn màn hình',async()=>{try{deferred.prompt();await deferred.userChoice}catch{}deferred=null;document.getElementById('installBtn')?.remove()})});
   addEventListener('appinstalled',()=>{document.getElementById('installBtn')?.remove()});
 
   /* 3) iPhone/iPad Safari: không có API toàn màn hình, chỉ có cách thêm vào màn hình chính */

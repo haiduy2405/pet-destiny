@@ -18,7 +18,7 @@ const SaveStore=(()=>{
   if(typeof text!=='string'||text.length>MAX_FILE)throw Error('Invalid backup file');
   const raw=JSON.parse(text);
   const ours=raw&&raw.app===FILE_APP&&raw.format===FILE_FORMAT,store=raw&&raw.version===1;
-  if(!ours&&!store)throw Error('Not a Pet Destiny backup');
+  if(!ours&&!store)throw Error('Not a Làng Bạn Nhỏ backup');
   if(!Array.isArray(raw.slots)||raw.slots.length!==SLOTS)throw Error('Invalid backup slots');
   const t=Date.now(),slots=raw.slots.map(s=>{if(s===null)return null;if(!s||!valid(s.state))throw Error('Invalid backup slot');return {state:copy(s.state),createdAt:stamp(s.createdAt,t),updatedAt:stamp(s.updatedAt,t)}});
   if(!slots.some(Boolean))throw Error('Empty backup');
