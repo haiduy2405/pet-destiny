@@ -83,3 +83,9 @@ img,svg,canvas,a{-webkit-user-drag:none;user-drag:none}
 button,[role=button],nav,.card{-webkit-user-select:none;user-select:none}
 ::selection{background:transparent}
 input::selection,textarea::selection,footer ::selection,footer::selection{background:#9fe0b8}
+/* Toàn màn hình / cài app: nội dung tràn xuống sau thanh trạng thái và tai thỏ; header tự đệm theo vùng an toàn (ngoài trình duyệt các giá trị này bằng 0 nên không đổi gì) */
+body{padding-top:0}
+header{padding-top:calc(18px + env(safe-area-inset-top));padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right))}
+nav{padding-bottom:calc(7px + env(safe-area-inset-bottom))}
+.fs-hint{position:fixed;left:12px;right:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:35;max-width:456px;margin:auto;background:#12353d;color:#fff;border:2px solid #ffffff44;border-radius:18px;padding:14px 16px;box-shadow:0 5px 0 #0a2329,0 14px 28px #0007;font-size:14px;line-height:1.45}
+.fs-hint b{color:#ffe27a}.fs-hint button{width:auto;min-height:38px;margin:10px 0 0;padding:8px 16px;font-size:13px}

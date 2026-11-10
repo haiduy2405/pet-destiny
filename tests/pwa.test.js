@@ -27,7 +27,7 @@ test('every local script, stylesheet and CSS url() is precached and exists on di
 
 test('manifest is valid and its icons exist', () => {
   const m = JSON.parse(read('manifest.webmanifest'));
-  assert.equal(m.display, 'standalone');
+  assert.equal(m.display, 'fullscreen'); assert.deepEqual(m.display_override, ['fullscreen', 'standalone']);
   assert.ok(m.name && m.short_name && m.start_url && m.scope);
   assert.ok(m.icons.some(i => i.sizes === '192x192') && m.icons.some(i => i.sizes === '512x512'));
   for (const i of m.icons) assert.ok(fs.existsSync(path.join(root, i.src)), i.src);
@@ -36,4 +36,14 @@ test('manifest is valid and its icons exist', () => {
 
 test('every script tag in index.html carries a ?v= cache buster', () => {
   for (const m of html.matchAll(/<script src="([^"]+)"/g)) assert.match(m[1], /\?v=\d+$/, m[1]);
+});
+test('page: tints the status bar, fills the notch area and enables iOS standalone', () => {
+  const manifest = JSON.parse(read('manifest.webmanifest'));
+  assert.match(html, /viewport-fit=cover/);
+  const theme = html.match(/<meta name="theme-color" content="([^"]+)"/)[1];
+  assert.equal(theme, manifest.theme_color, 'màu thanh trạng thái khớp manifest');
+  assert.match(html, /apple-mobile-web-app-capable/); assert.match(html, /mobile-web-app-capable/);
+  assert.match(html, /apple-mobile-web-app-status-bar-style" content="black-translucent"/);
+  const css = read('game-theme.css');
+  assert.match(css, /env\(safe-area-inset-top\)/); assert.match(css, /env\(safe-area-inset-bottom\)/);
 });
