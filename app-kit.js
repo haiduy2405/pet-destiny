@@ -48,3 +48,7 @@ function txn(fn){
   if($('coins'))$('coins').textContent=state.coins;
   return res;
 }
+/* chặn menu ngữ cảnh khi bấm giữ (Android hiện menu "lưu ảnh/sao chép") và kéo-thả ảnh; ô nhập chữ giữ nguyên để dán/sao chép */
+document.addEventListener('contextmenu',e=>{if(!e.target.closest('input,textarea,select,[contenteditable=true],footer,.selectable'))e.preventDefault()});
+document.addEventListener('selectstart',e=>{const t=e.target.nodeType===1?e.target:e.target.parentElement;if(t&&!t.closest('input,textarea,select,[contenteditable=true],footer,.selectable'))e.preventDefault()});
+document.addEventListener('dragstart',e=>{if(e.target.closest&&e.target.closest('img,a'))e.preventDefault()});

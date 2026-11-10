@@ -1,4 +1,4 @@
-# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v51)
+# Pet Destiny — Handoff (cập nhật 2026-11-09, bản v52)
 
 ## Prompt dán vào session mới
 > Đọc `HANDOFF.md` trong repo haiduy2405/pet-destiny (đừng đọc cả codebase). Trả lời tiếng Việt, ngắn gọn, TL;DR trước. Tiếp tục tái cấu trúc theo mục "Tái cấu trúc: việc còn lại" (làm từng bước, `npm test` xanh sau mỗi bước, không làm hỏng file lưu cũ), hoặc theo ưu tiên tôi nói. Trước khi làm, kiểm tra trên điện thoại thật những gì bản v43–v44 chưa kiểm được (mục Rủi ro).
@@ -118,3 +118,6 @@ Lỗi: bấm đáp án nốt nhạc thì nốt piano và chuông "đúng/sai", x
 - Lãi vé đầu ngày khi bắt trọn 6/6: Ao ≈ 59, Hồ rừng ≈ 123, Vịnh ≈ 190–200 (trước 45/100/180). Hệ số vé lặp trong ngày [1, .75, .5, .3, .2].
 - "Người chơi lười" (`lazy()` trong test: bấm giữ 0,3s/thả 0,3s, không nhìn cá) là mốc người mới thật: Ao + cần tre bắt ≥ 50%, Hồ rừng + cần sợi ≥ 70%, Vịnh + cần carbon ≥ 50%. Trần kinh tế trong `economy-balance.test.js`: ao ≤ 65, rừng ≤ 135, vịnh ≤ 215 mỗi vé.
 Chưa thử trên điện thoại thật: nếu vẫn khó, giảm `reel.speed`/tăng `reel.zone` ở `EcoData.fishing.lakes`, chạy `node tools/economy-report.js`.
+
+## v52: không còn bôi đen/chọn chữ khi bấm giữ hoặc bấm đúp
+`game-theme.css` (user-select/touch-callout/touch-action: manipulation) + 3 listener cuối `app-kit.js` (contextmenu, selectstart, dragstart). Ô nhập chữ, `select`, `footer` (hướng dẫn sao lưu) và class `.selectable` vẫn chọn/sao chép được: muốn một đoạn chữ mới sao chép được thì thêm class `selectable`. Pinch-zoom bằng 2 ngón vẫn giữ để dễ nhìn.

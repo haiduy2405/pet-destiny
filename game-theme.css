@@ -75,3 +75,11 @@ body[data-page=daily] .hero{display:none}body[data-page=daily] #view{padding-top
 nav button{white-space:nowrap;font-size:10px;letter-spacing:-.2px}
 @media(max-width:360px){nav button{font-size:9px}nav button .nav-icon{font-size:20px}}
 #toast{bottom:calc(104px + env(safe-area-inset-bottom));z-index:40;border-radius:16px;background:#12353d;border:2px solid #ffffff44;box-shadow:0 5px 0 #0a2329,0 12px 24px #0006;font-weight:700}
+/* Cảm giác app: không bôi đen/chọn chữ khi bấm giữ hay bấm đúp, không hiện menu giữ ảnh/liên kết, không zoom khi bấm đúp (vẫn zoom bằng 2 ngón để người cần nhìn rõ).
+   Ô nhập chữ và phần chân trang (hướng dẫn sao lưu) vẫn chọn/sao chép được. */
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%;touch-action:manipulation}
+input,textarea,select,[contenteditable=true],footer,.selectable{-webkit-user-select:text;user-select:text}
+img,svg,canvas,a{-webkit-user-drag:none;user-drag:none}
+button,[role=button],nav,.card{-webkit-user-select:none;user-select:none}
+::selection{background:transparent}
+input::selection,textarea::selection,footer ::selection,footer::selection{background:#9fe0b8}
