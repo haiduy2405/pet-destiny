@@ -24,7 +24,7 @@ test('load order: every logic core loads before the UI file that uses it', () =>
   before('balance-core.js', 'levels.js', 'levels.js gọi Balance.*');
   before('levels-core.js', 'levels.js', 'levels.js gọi Levels.*');
   before('fishing-core.js', 'fishing.js', 'fishing.js gọi Fishing.*');
-  before('quests-core.js', 'daily.js', 'daily.js gọi Quests.*'); before('adventure-core.js', 'daily.js', 'daily.js đọc Adventure.daily');
+  before('quests-core.js', 'daily.js', 'daily.js gọi Quests.*'); before('village-core.js', 'daily.js', 'daily.js gọi Village.*'); before('adventure-core.js', 'daily.js', 'daily.js đọc Adventure.daily');
 });
 test('load order: tab router and shared helpers come before every tab that registers', () => {
   for (const f of uiFiles.filter(f => /Tabs\.register\(/.test(read(f)) && f !== 'app-kit.js')) before('app-kit.js', f, 'tab dùng Tabs/txn');

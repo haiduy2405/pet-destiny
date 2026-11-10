@@ -127,3 +127,13 @@ Web KHÔNG thể tự vào toàn màn hình khi chưa có thao tác chạm (quy 
 
 ## v54: đổi tên game thành "Làng Bạn Nhỏ"
 Đổi mọi chữ người chơi thấy: tiêu đề trang, header, manifest, tên app iOS, nút cài app, ô lưu, ảnh chụp nhà (dấu nước), thông báo sao lưu, tên file tải về (`lang-ban-nho-*.json/.png`), kho cache của service worker (`lang-ban-nho-VERSION`, kho cũ `pet-destiny-*` vẫn được dọn). **GIỮ NGUYÊN có chủ đích**: khoá localStorage `pet-destiny-*`, `KEY='pet-destiny-v1'`, `FILE_APP='pet-destiny'` trong file sao lưu, tên kho GitHub và URL GitHub Pages (đổi các thứ này sẽ làm mất file lưu hoặc không nhập được sao lưu cũ, và gãy link/app đã cài). Đừng "dọn" các chuỗi `pet-destiny` còn lại trong code. Đổi tên kho GitHub là bước riêng, làm tay (Settings → Rename) và sẽ đổi đường dẫn trang.
+
+
+## v55 — Làng (đơn hàng · điểm danh · thành tựu) + nội dung mới
+- Tab `daily` đổi thành **Làng 🏘️** với 4 tab con (Nhiệm vụ | Đơn hàng | Thành tựu | Điểm danh), vẽ trong `daily.js`; logic ở `village-core.js` (`Village`), số liệu ở `EcoData.village`.
+- Trạng thái `s.village={od:{date,done},orders,ci:{last,day,total},ach:[],best}`; `normalize` tự sửa dữ liệu hỏng, `best` theo `dq.streak`.
+- **Đơn hàng**: 3 đơn/ngày theo ngày (hash): cây trồng, cá (cá rẻ nhất đủ `min` xu bị trừ), hỗn hợp. Thưởng = giá gốc × [1.3,1.35,1.5], làm tròn 5. Mỗi đơn 1 lần/ngày.
+- **Điểm danh** 7 ngày xoay vòng, bỏ ngày không bị phạt; ngày 3/6 tặng mồi (tôn trọng `baitCap`).
+- **Thành tựu**: 9 nhóm, mốc nhận một lần (tổng ≤ 2000 xu, test chặn).
+- Cây mới: cà chua, nho tím, hướng dương (lợi nhuận/giờ không tăng theo thời gian trồng — test `farm-core` kiểm tra). 16 đồ nhà búp bê mới (giá trong `EcoData.dollhouse.furniture`).
+- Test: `tests/village-core.test.js`; architecture: `village-core.js` trước `daily.js`.
